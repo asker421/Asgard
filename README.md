@@ -2,7 +2,7 @@
 
 Asgard TV is an Android TV WebView cinema hub.
 
-Current GitHub build: **1.7 — Persistence Core**.
+Current GitHub build: **1.8 — Sources Manager**.
 
 ## Included
 
@@ -12,7 +12,8 @@ Current GitHub build: **1.7 — Persistence Core**.
 - ExoPlayer activity
 - Modular Web UI
 - TXT configuration files
-- Sources parser and saved sources
+- Sources Manager
+- Sources diagnostics
 - Favorites
 - Watch history
 - Watch progress

@@ -56,6 +56,11 @@ class MainActivity : Activity() {
             return true
         }
 
+        @JavascriptInterface fun resetSourcesTxt(): Boolean {
+            prefs.edit().remove("sources_txt").apply()
+            return true
+        }
+
         @JavascriptInterface fun openPlayer(url: String, title: String, startPosition: Long) {
             val intent = Intent(this@MainActivity, PlayerActivity::class.java)
             intent.putExtra("url", url)
