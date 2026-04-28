@@ -26,7 +26,13 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         prefs = getSharedPreferences("asgard_store", MODE_PRIVATE)
         webView = WebView(this)
-        webView.webViewClient = WebViewClient()
+        webView.webViewClient = object : WebViewClient() {
+            override fun shouldOverrideUrlLoading(view: WebView?, request: android.webkit.WebResourceRequest?): Boolean {
+                val url = request?.url?.toString() ?: return true
+                if (url.startsWith("file:///android_asset/")) return false
+                return openExternalUrlInternal(url)
+            }
+        }
         webView.webChromeClient = WebChromeClient()
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
@@ -104,6 +110,19 @@ class MainActivity : Activity() {
         runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
     }
 
+    private fun openExternalUrlInternal(url: String): Boolean {
+        return try {
+            val parsed = Uri.parse(url)
+            val scheme = parsed.scheme ?: return true
+            if (scheme != "http" && scheme != "https") return true
+            val intent = Intent(Intent.ACTION_VIEW, parsed)
+            startActivity(intent)
+            true
+        } catch (_: Exception) {
+            true
+        }
+    }
+
     inner class AsgardBridge {
         @JavascriptInterface fun showToast(message: String) {
             this@MainActivity.showToast(message)
@@ -131,21 +150,15 @@ class MainActivity : Activity() {
 
         @JavascriptInterface fun getAppVersionInfo(): String {
             val obj = JSONObject()
-            obj.put("versionName", "2.1.0")
-            obj.put("versionCode", 21)
+            obj.put("versionName", BuildConfig.VERSION_NAME)
+            obj.put("versionCode", BuildConfig.VERSION_CODE)
             obj.put("packageName", packageName)
             obj.put("repo", "asker421/Asgard")
             return obj.toString()
         }
 
         @JavascriptInterface fun openExternalUrl(url: String): Boolean {
-            return try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                startActivity(intent)
-                true
-            } catch (_: Exception) {
-                false
-            }
+            return openExternalUrlInternal(url)
         }
 
         @JavascriptInterface fun pickTorrentFile(): Boolean {
