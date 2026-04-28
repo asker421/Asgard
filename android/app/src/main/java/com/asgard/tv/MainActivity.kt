@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.StatFs
+import android.provider.OpenableColumns
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebView
@@ -18,6 +19,7 @@ import org.json.JSONObject
 class MainActivity : Activity() {
     private lateinit var webView: WebView
     private lateinit var prefs: SharedPreferences
+    private val torrentPickerRequestCode = 2101
 
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,15 +33,80 @@ class MainActivity : Activity() {
         webView.addJavascriptInterface(AsgardBridge(), "AsgardBridge")
         setContentView(webView)
         webView.loadUrl("file:///android_asset/web/index.html")
+        handleIncomingTorrentIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIncomingTorrentIntent(intent)
     }
 
     override fun onBackPressed() {
         webView.evaluateJavascript("window.asgardBack && window.asgardBack();", null)
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == torrentPickerRequestCode) {
+            if (resultCode == RESULT_OK && data?.data != null) {
+                persistTorrentFileImport(data.data!!, "picker")
+                webView.evaluateJavascript("window.AsApp && AsApp.onTorrentFilePicked && AsApp.onTorrentFilePicked();", null)
+            } else {
+                showToast("Torrent file selection cancelled")
+            }
+        }
+    }
+
+    private fun handleIncomingTorrentIntent(intent: Intent?) {
+        val uri = intent?.data ?: return
+        val action = intent.action ?: return
+        if (action == Intent.ACTION_VIEW || action == Intent.ACTION_SEND) {
+            persistTorrentFileImport(uri, "intent")
+        }
+    }
+
+    private fun persistTorrentFileImport(uri: Uri, source: String) {
+        val obj = JSONObject()
+        obj.put("type", "torrent_file")
+        obj.put("source", source)
+        obj.put("uri", uri.toString())
+        obj.put("name", queryDisplayName(uri))
+        obj.put("sizeBytes", querySize(uri))
+        obj.put("status", "metadata_pending")
+        obj.put("rightsStatus", "User Source / Unknown Rights")
+        obj.put("createdAt", System.currentTimeMillis())
+        prefs.edit().putString("pending_torrent_file_import", obj.toString()).apply()
+    }
+
+    private fun queryDisplayName(uri: Uri): String {
+        return try {
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (cursor.moveToFirst() && nameIndex >= 0) cursor.getString(nameIndex) else uri.lastPathSegment ?: "selected.torrent"
+            } ?: (uri.lastPathSegment ?: "selected.torrent")
+        } catch (_: Exception) {
+            uri.lastPathSegment ?: "selected.torrent"
+        }
+    }
+
+    private fun querySize(uri: Uri): Long {
+        return try {
+            contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                if (cursor.moveToFirst() && sizeIndex >= 0) cursor.getLong(sizeIndex) else -1L
+            } ?: -1L
+        } catch (_: Exception) {
+            -1L
+        }
+    }
+
+    private fun showToast(message: String) {
+        runOnUiThread { Toast.makeText(this, message, Toast.LENGTH_SHORT).show() }
+    }
+
     inner class AsgardBridge {
         @JavascriptInterface fun showToast(message: String) {
-            runOnUiThread { Toast.makeText(this@MainActivity, message, Toast.LENGTH_SHORT).show() }
+            this@MainActivity.showToast(message)
         }
 
         @JavascriptInterface fun readAsset(fileName: String): String {
@@ -64,8 +131,8 @@ class MainActivity : Activity() {
 
         @JavascriptInterface fun getAppVersionInfo(): String {
             val obj = JSONObject()
-            obj.put("versionName", "2.0.0")
-            obj.put("versionCode", 20)
+            obj.put("versionName", "2.1.0")
+            obj.put("versionCode", 21)
             obj.put("packageName", packageName)
             obj.put("repo", "asker421/Asgard")
             return obj.toString()
@@ -79,6 +146,27 @@ class MainActivity : Activity() {
             } catch (_: Exception) {
                 false
             }
+        }
+
+        @JavascriptInterface fun pickTorrentFile(): Boolean {
+            return try {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+                intent.addCategory(Intent.CATEGORY_OPENABLE)
+                intent.type = "*/*"
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("application/x-bittorrent", "application/octet-stream", "application/torrent"))
+                startActivityForResult(intent, torrentPickerRequestCode)
+                true
+            } catch (_: Exception) {
+                showToast("Cannot open file picker")
+                false
+            }
+        }
+
+        @JavascriptInterface fun getPendingTorrentFileImport(): String = prefs.getString("pending_torrent_file_import", "{}") ?: "{}"
+
+        @JavascriptInterface fun clearPendingTorrentFileImport(): Boolean {
+            prefs.edit().remove("pending_torrent_file_import").apply()
+            return true
         }
 
         @JavascriptInterface fun openPlayer(url: String, title: String, startPosition: Long) {
