@@ -1,0 +1,51 @@
+name: Build APK Final
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-final:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Verify final checked-out sources
+        working-directory: android
+        run: |
+          echo "Checked out commit: $(git rev-parse HEAD)"
+          java -version
+          echo "--- app/build.gradle.kts ---"
+          sed -n '1,140p' app/build.gradle.kts
+          echo "--- MainActivity.kt lines 140-170 ---"
+          nl -ba app/src/main/java/com/asgard/tv/MainActivity.kt | sed -n '140,170p'
+          if grep -R "BuildConfig" app/src/main/java/com/asgard/tv/MainActivity.kt; then
+            echo "ERROR: BuildConfig reference still exists in checked-out MainActivity.kt" >&2
+            exit 1
+          fi
+          echo "BuildConfig source check: OK"
+
+      - name: Build debug APK using repository wrapper
+        working-directory: android
+        run: |
+          echo "Using repository Gradle wrapper from $(pwd)/gradlew"
+          chmod +x ./gradlew
+          ./gradlew :app:assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: asgard-tv-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
