@@ -123,6 +123,23 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun getVersionNameCompat(): String {
+        return try {
+            packageManager.getPackageInfo(packageName, 0).versionName ?: "unknown"
+        } catch (_: Exception) {
+            "unknown"
+        }
+    }
+
+    private fun getVersionCodeCompat(): Long {
+        return try {
+            val info = packageManager.getPackageInfo(packageName, 0)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) info.longVersionCode else @Suppress("DEPRECATION") info.versionCode.toLong()
+        } catch (_: Exception) {
+            -1L
+        }
+    }
+
     inner class AsgardBridge {
         @JavascriptInterface fun showToast(message: String) {
             this@MainActivity.showToast(message)
@@ -150,8 +167,8 @@ class MainActivity : Activity() {
 
         @JavascriptInterface fun getAppVersionInfo(): String {
             val obj = JSONObject()
-            obj.put("versionName", BuildConfig.VERSION_NAME)
-            obj.put("versionCode", BuildConfig.VERSION_CODE)
+            obj.put("versionName", getVersionNameCompat())
+            obj.put("versionCode", getVersionCodeCompat())
             obj.put("packageName", packageName)
             obj.put("repo", "asker421/Asgard")
             return obj.toString()
