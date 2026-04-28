@@ -20,7 +20,26 @@ window.AsTorrent={
       return out;
     }catch(e){out.error='Ошибка разбора magnet: '+e.message;return out}
   },
+  isTorrentFileName(name){return String(name||'').toLowerCase().trim().endsWith('.torrent')},
+  parseTorrentFileImport(file){
+    const out={type:'torrent_file',ok:false,error:'',name:'',uri:'',sizeBytes:-1,status:'invalid'};
+    try{
+      const f=file||{};
+      out.name=String(f.name||'selected.torrent');
+      out.uri=String(f.uri||'');
+      out.sizeBytes=Number(f.sizeBytes||-1);
+      if(!out.uri){out.error='Файл не выбран или Android не вернул URI';return out}
+      if(!this.isTorrentFileName(out.name)&&!out.uri.toLowerCase().includes('.torrent')){out.error='Ожидается файл с расширением .torrent';return out}
+      if(out.sizeBytes===0){out.error='Файл пустой';return out}
+      out.ok=true;
+      out.status='metadata_pending';
+      return out;
+    }catch(e){out.error='Ошибка проверки .torrent файла: '+e.message;return out}
+  },
   makeTask(parsed){
+    if(parsed.type==='torrent_file'){
+      return {id:'torrent_file_'+Date.now(),name:parsed.name,type:'torrent_file',uri:parsed.uri,sizeBytes:parsed.sizeBytes,status:'metadata_pending',attempts:0,lastError:'',rightsStatus:'User Source / Unknown Rights',files:[],createdAt:Date.now(),updatedAt:Date.now()};
+    }
     return {id:parsed.infoHash,name:parsed.name,type:'magnet',infoHash:parsed.infoHash,raw:parsed.raw,trackers:parsed.trackers||[],webSeeds:parsed.webSeeds||[],status:'metadata_pending',attempts:0,lastError:'',rightsStatus:'User Source / Unknown Rights',createdAt:Date.now(),updatedAt:Date.now()};
   },
   simulateMetadata(task){
@@ -31,5 +50,5 @@ window.AsTorrent={
     copy.lastError='Metadata engine is not implemented yet. This placeholder validates input and saves the task without crashing.';
     return copy;
   },
-  diagnostics(tasks){return tasks.map(t=>({id:t.id,name:t.name,status:t.status,attempts:t.attempts||0,hasInfoHash:!!t.infoHash,trackers:(t.trackers||[]).length,lastError:t.lastError||'',rightsStatus:t.rightsStatus||'User Source / Unknown Rights'}))}
+  diagnostics(tasks){return tasks.map(t=>({id:t.id,name:t.name,type:t.type,status:t.status,attempts:t.attempts||0,hasInfoHash:!!t.infoHash,hasUri:!!t.uri,sizeBytes:t.sizeBytes||-1,trackers:(t.trackers||[]).length,files:(t.files||[]).length,lastError:t.lastError||'',rightsStatus:t.rightsStatus||'User Source / Unknown Rights'}))}
 };
