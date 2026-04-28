@@ -64,8 +64,8 @@ class MainActivity : Activity() {
 
         @JavascriptInterface fun getAppVersionInfo(): String {
             val obj = JSONObject()
-            obj.put("versionName", "1.9.0")
-            obj.put("versionCode", 19)
+            obj.put("versionName", "2.0.0")
+            obj.put("versionCode", 20)
             obj.put("packageName", packageName)
             obj.put("repo", "asker421/Asgard")
             return obj.toString()
@@ -88,6 +88,50 @@ class MainActivity : Activity() {
             intent.putExtra("itemId", title.ifBlank { url })
             intent.putExtra("startPosition", startPosition)
             startActivity(intent)
+        }
+
+        @JavascriptInterface fun getTorrentTasks(): String = prefs.getString("torrent_tasks", "[]") ?: "[]"
+
+        @JavascriptInterface fun saveTorrentTasks(tasksJson: String): Boolean {
+            JSONArray(tasksJson)
+            prefs.edit().putString("torrent_tasks", tasksJson).apply()
+            return true
+        }
+
+        @JavascriptInterface fun addTorrentTask(taskJson: String): Boolean {
+            val task = JSONObject(taskJson)
+            val id = task.optString("id", task.optString("infoHash", "task_" + System.currentTimeMillis()))
+            val all = JSONArray(prefs.getString("torrent_tasks", "[]"))
+            val next = JSONArray()
+            for (i in 0 until all.length()) {
+                val old = all.getJSONObject(i)
+                if (old.optString("id") != id) next.put(old)
+            }
+            task.put("id", id)
+            task.put("updatedAt", System.currentTimeMillis())
+            if (!task.has("createdAt")) task.put("createdAt", System.currentTimeMillis())
+            if (!task.has("status")) task.put("status", "metadata_pending")
+            next.put(task)
+            prefs.edit().putString("torrent_tasks", next.toString()).apply()
+            return true
+        }
+
+        @JavascriptInterface fun updateTorrentTask(taskJson: String): Boolean = addTorrentTask(taskJson)
+
+        @JavascriptInterface fun removeTorrentTask(taskId: String): Boolean {
+            val all = JSONArray(prefs.getString("torrent_tasks", "[]"))
+            val next = JSONArray()
+            for (i in 0 until all.length()) {
+                val item = all.getJSONObject(i)
+                if (item.optString("id") != taskId) next.put(item)
+            }
+            prefs.edit().putString("torrent_tasks", next.toString()).apply()
+            return true
+        }
+
+        @JavascriptInterface fun clearTorrentTasks(): Boolean {
+            prefs.edit().putString("torrent_tasks", "[]").apply()
+            return true
         }
 
         @JavascriptInterface fun saveWatchProgress(itemId: String, position: Long, duration: Long, title: String): Boolean {
