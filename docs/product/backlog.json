@@ -1,17 +1,26 @@
 {
   "project": "Asgard TV",
   "source_of_truth": "docs/product/backlog.json",
-  "last_updated": "2026-04-28T17:00:00+04:00",
+  "last_updated": "2026-04-28T17:30:00+04:00",
+  "note": "This is the only backlog file. All previously separate scope docs are consolidated here.",
   "statuses": ["TODO", "IN_PROGRESS", "CODE_REVIEW", "READY_FOR_QA", "QA_IN_PROGRESS", "BUG_FOUND", "DONE", "BLOCKED", "DEFERRED"],
+  "status_flow": {
+    "normal": ["TODO", "IN_PROGRESS", "CODE_REVIEW", "READY_FOR_QA", "QA_IN_PROGRESS", "DONE"],
+    "qa_failed": ["READY_FOR_QA", "QA_IN_PROGRESS", "BUG_FOUND", "IN_PROGRESS"],
+    "blocked": ["TODO", "IN_PROGRESS", "BLOCKED"],
+    "deferred": ["TODO", "DEFERRED"]
+  },
   "coding_branch_rules": [
-    "Read docs/product/backlog.json before coding.",
-    "Pick the highest priority TODO task from the current release.",
+    "Use only docs/product/backlog.json as the backlog source of truth.",
+    "Read this file before coding.",
+    "Pick the highest priority TODO task from the current release unless instructed otherwise.",
     "Set status to IN_PROGRESS before starting implementation.",
-    "After implementation, update implementation_notes and links.",
+    "After implementation, update implementation_notes and links.branch/links.commit/links.pull_request.",
     "Move task to CODE_REVIEW or READY_FOR_QA when implementation is complete.",
-    "Set DONE only after acceptance criteria and Definition of Done are satisfied.",
+    "Set DONE only after acceptance criteria and definition_of_done are satisfied.",
     "Never delete backlog items.",
-    "If new work is discovered, add a new TODO item."
+    "If new work is discovered, add a new TODO story under the correct epic.",
+    "If implementation differs from requirement, add implementation_notes instead of silently changing acceptance criteria."
   ],
   "epics": [
     {
@@ -20,279 +29,176 @@
       "priority": "Critical",
       "release": "0.1",
       "stories": [
-        {
-          "id": "ASG-001",
-          "title": "Android TV project setup",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.1",
-          "description": "Build a native Android TV APK for Asgard TV.",
-          "acceptance_criteria": ["APK builds", "App launches on Android TV", "TV launcher metadata exists", "Splash screen shows Asgard TV", "No crash without internet"],
-          "definition_of_done": ["APK builds successfully", "Tested on emulator or device", "Status updated in backlog"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-002",
-          "title": "Remote-first navigation",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.1",
-          "description": "Make all core screens usable with Android TV remote.",
-          "acceptance_criteria": ["Arrow keys move focus", "OK activates item", "Back works", "Focus is always visible", "No focus traps"],
-          "definition_of_done": ["Navigation tested", "Focus never disappears", "Back behavior consistent"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-003",
-          "title": "Home screen skeleton",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.1",
-          "description": "Create home screen with Search, Continue Watching, Movies, Series, New, Favorites and Settings.",
-          "acceptance_criteria": ["All sections visible", "Remote navigation works", "Loading/empty/error states exist", "Text readable from TV distance"],
-          "definition_of_done": ["Home opens reliably", "No crash with empty content"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        }
+        {"id":"ASG-001","title":"Android TV project setup","priority":"Critical","status":"TODO","release":"0.1","description":"Build native Android TV APK for Mi Box S / Android TV / Smart Box.","acceptance_criteria":["APK builds","App launches on Android TV","TV launcher metadata exists","Splash screen shows Asgard TV","App opens without internet","No crash on first launch"],"definition_of_done":["APK builds successfully","Tested on emulator or device","Status updated in backlog"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-002","title":"Remote-first navigation","priority":"Critical","status":"TODO","release":"0.1","description":"Make all core screens usable with Android TV remote.","acceptance_criteria":["Up/down/left/right move focus predictably","OK activates focused item","Back works safely","Focus is always visible","No focus traps","Long press does not break navigation"],"definition_of_done":["Navigation tested","Focus never disappears","Back behavior consistent"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-003","title":"Home screen skeleton","priority":"Critical","status":"TODO","release":"0.1","description":"Create home screen with key TV sections.","acceptance_criteria":["Home has Search","Home has Continue Watching","Home has Movies","Home has Series","Home has New/Upcoming","Home has Favorites","Home has Watchlist","Home has Settings","Remote navigation works","Loading/empty/error states exist","Text readable from TV distance"],"definition_of_done":["Home opens reliably","No crash with empty content"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
       ]
     },
     {
       "id": "EPIC-002",
-      "title": "Catalog, Search and Sources",
-      "priority": "Critical",
-      "release": "0.2",
+      "title": "Premium TV UI and Onboarding",
+      "priority": "High",
+      "release": "0.1-0.3",
       "stories": [
-        {
-          "id": "ASG-010",
-          "title": "Mock catalog",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.1",
-          "description": "Create offline mock catalog for UI and player testing.",
-          "acceptance_criteria": ["Mock movies exist", "Mock series exist", "Mock detail page works", "Mock video can be opened"],
-          "definition_of_done": ["Works without internet"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-011",
-          "title": "Search screen",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.2",
-          "description": "Search movies and series by title.",
-          "acceptance_criteria": ["Android TV keyboard works", "Russian/English input works", "Loading/no-result/error states exist", "Slow sources do not freeze UI"],
-          "definition_of_done": ["Search works with remote"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-012",
-          "title": "TXT source import",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.2",
-          "description": "Import user-controlled sources from simple .txt file, one source per line.",
-          "acceptance_criteria": ["One source per non-empty line", "# comments ignored", "Invalid rows reported", "Import result summary shown", "Sources persist after restart"],
-          "definition_of_done": ["Bad file does not crash app", "User can import without JSON"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        }
+        {"id":"ASG-004","title":"Premium dark TV design system","priority":"High","status":"TODO","release":"0.1","description":"Make the app look like a premium streaming product, not a technical utility.","acceptance_criteria":["Dark theme by default","Large readable typography","Big poster cards","Cinematic backdrop images","Clean focus states","Smooth lightweight animations","Consistent spacing and UI components"],"definition_of_done":["UI is readable from 2-3 meters","Focus state is visually clear"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-005","title":"First launch onboarding","priority":"High","status":"TODO","release":"0.2","description":"Explain setup to a non-technical user on first launch.","acceptance_criteria":["Explains what Asgard TV is","Explains how to add sources","Explains TXT import","Explains QR phone import","Explains AI features","Explains player controls","Can be skipped","Can be reopened from settings"],"definition_of_done":["Non-technical user can understand setup","Onboarding works with remote"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-006","title":"Global loading, empty, error and retry states","priority":"High","status":"TODO","release":"0.2","description":"Every major screen should have clear states.","acceptance_criteria":["Loading state exists","Empty state exists","Error state exists","Retry action exists","Offline state exists where relevant","No technical stack traces shown to user"],"definition_of_done":["States verified on home/search/detail/settings/player where relevant"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
       ]
     },
     {
       "id": "EPIC-003",
-      "title": "Player",
+      "title": "Catalog, Search and Metadata",
       "priority": "Critical",
-      "release": "0.3",
+      "release": "0.1-0.3",
       "stories": [
-        {
-          "id": "ASG-020",
-          "title": "Embedded player",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.1",
-          "description": "Play video inside Asgard TV.",
-          "acceptance_criteria": ["Video starts", "Play/pause works", "Back exits safely", "Loading/error states exist", "Player error does not crash app"],
-          "definition_of_done": ["Player works with mock video", "Remote controls work"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-021",
-          "title": "Timeline seek and continue watching",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.3",
-          "description": "Support timecode seek and resume playback from last position.",
-          "acceptance_criteria": ["Timeline visible", "Seek works with remote", "Current/total time visible", "Progress saved", "Continue Watching row works"],
-          "definition_of_done": ["Progress survives restart", "Seek does not crash when duration is unknown"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        }
+        {"id":"ASG-010","title":"Mock catalog","priority":"Critical","status":"TODO","release":"0.1","description":"Create offline mock catalog for UI and player testing.","acceptance_criteria":["Mock movies exist","Mock series exist","Mock posters/metadata exist","Mock detail page works","Mock video can be opened","Mock mode clearly marked"],"definition_of_done":["Works without internet"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-011","title":"Search screen","priority":"Critical","status":"TODO","release":"0.2","description":"Search movies and series by title.","acceptance_criteria":["Android TV keyboard works","Russian input works","English input works","Loading/no-result/error states exist","Slow sources do not freeze UI","Search works with remote"],"definition_of_done":["Search works with mock and source data"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-012","title":"Unified search results and normalization","priority":"Critical","status":"TODO","release":"0.2","description":"Show unified search results from enabled sources.","acceptance_criteria":["Results include title/year/type/poster/rating/source/quality where available","Duplicate results are grouped or ranked","Broken source does not break all search","Result opens detail page","Data normalized into common model"],"definition_of_done":["Multiple sources can return results safely"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-013","title":"Search filters and voice search","priority":"Medium","status":"TODO","release":"0.3","description":"Add filters and Android TV voice input.","acceptance_criteria":["Filter by movie/series","Filter by year","Filter by genre","Filter by rating","Filter by quality","Filter by language/source","Voice search via Android TV system input works"],"definition_of_done":["Filters work with remote","Voice result can be edited"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
       ]
     },
     {
       "id": "EPIC-004",
-      "title": "QR Import and AI Assistant",
-      "priority": "High",
-      "release": "0.4-0.5",
+      "title": "Content Detail Pages",
+      "priority": "Critical",
+      "release": "0.2-0.4",
       "stories": [
-        {
-          "id": "ASG-030",
-          "title": "QR import from phone",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.4",
-          "description": "Import source list from phone by scanning QR on TV.",
-          "acceptance_criteria": ["TV shows QR", "Phone import page opens", "User can paste source list", "TV confirmation required", "Session expires"],
-          "definition_of_done": ["End-to-end QR flow works", "Old QR cannot be reused"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-031",
-          "title": "AI summary and recommendations",
-          "priority": "High",
-          "status": "TODO",
-          "release": "0.5",
-          "description": "Add AI summary, why-you-may-like-this, movie picker, new episodes and upcoming releases.",
-          "acceptance_criteria": ["AI summary without spoilers", "Why you may like this shown", "Movie picker by mood", "AI can be disabled", "App works when AI unavailable"],
-          "definition_of_done": ["AI failure does not break app", "AI settings exist"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        }
+        {"id":"ASG-020","title":"Movie detail page","priority":"Critical","status":"TODO","release":"0.2","description":"Show rich movie detail page before playback.","acceptance_criteria":["Shows poster/backdrop/title/original title/year/genre/country/runtime/rating/description","Shows actors and director where available","Shows source availability","Has Watch button","Has Add to Favorites","Has Add to Watchlist","Missing metadata does not break layout"],"definition_of_done":["Detail page works from mock and search results","Remote focus order correct"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-021","title":"Series detail page with seasons and episodes","priority":"Critical","status":"TODO","release":"0.3","description":"Support seasons, episodes and watched state.","acceptance_criteria":["Shows seasons","Shows episodes","Watched episodes marked","Last watched episode visible","Next episode visible","Episode description/release date shown where available","Continue from last episode works"],"definition_of_done":["Series navigation works with remote"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-022","title":"Actors, filmography and trailers","priority":"Medium","status":"TODO","release":"0.4","description":"Add actor pages and trailer playback.","acceptance_criteria":["Actor list visible on detail page","Actor page opens","Known roles displayed where available","Where else actor played displayed","Trailer button exists","Trailer plays or shows graceful missing state"],"definition_of_done":["Actor/trailer flows work with remote"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
       ]
     },
     {
       "id": "EPIC-005",
+      "title": "Source Management and Import",
+      "priority": "Critical",
+      "release": "0.2-0.4",
+      "stories": [
+        {"id":"ASG-030","title":"Manual source management","priority":"Critical","status":"TODO","release":"0.2","description":"User can add, edit, enable, disable and delete sources.","acceptance_criteria":["Sources screen exists","Add source works","Edit source works","Enable/disable source works","Delete source works","Source status visible","Last checked timestamp visible","Invalid source shows friendly error"],"definition_of_done":["Sources persist locally","One broken source does not crash app"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-031","title":"TXT source import","priority":"Critical","status":"TODO","release":"0.2","description":"Import user-controlled sources from simple .txt file, one source per line.","acceptance_criteria":["One source per non-empty line","# comments ignored","Invalid rows reported","Import result summary shown","Sources persist after restart","No JSON required"],"definition_of_done":["Bad file does not crash app","User can import without coding"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-032","title":"SourceAdapter architecture","priority":"Critical","status":"TODO","release":"0.2","description":"Create source adapter contract for search/details/streams/health checks.","acceptance_criteria":["Adapter has search","Adapter has getDetails","Adapter has getStreams","Adapter has healthCheck","Timeouts implemented","Source errors isolated","Disabled sources ignored"],"definition_of_done":["One broken source cannot crash global search"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-033","title":"Source diagnostics and test mode","priority":"High","status":"TODO","release":"0.3","description":"Add health checks, parser diagnostics and separate test mode.","acceptance_criteria":["Check all sources","Check selected source","Test query works","Raw response visible in developer mode","Normalized response visible","Errors categorized as network/timeout/invalid/empty/parser/stream unavailable","Test mode separated from production sources"],"definition_of_done":["Diagnostics explain source failures","Test sources do not pollute normal catalog"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-034","title":"Legal-safe source architecture","priority":"Critical","status":"TODO","release":"0.2","description":"Keep source system user-controlled and legally safe.","acceptance_criteria":["No pirated/copyrighted sources bundled in APK","Example source file has placeholders only","Production and test mode separated","Disclaimer exists where appropriate","App does not depend on prohibited built-in sources"],"definition_of_done":["APK ships without prohibited catalogs"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-006",
+      "title": "Video Player",
+      "priority": "Critical",
+      "release": "0.1-0.5",
+      "stories": [
+        {"id":"ASG-040","title":"Embedded player","priority":"Critical","status":"TODO","release":"0.1","description":"Play video inside Asgard TV.","acceptance_criteria":["Video starts","Play/pause works","Back exits safely","Loading/error states exist","Player error does not crash app"],"definition_of_done":["Player works with mock video","Remote controls work"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-041","title":"Timeline seek and timecode navigation","priority":"Critical","status":"TODO","release":"0.3","description":"Support seeking and visible timecode.","acceptance_criteria":["Timeline visible","Current time visible","Total duration visible","Seek forward works","Seek backward works","Exact timecode navigation where possible","Seek does not crash when duration unknown"],"definition_of_done":["Seek works with remote","Unknown duration handled safely"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-042","title":"Continue watching","priority":"Critical","status":"TODO","release":"0.3","description":"Save and resume playback progress.","acceptance_criteria":["Progress saved periodically","Continue Watching row exists","Continue/Start Over prompt exists","Progress survives app restart","Progress survives device reboot","Series resumes next relevant episode"],"definition_of_done":["Resume works after restart"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-043","title":"Quality, subtitles and audio tracks","priority":"High","status":"TODO","release":"0.4","description":"Support quality, subtitles and audio selection.","acceptance_criteria":["Manual quality selector","Auto quality when supported","480p/720p/1080p/4K where available","Subtitles enable/disable","Subtitle language selection","Subtitle size setting","Audio track selection","Changing settings preserves playback position"],"definition_of_done":["Player menu works with remote","Missing tracks/subtitles handled safely"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-044","title":"External player fallback","priority":"Medium","status":"TODO","release":"0.4","description":"Allow opening video in external player if embedded player fails.","acceptance_criteria":["External player option in settings","Android intent support","Friendly message if external player missing","Return to Asgard TV safely"],"definition_of_done":["External player flow tested"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-007",
+      "title": "QR Phone Import",
+      "priority": "Critical",
+      "release": "0.4",
+      "stories": [
+        {"id":"ASG-050","title":"QR import from phone","priority":"Critical","status":"TODO","release":"0.4","description":"Import source list or links from phone by scanning QR on TV.","acceptance_criteria":["TV shows QR","Phone import page opens","User can paste source list","User can paste TXT file link","TV confirmation required","Import result shown","Session expires"],"definition_of_done":["End-to-end QR flow works","Old QR cannot be reused"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-051","title":"QR security","priority":"High","status":"TODO","release":"0.4","description":"Secure QR import session.","acceptance_criteria":["One-time token","Session timeout","No personal data in QR","TV confirmation before applying import","Old QR cannot be reused"],"definition_of_done":["Unauthorized import cannot be applied without TV confirmation"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-008",
+      "title": "AI Assistant",
+      "priority": "High",
+      "release": "0.5",
+      "stories": [
+        {"id":"ASG-060","title":"AI summary without spoilers","priority":"High","status":"TODO","release":"0.5","description":"Show short AI summary on detail page.","acceptance_criteria":["3-5 short sentences","No spoilers by default","Spoiler mode explicit","AI block can be hidden if unavailable","App works when AI unavailable"],"definition_of_done":["AI failure does not break app"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-061","title":"Why you may like this","priority":"High","status":"TODO","release":"0.5","description":"Explain why selected title may fit user taste.","acceptance_criteria":["3-5 reasons","Uses genre/metadata/history/mood where available","Short TV-readable format","Can be disabled"],"definition_of_done":["Output readable on TV"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-062","title":"AI movie picker","priority":"High","status":"TODO","release":"0.5","description":"Suggest what to watch by mood.","acceptance_criteria":["Mood options include light/funny/action/thriller/family/smart/mystery/series tonight/movie under beer/something short","Returns 5-10 suggestions","Short reason for each","Can open title card from suggestion"],"definition_of_done":["Picker works with remote"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-063","title":"New episodes and upcoming releases","priority":"High","status":"TODO","release":"0.5","description":"Track watched series and show upcoming content.","acceptance_criteria":["Track watched series","Show last watched episode","Show next episode","Show release date where available","Home row New Episodes","Upcoming releases can be added to Watchlist"],"definition_of_done":["Missing release data handled gracefully"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-064","title":"AI settings and provider configuration","priority":"Medium","status":"TODO","release":"0.5","description":"Allow AI enable/disable and provider/API key settings.","acceptance_criteria":["Enable/disable AI","Provider setting","API key field if needed","Language setting","Test AI connection","API key not logged"],"definition_of_done":["App works with AI disabled or unavailable"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-009",
+      "title": "Personal Library and Profiles",
+      "priority": "High",
+      "release": "0.6",
+      "stories": [
+        {"id":"ASG-070","title":"Favorites","priority":"High","status":"TODO","release":"0.6","description":"Save and manage favorite titles.","acceptance_criteria":["Add to Favorites","Remove from Favorites","Favorites screen","Persists after restart","No duplicates"],"definition_of_done":["Favorites work from detail page and list"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-071","title":"Watchlist","priority":"Medium","status":"TODO","release":"0.6","description":"Save titles for later.","acceptance_criteria":["Add to Watchlist","Remove from Watchlist","Watch later screen","Future releases can be added"],"definition_of_done":["Watchlist persists"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-072","title":"Viewing history","priority":"High","status":"TODO","release":"0.6","description":"Track watched movies and episodes.","acceptance_criteria":["Movie history","Episode history","Last watched date","Remove item","Clear all","Disable history"],"definition_of_done":["History persists and can be cleared"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-073","title":"Profiles and child profile foundation","priority":"Medium","status":"TODO","release":"0.7","description":"Support separate profiles later.","acceptance_criteria":["Multiple profiles model","Separate history/favorites/watchlist","Profile selection planned or implemented","Child profile marker","Optional PIN planned"],"definition_of_done":["Profile data separation does not break current single-user mode"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-010",
       "title": "Torrent and Magnet Playback",
       "priority": "Critical",
       "release": "0.4-0.6",
       "stories": [
-        {
-          "id": "ASG-TOR-001",
-          "title": "Magnet link input",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.4",
-          "description": "Allow user-provided legal magnet links to be pasted or imported through QR import.",
-          "acceptance_criteria": ["User can paste magnet link", "QR import can receive magnet link", "Magnet URI format is validated", "Invalid magnet shows clear error", "Metadata loading has timeout/retry", "App does not crash if metadata fails"],
-          "definition_of_done": ["Valid magnet starts metadata loading", "Invalid/dead magnet does not crash app", "Legal/user-controlled usage disclaimer is visible"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-TOR-002",
-          "title": "Torrent file input",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.4",
-          "description": "Allow user-provided legal .torrent files to be opened/imported and parsed.",
-          "acceptance_criteria": ["App can receive .torrent file", "Torrent metadata is parsed", "Invalid torrent file shows clear error", "Import works through local picker or phone bridge where possible", "Malformed file does not crash app"],
-          "definition_of_done": ["Valid torrent file shows metadata", "Invalid file safely fails"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-TOR-003",
-          "title": "Torrent metadata and file selection",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.5",
-          "description": "Show torrent metadata and let the user choose a playable video file from single-file or multi-file torrent.",
-          "acceptance_criteria": ["Shows torrent name", "Shows file list and sizes", "Detects likely video files", "Supports mp4/mkv/avi/mov/m4v/webm", "Suggests largest video as default", "User can manually choose file"],
-          "definition_of_done": ["Multi-file torrents can be handled", "Non-video files are not selected by default"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-TOR-004",
-          "title": "Streaming-first torrent playback",
-          "priority": "Critical",
-          "status": "TODO",
-          "release": "0.5",
-          "description": "Start playback before full torrent download when enough buffer is available.",
-          "acceptance_criteria": ["Torrent engine supports sequential/streaming mode or limitation is documented", "Player starts after enough initial buffer", "Buffering state is visible", "Playback resumes after buffer refill", "User can cancel playback/download", "UI does not freeze while downloading"],
-          "definition_of_done": ["Playback works for supported legal/test torrents", "No crash on no peers or slow peers"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-TOR-005",
-          "title": "Torrent player integration and seeking",
-          "priority": "High",
-          "status": "TODO",
-          "release": "0.5",
-          "description": "Integrate torrent playback with the embedded Asgard TV player and handle seek limitations safely.",
-          "acceptance_criteria": ["Torrent stream opens in embedded player", "Play/pause/back work", "Timeline works where buffered/downloaded range supports it", "Unsupported seek shows clear limitation", "Continue Watching works where technically possible", "Player errors are handled"],
-          "definition_of_done": ["Torrent playback uses same player UX", "Seek failure does not crash app"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        },
-        {
-          "id": "ASG-TOR-006",
-          "title": "Torrent buffer, cache and diagnostics",
-          "priority": "High",
-          "status": "TODO",
-          "release": "0.6",
-          "description": "Show torrent progress, manage cache/storage and provide diagnostics for torrent failures.",
-          "acceptance_criteria": ["Shows metadata/loading state", "Shows connecting to peers state", "Shows download speed and buffer progress", "Shows no peers message", "Cache size can be limited/cleared", "Diagnostics show invalid magnet, metadata timeout, no peers, unsupported codec, storage error and player error"],
-          "definition_of_done": ["Low storage condition is handled", "Torrent cache can be cleared", "Diagnostics explain playback failures"],
-          "links": {"branch": "", "pull_request": "", "commit": ""},
-          "implementation_notes": [],
-          "qa": {"tested": false, "result": "", "notes": ""},
-          "updated_by": "",
-          "updated_at": ""
-        }
+        {"id":"ASG-TOR-001","title":"Magnet link input","priority":"Critical","status":"TODO","release":"0.4","description":"Allow user-provided legal magnet links to be pasted or imported through QR import.","acceptance_criteria":["User can paste magnet link","QR import can receive magnet link","Magnet URI format is validated","Invalid magnet shows clear error","Metadata loading has timeout/retry","App does not crash if metadata fails"],"definition_of_done":["Valid magnet starts metadata loading","Invalid/dead magnet does not crash app","Legal/user-controlled usage disclaimer visible"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-TOR-002","title":"Torrent file input","priority":"Critical","status":"TODO","release":"0.4","description":"Allow user-provided legal .torrent files to be opened/imported and parsed.","acceptance_criteria":["App can receive .torrent file","Torrent metadata is parsed","Invalid torrent file shows clear error","Import works through local picker or phone bridge where possible","Malformed file does not crash app"],"definition_of_done":["Valid torrent file shows metadata","Invalid file safely fails"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-TOR-003","title":"Torrent metadata and file selection","priority":"Critical","status":"TODO","release":"0.5","description":"Show torrent metadata and let user choose playable video file from single-file or multi-file torrent.","acceptance_criteria":["Shows torrent name","Shows file list and sizes","Detects likely video files","Supports mp4/mkv/avi/mov/m4v/webm","Suggests largest video as default","User can manually choose file"],"definition_of_done":["Multi-file torrents handled","Non-video files not selected by default"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-TOR-004","title":"Streaming-first torrent playback","priority":"Critical","status":"TODO","release":"0.5","description":"Start playback before full torrent download when enough buffer is available.","acceptance_criteria":["Engine supports sequential/streaming mode or limitation documented","Player starts after enough initial buffer","Buffering state visible","Playback resumes after buffer refill","User can cancel playback/download","UI does not freeze while downloading"],"definition_of_done":["Playback works for supported legal/test torrents","No crash on no peers or slow peers"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-TOR-005","title":"Torrent player integration and seeking","priority":"High","status":"TODO","release":"0.5","description":"Integrate torrent playback with embedded Asgard TV player and handle seek limitations safely.","acceptance_criteria":["Torrent stream opens in embedded player","Play/pause/back work","Timeline works where buffered/downloaded range supports it","Unsupported seek shows clear limitation","Continue Watching works where technically possible","Player errors handled"],"definition_of_done":["Torrent playback uses same player UX","Seek failure does not crash app"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-TOR-006","title":"Torrent buffer, cache and diagnostics","priority":"High","status":"TODO","release":"0.6","description":"Show torrent progress, manage cache/storage and provide diagnostics for failures.","acceptance_criteria":["Shows metadata/loading state","Shows connecting to peers state","Shows download speed and buffer progress","Shows no peers message","Cache size can be limited/cleared","Diagnostics show invalid magnet, metadata timeout, no peers, unsupported codec, storage error and player error"],"definition_of_done":["Low storage handled","Torrent cache can be cleared","Diagnostics explain playback failures"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-011",
+      "title": "Settings, Backup, Privacy and Security",
+      "priority": "High",
+      "release": "0.6-0.7",
+      "stories": [
+        {"id":"ASG-080","title":"Settings sections","priority":"High","status":"TODO","release":"0.6","description":"Create full settings structure.","acceptance_criteria":["Sources section","Import section","Player section","AI section","Interface section","Profiles section","Storage section","Diagnostics section","About section"],"definition_of_done":["All settings sections work with remote"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-081","title":"Backup export and import settings","priority":"Medium","status":"TODO","release":"0.7","description":"Allow user to export/import settings.","acceptance_criteria":["Export settings to file","Import settings from file","Can include/exclude sources/favorites/watchlist/history/profiles/settings","Import validates schema"],"definition_of_done":["Bad backup file does not crash app"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-082","title":"Privacy and secure API key storage","priority":"High","status":"TODO","release":"0.7","description":"Protect user privacy and secrets.","acceptance_criteria":["Disable history","Clear history","Secure API key storage","API keys not logged","API key not exported without explicit confirmation"],"definition_of_done":["Logs and exports do not leak API keys"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-012",
+      "title": "Diagnostics, Developer Mode and QA",
+      "priority": "Critical",
+      "release": "0.7",
+      "stories": [
+        {"id":"ASG-090","title":"Diagnostics screen","priority":"High","status":"TODO","release":"0.7","description":"Show diagnostics for app, network, sources, AI and player.","acceptance_criteria":["Checks internet","Checks sources","Checks AI","Checks player","Checks cache","Checks permissions","Shows app version/storage","Statuses OK/Warning/Error"],"definition_of_done":["Diagnostics can rerun and does not crash"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-091","title":"Logs export and developer mode","priority":"Medium","status":"TODO","release":"0.7","description":"Support logs export and technical diagnostics.","acceptance_criteria":["Local logs","Export logs","Private data redacted","Source/player/AI errors separated","Developer mode shows source ID/response time/parser status/stream status/player error/raw and normalized parser output"],"definition_of_done":["Exported logs safe to share"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-092","title":"Smoke test and Mi Box S validation","priority":"Critical","status":"TODO","release":"0.7","description":"Create and pass release smoke checks.","acceptance_criteria":["Install APK","Launch app","Open without internet","Remote navigation","Focus visibility","Home/Search/Detail/Player","Play/pause/seek/continue watching","Source add/TXT import/QR import","AI disabled mode","Settings/Diagnostics","15-minute stability test","Mi Box S validation"],"definition_of_done":["No critical smoke test failed"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
+      ]
+    },
+    {
+      "id": "EPIC-013",
+      "title": "Release APK and No-Code Usage",
+      "priority": "Critical",
+      "release": "1.0",
+      "stories": [
+        {"id":"ASG-100","title":"Release APK packaging","priority":"Critical","status":"TODO","release":"1.0","description":"Produce ready installable APK for non-technical user.","acceptance_criteria":["Ready APK exists","APK can install on Mi Box S","Version visible in app","Update does not delete settings","Changelog included"],"definition_of_done":["APK install verified","Critical smoke test passed"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""},
+        {"id":"ASG-101","title":"Simple installation and update guide","priority":"Critical","status":"TODO","release":"1.0","description":"Write simple guide for non-programmer.","acceptance_criteria":["Explains APK install","Explains unknown sources permission","Explains how to open app","Explains source add","Explains TXT import","Explains QR import","Explains AI enable/disable","Explains app update"],"definition_of_done":["Guide is understandable without programming knowledge"],"links":{"branch":"","pull_request":"","commit":""},"implementation_notes":[],"qa":{"tested":false,"result":"","notes":""},"updated_by":"","updated_at":""}
       ]
     }
+  ],
+  "definition_of_good": [
+    "Remote navigation is perfect",
+    "Player is stable",
+    "Continue Watching works",
+    "TXT import works",
+    "QR import works",
+    "Torrent/magnet legal user-provided playback works or limitations are documented",
+    "Source errors do not crash the app",
+    "AI is useful but optional",
+    "UI looks premium",
+    "Diagnostics explain what is broken",
+    "Non-programmer can install and configure it"
+  ],
+  "definition_of_stable_1_0": [
+    "APK release exists",
+    "Critical smoke test passed",
+    "Mi Box S or Android TV physical validation passed",
+    "No critical crash",
+    "No focus/navigation blocker",
+    "No player blocker",
+    "No broken source import",
+    "No broken update path that deletes user data",
+    "Changelog exists",
+    "Installation guide exists"
   ]
 }
