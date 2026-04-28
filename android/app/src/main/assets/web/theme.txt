@@ -1,0 +1,5 @@
+theme = dark
+accent_color = gold
+background = black
+poster_size = large
+font_size = large

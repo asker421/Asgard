@@ -1,0 +1,3 @@
+# name | type | url_or_template | language | enabled | priority | auth_required | notes
+Internet Archive | archive | https://archive.org | multi | true | 1 | false | public archive
+Wikimedia Commons | commons | https://commons.wikimedia.org | multi | true | 2 | false | creative commons media
