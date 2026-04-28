@@ -13,34 +13,26 @@ class PlayerActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val playerView = PlayerView(this)
-        setContentView(playerView)
-
+        val view = PlayerView(this)
+        setContentView(view)
         val url = intent.getStringExtra("url") ?: ""
-        val startPosition = intent.getLongExtra("startPosition", 0L)
-
-        player = ExoPlayer.Builder(this).build().also { exo ->
-            playerView.player = exo
+        player = ExoPlayer.Builder(this).build().also { p ->
+            view.player = p
             if (url.isNotBlank()) {
-                exo.setMediaItem(MediaItem.fromUri(Uri.parse(url)))
-                exo.prepare()
-                if (startPosition > 0) exo.seekTo(startPosition)
-                exo.playWhenReady = true
+                p.setMediaItem(MediaItem.fromUri(Uri.parse(url)))
+                p.prepare()
+                p.playWhenReady = true
             }
         }
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        val p = player ?: return super.dispatchKeyEvent(event)
         if (event.action == KeyEvent.ACTION_DOWN) {
-            val p = player
-            if (p != null) {
-                when (event.keyCode) {
-                    KeyEvent.KEYCODE_DPAD_LEFT -> { p.seekTo((p.currentPosition - 10_000).coerceAtLeast(0)); return true }
-                    KeyEvent.KEYCODE_DPAD_RIGHT -> { p.seekTo(p.currentPosition + 10_000); return true }
-                    KeyEvent.KEYCODE_MEDIA_REWIND -> { p.seekTo((p.currentPosition - 60_000).coerceAtLeast(0)); return true }
-                    KeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> { p.seekTo(p.currentPosition + 60_000); return true }
-                    KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> { if (p.isPlaying) p.pause() else p.play(); return true }
-                }
+            when (event.keyCode) {
+                KeyEvent.KEYCODE_DPAD_LEFT -> { p.seekTo((p.currentPosition - 10000).coerceAtLeast(0)); return true }
+                KeyEvent.KEYCODE_DPAD_RIGHT -> { p.seekTo(p.currentPosition + 10000); return true }
+                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER -> { if (p.isPlaying) p.pause() else p.play(); return true }
             }
         }
         return super.dispatchKeyEvent(event)
@@ -48,7 +40,6 @@ class PlayerActivity : Activity() {
 
     override fun onDestroy() {
         player?.release()
-        player = null
         super.onDestroy()
     }
 }
