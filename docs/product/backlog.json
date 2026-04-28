@@ -195,6 +195,104 @@
           "updated_at": ""
         }
       ]
+    },
+    {
+      "id": "EPIC-005",
+      "title": "Torrent and Magnet Playback",
+      "priority": "Critical",
+      "release": "0.4-0.6",
+      "stories": [
+        {
+          "id": "ASG-TOR-001",
+          "title": "Magnet link input",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.4",
+          "description": "Allow user-provided legal magnet links to be pasted or imported through QR import.",
+          "acceptance_criteria": ["User can paste magnet link", "QR import can receive magnet link", "Magnet URI format is validated", "Invalid magnet shows clear error", "Metadata loading has timeout/retry", "App does not crash if metadata fails"],
+          "definition_of_done": ["Valid magnet starts metadata loading", "Invalid/dead magnet does not crash app", "Legal/user-controlled usage disclaimer is visible"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-TOR-002",
+          "title": "Torrent file input",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.4",
+          "description": "Allow user-provided legal .torrent files to be opened/imported and parsed.",
+          "acceptance_criteria": ["App can receive .torrent file", "Torrent metadata is parsed", "Invalid torrent file shows clear error", "Import works through local picker or phone bridge where possible", "Malformed file does not crash app"],
+          "definition_of_done": ["Valid torrent file shows metadata", "Invalid file safely fails"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-TOR-003",
+          "title": "Torrent metadata and file selection",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.5",
+          "description": "Show torrent metadata and let the user choose a playable video file from single-file or multi-file torrent.",
+          "acceptance_criteria": ["Shows torrent name", "Shows file list and sizes", "Detects likely video files", "Supports mp4/mkv/avi/mov/m4v/webm", "Suggests largest video as default", "User can manually choose file"],
+          "definition_of_done": ["Multi-file torrents can be handled", "Non-video files are not selected by default"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-TOR-004",
+          "title": "Streaming-first torrent playback",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.5",
+          "description": "Start playback before full torrent download when enough buffer is available.",
+          "acceptance_criteria": ["Torrent engine supports sequential/streaming mode or limitation is documented", "Player starts after enough initial buffer", "Buffering state is visible", "Playback resumes after buffer refill", "User can cancel playback/download", "UI does not freeze while downloading"],
+          "definition_of_done": ["Playback works for supported legal/test torrents", "No crash on no peers or slow peers"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-TOR-005",
+          "title": "Torrent player integration and seeking",
+          "priority": "High",
+          "status": "TODO",
+          "release": "0.5",
+          "description": "Integrate torrent playback with the embedded Asgard TV player and handle seek limitations safely.",
+          "acceptance_criteria": ["Torrent stream opens in embedded player", "Play/pause/back work", "Timeline works where buffered/downloaded range supports it", "Unsupported seek shows clear limitation", "Continue Watching works where technically possible", "Player errors are handled"],
+          "definition_of_done": ["Torrent playback uses same player UX", "Seek failure does not crash app"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-TOR-006",
+          "title": "Torrent buffer, cache and diagnostics",
+          "priority": "High",
+          "status": "TODO",
+          "release": "0.6",
+          "description": "Show torrent progress, manage cache/storage and provide diagnostics for torrent failures.",
+          "acceptance_criteria": ["Shows metadata/loading state", "Shows connecting to peers state", "Shows download speed and buffer progress", "Shows no peers message", "Cache size can be limited/cleared", "Diagnostics show invalid magnet, metadata timeout, no peers, unsupported codec, storage error and player error"],
+          "definition_of_done": ["Low storage condition is handled", "Torrent cache can be cleared", "Diagnostics explain playback failures"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        }
+      ]
     }
   ]
 }
