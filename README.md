@@ -2,9 +2,9 @@
 
 Asgard TV is an Android TV WebView cinema hub.
 
-Current GitHub build: **1.6 — Modular Sources UI Build**.
+Current GitHub build: **1.7 — Persistence Core**.
 
-## What is included
+## Included
 
 - Android TV project
 - WebView shell
@@ -12,24 +12,16 @@ Current GitHub build: **1.6 — Modular Sources UI Build**.
 - ExoPlayer activity
 - Modular Web UI
 - TXT configuration files
-- User sources parser
-- iPhone/Safari preview
+- Sources parser and saved sources
+- Favorites
+- Watch history
+- Watch progress
+- Storage info
 - GitHub Actions APK build
 
 ## Build APK
 
 Open **Actions** and run **Build APK**. Download artifact `asgard-tv-debug-apk`.
-
-## iPhone preview
-
-Serve the `web/` folder locally:
-
-```bash
-cd web
-python3 -m http.server 8080
-```
-
-Open the local IP address from Safari.
 
 ## Source policy
 

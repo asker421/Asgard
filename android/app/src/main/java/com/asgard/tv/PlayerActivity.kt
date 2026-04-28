@@ -7,15 +7,21 @@ import android.view.KeyEvent
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import org.json.JSONArray
+import org.json.JSONObject
 
 class PlayerActivity : Activity() {
     private var player: ExoPlayer? = null
+    private var itemId: String = ""
+    private var title: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val playerView = PlayerView(this)
         setContentView(playerView)
         val url = intent.getStringExtra("url") ?: ""
+        title = intent.getStringExtra("title") ?: url
+        itemId = intent.getStringExtra("itemId") ?: title
         val startPosition = intent.getLongExtra("startPosition", 0L)
         player = ExoPlayer.Builder(this).build().also { p ->
             playerView.player = p
@@ -42,9 +48,35 @@ class PlayerActivity : Activity() {
         return super.dispatchKeyEvent(event)
     }
 
+    override fun onPause() {
+        saveProgress()
+        super.onPause()
+    }
+
     override fun onDestroy() {
+        saveProgress()
         player?.release()
         player = null
         super.onDestroy()
+    }
+
+    private fun saveProgress() {
+        val p = player ?: return
+        if (itemId.isBlank()) return
+        val prefs = getSharedPreferences("asgard_store", MODE_PRIVATE)
+        val all = JSONArray(prefs.getString("watch_progress", "[]"))
+        val next = JSONArray()
+        for (i in 0 until all.length()) {
+            val item = all.getJSONObject(i)
+            if (item.optString("itemId") != itemId) next.put(item)
+        }
+        val obj = JSONObject()
+        obj.put("itemId", itemId)
+        obj.put("title", title)
+        obj.put("position", p.currentPosition)
+        obj.put("duration", p.duration)
+        obj.put("updatedAt", System.currentTimeMillis())
+        next.put(obj)
+        prefs.edit().putString("watch_progress", next.toString()).apply()
     }
 }
