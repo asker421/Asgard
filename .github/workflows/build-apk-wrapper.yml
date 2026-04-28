@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       - uses: actions/setup-java@v4
         with:
@@ -24,12 +26,16 @@ jobs:
       - name: Verify checked-out build files
         working-directory: android
         run: |
-          git rev-parse HEAD
+          echo "Checked out commit: $(git rev-parse HEAD)"
           java -version
-          ls -la
-          sed -n '1,160p' app/build.gradle.kts
+          sed -n '1,180p' app/build.gradle.kts
           sed -n '1,120p' build.gradle.kts
           sed -n '1,80p' gradle/wrapper/gradle-wrapper.properties
+          if grep -R "BuildConfig" app/src/main/java/com/asgard/tv/MainActivity.kt; then
+            echo "ERROR: MainActivity.kt still references BuildConfig. This run is not using the fixed source." >&2
+            exit 1
+          fi
+          echo "MainActivity.kt BuildConfig check: OK"
 
       - name: Build debug APK using repository wrapper
         working-directory: android
