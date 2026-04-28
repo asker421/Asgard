@@ -25,9 +25,11 @@ jobs:
         with:
           gradle-version: 8.10.2
 
-      - name: Build debug APK
+      - name: Build debug APK with Gradle Wrapper
         working-directory: android
-        run: ./gradlew :app:assembleDebug
+        run: |
+          echo "Using repository Gradle wrapper"
+          ./gradlew :app:assembleDebug
 
       - uses: actions/upload-artifact@v4
         with:
