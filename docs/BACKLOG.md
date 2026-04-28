@@ -1,36 +1,36 @@
 # Asgard TV Backlog
 
-## 1.9 — Input & Update System
+## 2.0 — Real Update Installer & Release Pipeline
 
-### Remote + Touch Screen Support
+### GitHub Releases Pipeline
 
-Goal: the same UI must work comfortably with Android TV remote and touch screens.
+- Create release workflow that builds APK and attaches it to GitHub Release.
+- Generate `latest.json` with versionCode, versionName, apkUrl, notesUrl and sha256.
+- Add release notes screen with changelog.
 
-Tasks:
+### Android Update Installer
 
-- Add explicit focusable classes to all main UI controls.
-- Add D-pad focus ring and keyboard navigation.
-- Add click/touch hit areas for tablets, touch TV boxes and phone preview.
-- Avoid hover-only behavior.
-- Add large touch targets, minimum 48dp equivalent.
-- Add scroll behavior that works with D-pad and touch.
-- Test on Android TV remote, mouse/air mouse, and touch screen.
+- Download APK through DownloadManager.
+- Verify sha256 before install.
+- Open Android package installer with user confirmation.
+- Show update progress.
+- Add settings:
+  - auto-check on startup
+  - manual only
+  - never check
 
-### GitHub Update System
+Important: normal Android apps cannot silently install APK updates. User confirmation is required unless the app is system/device-owner/root-managed.
 
-Goal: app can check GitHub Releases and guide the user to install the newest APK.
+## 2.1 — Full Player Pro
 
-Tasks:
+- Audio track selection.
+- Subtitle track selection.
+- External `.srt` / `.vtt` subtitle URL.
+- Manual timecode jump.
+- Player diagnostics.
 
-- Create GitHub Releases for APK artifacts.
-- Add update metadata endpoint, for example `latest.json`.
-- Add Android bridge method `checkForUpdates()`.
-- Add update screen in Web UI.
-- Compare installed `versionCode` with remote release version.
-- Download APK to Downloads/cache.
-- Open Android package installer for user-confirmed install.
-- Never silently install APK without user confirmation.
-- Show release notes before update.
-- Add settings: auto-check on startup, manual check, never check.
+## 2.2 — Room Database
 
-Important Android limitation: normal apps cannot fully auto-install APK updates silently. User confirmation is required unless the device is managed/rooted/system app.
+- Replace SharedPreferences persistence with Room.
+- Add migrations.
+- Add backup/restore.

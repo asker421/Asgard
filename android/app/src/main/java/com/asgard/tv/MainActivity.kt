@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.SharedPreferences
+import android.net.Uri
 import android.os.Bundle
 import android.os.StatFs
 import android.webkit.JavascriptInterface
@@ -59,6 +60,25 @@ class MainActivity : Activity() {
         @JavascriptInterface fun resetSourcesTxt(): Boolean {
             prefs.edit().remove("sources_txt").apply()
             return true
+        }
+
+        @JavascriptInterface fun getAppVersionInfo(): String {
+            val obj = JSONObject()
+            obj.put("versionName", "1.9.0")
+            obj.put("versionCode", 19)
+            obj.put("packageName", packageName)
+            obj.put("repo", "asker421/Asgard")
+            return obj.toString()
+        }
+
+        @JavascriptInterface fun openExternalUrl(url: String): Boolean {
+            return try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                startActivity(intent)
+                true
+            } catch (_: Exception) {
+                false
+            }
         }
 
         @JavascriptInterface fun openPlayer(url: String, title: String, startPosition: Long) {

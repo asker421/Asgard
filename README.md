@@ -2,7 +2,7 @@
 
 Asgard TV is an Android TV WebView cinema hub.
 
-Current GitHub build: **1.8 — Sources Manager**.
+Current GitHub build: **1.9 — Input & Update System**.
 
 ## Included
 
@@ -13,16 +13,18 @@ Current GitHub build: **1.8 — Sources Manager**.
 - Modular Web UI
 - TXT configuration files
 - Sources Manager
-- Sources diagnostics
-- Favorites
-- Watch history
-- Watch progress
-- Storage info
+- Favorites / history / watch progress
+- Remote + touch-friendly UI layer
+- GitHub update screen
 - GitHub Actions APK build
 
 ## Build APK
 
 Open **Actions** and run **Build APK**. Download artifact `asgard-tv-debug-apk`.
+
+## Updates
+
+The app can check GitHub Releases and open the latest release page. Android requires user confirmation to install APK updates.
 
 ## Source policy
 
