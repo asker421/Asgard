@@ -14,15 +14,22 @@ set DISTRIBUTION_URL=%DISTRIBUTION_URL:\:=:%
 
 for %%A in ("%DISTRIBUTION_URL%") do set ZIP_NAME=%%~nxA
 set DIST_NAME=%ZIP_NAME:.zip=%
+set GRADLE_HOME_NAME=%DIST_NAME:-bin=%
+set GRADLE_HOME_NAME=%GRADLE_HOME_NAME:-all=%
 if "%GRADLE_USER_HOME%"=="" set GRADLE_USER_HOME=%USERPROFILE%\.gradle
 set DIST_DIR=%GRADLE_USER_HOME%\wrapper\dists\%DIST_NAME%
-set GRADLE_BIN=%DIST_DIR%\%DIST_NAME%\bin\gradle.bat
+set GRADLE_BIN=%DIST_DIR%\%GRADLE_HOME_NAME%\bin\gradle.bat
 set ZIP_FILE=%DIST_DIR%\%ZIP_NAME%
 
 if not exist "%GRADLE_BIN%" (
   mkdir "%DIST_DIR%" 2>nul
   powershell -NoProfile -ExecutionPolicy Bypass -Command "[Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%DISTRIBUTION_URL%' -OutFile '%ZIP_FILE%'"
   powershell -NoProfile -ExecutionPolicy Bypass -Command "Expand-Archive -Path '%ZIP_FILE%' -DestinationPath '%DIST_DIR%' -Force"
+)
+
+if not exist "%GRADLE_BIN%" (
+  echo Gradle executable not found at %GRADLE_BIN%
+  exit /b 1
 )
 
 call "%GRADLE_BIN%" %*
