@@ -1,0 +1,200 @@
+{
+  "project": "Asgard TV",
+  "source_of_truth": "docs/product/backlog.json",
+  "last_updated": "2026-04-28T17:00:00+04:00",
+  "statuses": ["TODO", "IN_PROGRESS", "CODE_REVIEW", "READY_FOR_QA", "QA_IN_PROGRESS", "BUG_FOUND", "DONE", "BLOCKED", "DEFERRED"],
+  "coding_branch_rules": [
+    "Read docs/product/backlog.json before coding.",
+    "Pick the highest priority TODO task from the current release.",
+    "Set status to IN_PROGRESS before starting implementation.",
+    "After implementation, update implementation_notes and links.",
+    "Move task to CODE_REVIEW or READY_FOR_QA when implementation is complete.",
+    "Set DONE only after acceptance criteria and Definition of Done are satisfied.",
+    "Never delete backlog items.",
+    "If new work is discovered, add a new TODO item."
+  ],
+  "epics": [
+    {
+      "id": "EPIC-001",
+      "title": "Android TV Foundation",
+      "priority": "Critical",
+      "release": "0.1",
+      "stories": [
+        {
+          "id": "ASG-001",
+          "title": "Android TV project setup",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.1",
+          "description": "Build a native Android TV APK for Asgard TV.",
+          "acceptance_criteria": ["APK builds", "App launches on Android TV", "TV launcher metadata exists", "Splash screen shows Asgard TV", "No crash without internet"],
+          "definition_of_done": ["APK builds successfully", "Tested on emulator or device", "Status updated in backlog"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-002",
+          "title": "Remote-first navigation",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.1",
+          "description": "Make all core screens usable with Android TV remote.",
+          "acceptance_criteria": ["Arrow keys move focus", "OK activates item", "Back works", "Focus is always visible", "No focus traps"],
+          "definition_of_done": ["Navigation tested", "Focus never disappears", "Back behavior consistent"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-003",
+          "title": "Home screen skeleton",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.1",
+          "description": "Create home screen with Search, Continue Watching, Movies, Series, New, Favorites and Settings.",
+          "acceptance_criteria": ["All sections visible", "Remote navigation works", "Loading/empty/error states exist", "Text readable from TV distance"],
+          "definition_of_done": ["Home opens reliably", "No crash with empty content"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        }
+      ]
+    },
+    {
+      "id": "EPIC-002",
+      "title": "Catalog, Search and Sources",
+      "priority": "Critical",
+      "release": "0.2",
+      "stories": [
+        {
+          "id": "ASG-010",
+          "title": "Mock catalog",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.1",
+          "description": "Create offline mock catalog for UI and player testing.",
+          "acceptance_criteria": ["Mock movies exist", "Mock series exist", "Mock detail page works", "Mock video can be opened"],
+          "definition_of_done": ["Works without internet"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-011",
+          "title": "Search screen",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.2",
+          "description": "Search movies and series by title.",
+          "acceptance_criteria": ["Android TV keyboard works", "Russian/English input works", "Loading/no-result/error states exist", "Slow sources do not freeze UI"],
+          "definition_of_done": ["Search works with remote"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-012",
+          "title": "TXT source import",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.2",
+          "description": "Import user-controlled sources from simple .txt file, one source per line.",
+          "acceptance_criteria": ["One source per non-empty line", "# comments ignored", "Invalid rows reported", "Import result summary shown", "Sources persist after restart"],
+          "definition_of_done": ["Bad file does not crash app", "User can import without JSON"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        }
+      ]
+    },
+    {
+      "id": "EPIC-003",
+      "title": "Player",
+      "priority": "Critical",
+      "release": "0.3",
+      "stories": [
+        {
+          "id": "ASG-020",
+          "title": "Embedded player",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.1",
+          "description": "Play video inside Asgard TV.",
+          "acceptance_criteria": ["Video starts", "Play/pause works", "Back exits safely", "Loading/error states exist", "Player error does not crash app"],
+          "definition_of_done": ["Player works with mock video", "Remote controls work"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-021",
+          "title": "Timeline seek and continue watching",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.3",
+          "description": "Support timecode seek and resume playback from last position.",
+          "acceptance_criteria": ["Timeline visible", "Seek works with remote", "Current/total time visible", "Progress saved", "Continue Watching row works"],
+          "definition_of_done": ["Progress survives restart", "Seek does not crash when duration is unknown"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        }
+      ]
+    },
+    {
+      "id": "EPIC-004",
+      "title": "QR Import and AI Assistant",
+      "priority": "High",
+      "release": "0.4-0.5",
+      "stories": [
+        {
+          "id": "ASG-030",
+          "title": "QR import from phone",
+          "priority": "Critical",
+          "status": "TODO",
+          "release": "0.4",
+          "description": "Import source list from phone by scanning QR on TV.",
+          "acceptance_criteria": ["TV shows QR", "Phone import page opens", "User can paste source list", "TV confirmation required", "Session expires"],
+          "definition_of_done": ["End-to-end QR flow works", "Old QR cannot be reused"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        },
+        {
+          "id": "ASG-031",
+          "title": "AI summary and recommendations",
+          "priority": "High",
+          "status": "TODO",
+          "release": "0.5",
+          "description": "Add AI summary, why-you-may-like-this, movie picker, new episodes and upcoming releases.",
+          "acceptance_criteria": ["AI summary without spoilers", "Why you may like this shown", "Movie picker by mood", "AI can be disabled", "App works when AI unavailable"],
+          "definition_of_done": ["AI failure does not break app", "AI settings exist"],
+          "links": {"branch": "", "pull_request": "", "commit": ""},
+          "implementation_notes": [],
+          "qa": {"tested": false, "result": "", "notes": ""},
+          "updated_by": "",
+          "updated_at": ""
+        }
+      ]
+    }
+  ]
+}
