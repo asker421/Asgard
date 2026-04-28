@@ -20,11 +20,13 @@ if [ -z "$DISTRIBUTION_URL" ]; then
   exit 1
 fi
 
+ZIP_NAME=$(basename "$DISTRIBUTION_URL")
 DIST_NAME=$(basename "$DISTRIBUTION_URL" .zip)
+GRADLE_HOME_NAME=$(printf '%s' "$DIST_NAME" | sed 's/-bin$//' | sed 's/-all$//')
 GRADLE_USER_HOME_DIR="${GRADLE_USER_HOME:-$HOME/.gradle}"
 DIST_DIR="$GRADLE_USER_HOME_DIR/wrapper/dists/$DIST_NAME"
-GRADLE_BIN="$DIST_DIR/$DIST_NAME/bin/gradle"
-ZIP_FILE="$DIST_DIR/$DIST_NAME.zip"
+GRADLE_BIN="$DIST_DIR/$GRADLE_HOME_NAME/bin/gradle"
+ZIP_FILE="$DIST_DIR/$ZIP_NAME"
 
 if [ ! -x "$GRADLE_BIN" ]; then
   mkdir -p "$DIST_DIR"
@@ -38,6 +40,12 @@ if [ ! -x "$GRADLE_BIN" ]; then
     exit 1
   fi
   unzip -q -o "$ZIP_FILE" -d "$DIST_DIR"
+fi
+
+if [ ! -x "$GRADLE_BIN" ]; then
+  echo "Gradle executable not found at $GRADLE_BIN" >&2
+  find "$DIST_DIR" -maxdepth 3 -type f -name gradle -print >&2 || true
+  exit 1
 fi
 
 exec "$GRADLE_BIN" "$@"
