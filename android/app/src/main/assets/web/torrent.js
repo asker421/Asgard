@@ -39,9 +39,9 @@ window.AsTorrent={
   },
   makeTask(parsed){
     if(parsed.type==='torrent_file'){
-      return {id:'torrent_file_'+Date.now(),name:parsed.name,type:'torrent_file',uri:parsed.uri,sizeBytes:parsed.sizeBytes,status:'metadata_pending',attempts:0,lastError:'',rightsStatus:'User Source / Unknown Rights',files:[],selectedFileIndex:-1,createdAt:Date.now(),updatedAt:Date.now()};
+      return {id:'torrent_file_'+Date.now(),name:parsed.name,type:'torrent_file',uri:parsed.uri,sizeBytes:parsed.sizeBytes,status:'metadata_pending',attempts:0,lastError:'',rightsStatus:'User Source / Unknown Rights',files:[],selectedFileIndex:-1,stream:null,createdAt:Date.now(),updatedAt:Date.now()};
     }
-    return {id:parsed.infoHash,name:parsed.name,type:'magnet',infoHash:parsed.infoHash,raw:parsed.raw,trackers:parsed.trackers||[],webSeeds:parsed.webSeeds||[],status:'metadata_pending',attempts:0,lastError:'',rightsStatus:'User Source / Unknown Rights',files:[],selectedFileIndex:-1,createdAt:Date.now(),updatedAt:Date.now()};
+    return {id:parsed.infoHash,name:parsed.name,type:'magnet',infoHash:parsed.infoHash,raw:parsed.raw,trackers:parsed.trackers||[],webSeeds:parsed.webSeeds||[],status:'metadata_pending',attempts:0,lastError:'',rightsStatus:'User Source / Unknown Rights',files:[],selectedFileIndex:-1,stream:null,createdAt:Date.now(),updatedAt:Date.now()};
   },
   ext(path){const p=String(path||'').split('?')[0].toLowerCase();const i=p.lastIndexOf('.');return i>=0?p.substring(i+1):''},
   isVideoFile(file){return this.videoExt.includes(this.ext(file&&file.path||file&&file.name||''))},
@@ -86,11 +86,52 @@ window.AsTorrent={
     return copy;
   },
   selectedFile(task){const files=task&&task.files||[];return files.find(f=>Number(f.index)===Number(task.selectedFileIndex))||null},
+  canStream(task){return !!this.selectedFile(task)&&['metadata_ready','file_selected','stream_ready','streaming','buffering','paused'].includes(task.status)},
+  startStream(task){
+    const copy=Object.assign({},task);
+    const file=this.selectedFile(copy);
+    if(!file){copy.status='stream_error';copy.lastError='Сначала загрузите metadata и выберите видеофайл.';return copy}
+    copy.stream={
+      mode:'sequential_placeholder',
+      status:'buffering',
+      selectedFileIndex:copy.selectedFileIndex,
+      selectedFile:file,
+      bufferPercent:18,
+      downloadedPercent:6,
+      speedKbps:0,
+      peers:0,
+      seeds:0,
+      localStreamUrl:'pending://asgard/'+encodeURIComponent(copy.id),
+      canOpenPlayer:false,
+      limitation:'Реальный P2P engine ещё не подключён. Это безопасный streaming-first state layer для UI, buffer/retry/cancel и будущей интеграции ExoPlayer.'
+    };
+    copy.status='buffering';
+    copy.lastError='Идёт подготовка буфера. Реальный P2P engine будет добавлен следующим нативным модулем.';
+    copy.updatedAt=Date.now();
+    return copy;
+  },
+  advanceStream(task){
+    const copy=Object.assign({},task);
+    const s=Object.assign({bufferPercent:0,downloadedPercent:0,speedKbps:0,peers:0,seeds:0},copy.stream||{});
+    s.bufferPercent=Math.min(100,Number(s.bufferPercent||0)+22);
+    s.downloadedPercent=Math.min(100,Number(s.downloadedPercent||0)+11);
+    s.speedKbps=s.bufferPercent>=30?1800:450;
+    s.peers=s.bufferPercent>=30?4:1;
+    s.seeds=s.bufferPercent>=30?2:0;
+    if(s.bufferPercent>=35){s.status='stream_ready';s.canOpenPlayer=false;copy.status='stream_ready';copy.lastError='Буфер достаточный для старта, но local stream server ещё не реализован. ExoPlayer handoff заблокирован до P2P engine.'}
+    else{copy.status='buffering';copy.lastError='Буфер ещё недостаточен для старта.'}
+    copy.stream=s;
+    copy.updatedAt=Date.now();
+    return copy;
+  },
+  pauseStream(task){const copy=Object.assign({},task);copy.stream=Object.assign({},copy.stream||{},{status:'paused'});copy.status='paused';copy.lastError='Streaming paused by user.';copy.updatedAt=Date.now();return copy},
+  cancelStream(task){const copy=Object.assign({},task);copy.stream=Object.assign({},copy.stream||{},{status:'cancelled'});copy.status='cancelled';copy.lastError='Streaming cancelled by user.';copy.updatedAt=Date.now();return copy},
+  simulateNoPeers(task){const copy=Object.assign({},task);copy.stream=Object.assign({},copy.stream||{},{status:'no_peers',peers:0,seeds:0,speedKbps:0});copy.status='no_peers';copy.lastError='Нет пиров. Попробуйте позже или выберите другой user-provided источник.';copy.updatedAt=Date.now();return copy},
   simulateMetadata(task){
     const copy=Object.assign({},task);
     copy.attempts=(copy.attempts||0)+1;
     copy.updatedAt=Date.now();
     return this.attachMetadata(copy);
   },
-  diagnostics(tasks){return tasks.map(t=>({id:t.id,name:t.name,type:t.type,status:t.status,attempts:t.attempts||0,hasInfoHash:!!t.infoHash,hasUri:!!t.uri,sizeBytes:t.sizeBytes||-1,trackers:(t.trackers||[]).length,files:(t.files||[]).length,videoFiles:(t.files||[]).filter(f=>f.isVideo).length,selectedFileIndex:typeof t.selectedFileIndex==='number'?t.selectedFileIndex:-1,selectedFile:this.selectedFile(t),lastError:t.lastError||'',rightsStatus:t.rightsStatus||'User Source / Unknown Rights'}))}
+  diagnostics(tasks){return tasks.map(t=>({id:t.id,name:t.name,type:t.type,status:t.status,attempts:t.attempts||0,hasInfoHash:!!t.infoHash,hasUri:!!t.uri,sizeBytes:t.sizeBytes||-1,trackers:(t.trackers||[]).length,files:(t.files||[]).length,videoFiles:(t.files||[]).filter(f=>f.isVideo).length,selectedFileIndex:typeof t.selectedFileIndex==='number'?t.selectedFileIndex:-1,selectedFile:this.selectedFile(t),stream:t.stream||null,lastError:t.lastError||'',rightsStatus:t.rightsStatus||'User Source / Unknown Rights'}))}
 };
