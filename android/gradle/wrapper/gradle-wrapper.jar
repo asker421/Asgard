@@ -1,0 +1,2 @@
+Asgard TV Gradle bootstrap placeholder.
+The android/gradlew script downloads and runs Gradle 8.10.2 using gradle-wrapper.properties.

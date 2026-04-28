@@ -18,9 +18,22 @@ Current GitHub build: **1.9 — Input & Update System**.
 - GitHub update screen
 - GitHub Actions APK build
 
-## Build APK
+## Build APK in GitHub Actions
 
 Open **Actions** and run **Build APK**. Download artifact `asgard-tv-debug-apk`.
+
+## Local build
+
+```bash
+cd android
+./gradlew :app:assembleDebug
+```
+
+APK output:
+
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
 
 ## Updates
 

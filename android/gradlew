@@ -1,0 +1,43 @@
+#!/usr/bin/env sh
+
+# Lightweight Gradle bootstrap for Asgard TV.
+# Uses the Gradle version declared in gradle/wrapper/gradle-wrapper.properties.
+# This keeps GitHub Actions and local builds independent from globally installed Gradle.
+
+set -e
+
+APP_HOME=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROPERTIES_FILE="$APP_HOME/gradle/wrapper/gradle-wrapper.properties"
+
+if [ ! -f "$PROPERTIES_FILE" ]; then
+  echo "Missing Gradle wrapper properties: $PROPERTIES_FILE" >&2
+  exit 1
+fi
+
+DISTRIBUTION_URL=$(sed -n 's/^distributionUrl=//p' "$PROPERTIES_FILE" | sed 's/\\:/:/g')
+if [ -z "$DISTRIBUTION_URL" ]; then
+  echo "distributionUrl is missing in $PROPERTIES_FILE" >&2
+  exit 1
+fi
+
+DIST_NAME=$(basename "$DISTRIBUTION_URL" .zip)
+GRADLE_USER_HOME_DIR="${GRADLE_USER_HOME:-$HOME/.gradle}"
+DIST_DIR="$GRADLE_USER_HOME_DIR/wrapper/dists/$DIST_NAME"
+GRADLE_BIN="$DIST_DIR/$DIST_NAME/bin/gradle"
+ZIP_FILE="$DIST_DIR/$DIST_NAME.zip"
+
+if [ ! -x "$GRADLE_BIN" ]; then
+  mkdir -p "$DIST_DIR"
+  echo "Downloading $DIST_NAME from $DISTRIBUTION_URL"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fL --retry 3 --connect-timeout 30 -o "$ZIP_FILE" "$DISTRIBUTION_URL"
+  elif command -v wget >/dev/null 2>&1; then
+    wget -O "$ZIP_FILE" "$DISTRIBUTION_URL"
+  else
+    echo "Neither curl nor wget is available to download Gradle." >&2
+    exit 1
+  fi
+  unzip -q -o "$ZIP_FILE" -d "$DIST_DIR"
+fi
+
+exec "$GRADLE_BIN" "$@"
