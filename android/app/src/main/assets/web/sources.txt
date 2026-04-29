@@ -1,35 +1,18 @@
 # name | type | url_or_template | language | enabled | priority | auth_required | notes
 
-# Legal / public / reference sources - enabled
+# Open/public demo sources
 Internet Archive | archive | https://archive.org | multi | true | 1 | false | public archive
 Internet Archive Movies | archive | https://archive.org/details/movies | multi | true | 2 | false | public archive movies
-Internet Archive Search API | api | https://archive.org/advancedsearch.php?q=mediatype:movies&fl[]=identifier&fl[]=title&fl[]=description&fl[]=year&output=json&rows=50 | multi | true | 3 | false | archive search api
-Wikimedia Commons | commons | https://commons.wikimedia.org | multi | true | 4 | false | creative commons media
-Wikimedia Commons API | api | https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch={query}&gsrnamespace=6&prop=imageinfo&iiprop=url|mime|size | multi | true | 5 | false | commons media api
 NASA Images API | api | https://images-api.nasa.gov/search?q={query}&media_type=image,video,audio | en | true | 6 | false | nasa public media api
-YouTube Official | official_youtube | https://www.youtube.com | multi | true | 7 | false | official youtube platform
-Open Library Search API | api | https://openlibrary.org/search.json?q={query} | multi | true | 8 | false | metadata api
 
-# RSS movie / TV news - enabled
-Rotten Tomatoes News RSS | rss | https://editorial.rottentomatoes.com/feed/ | en | true | 20 | false | movie and tv news rss
-The Movie Blog RSS | rss | https://www.themovieblog.com/feed/ | en | true | 21 | false | movie news rss
-ComingSoon RSS | rss | https://www.comingsoon.net/feed | en | true | 22 | false | movie and tv release news rss
-ScreenRant Movies RSS | rss | https://screenrant.com/feed/category/movie-news/ | en | true | 23 | false | movie news rss
-ScreenRant TV RSS | rss | https://screenrant.com/feed/category/tv-news/ | en | true | 24 | false | tv news rss
+# User-configured parser placeholders
+# Real URLs should be entered in Settings -> Parser & TorrServer, not bundled here.
+My JacRed Parser | jacred | USER_CONFIGURED_PARSER_URL | multi | false | 40 | true | user-configured compatible parser
+My Torznab Parser | torznab | USER_CONFIGURED_TORZNAB_URL | multi | false | 41 | true | user-configured compatible parser
+My TorrServer | api | USER_CONFIGURED_TORRSERVER_URL | multi | false | 42 | false | user-configured media server
 
-# Demo / custom catalogs - disabled until real URLs are configured
-Demo JSON Catalog | json | https://your-domain.com/catalog.json | multi | true | 30 | false | disabled placeholder demo json catalog
-Demo XML Catalog | xml | https://your-domain.com/catalog.xml | multi | true | 31 | false | disabled placeholder demo xml catalog
-External Search Template | search_template | https://example.com/search?q={query} | multi | true | 32 | false | disabled placeholder external search template
-
-# User-provided torrent/magnet placeholders - disabled
-User Magnet List | magnet_list | user://manual-magnets | multi | true | 80 | false | disabled manual user magnet list; rights not verified
-User Torrent File | torrent_file | user://manual-torrent-file | multi | true | 81 | false | disabled manual user torrent file; rights not verified
-
-# User-provided / rights not verified sources - disabled
-RuTracker | api | https://rutracker.org/forum/index.php | ru | true | 90 | true | disabled user-provided source; rights not verified
-Kinozal | api | https://kinozal.tv/ | ru | true | 91 | true | disabled user-provided source; rights not verified
-LostFilm | api | https://lostfilm.tv/ | ru | true | 92 | true | disabled user-provided source; rights not verified
-Rutor | api | https://rutor.info/ | ru | true | 93 | false | disabled user-provided source; rights not verified
-Filmix | api | https://filmix.ac/ | ru | true | 94 | false | disabled user-provided source; rights not verified
-Rezka | api | https://rezka.ag/ | ru | true | 95 | false | disabled user-provided source; rights not verified
+# User-provided direct media examples - disabled placeholders
+My MP4 Stream | direct_video | USER_CONFIGURED_MP4_URL | multi | false | 50 | false | user-provided direct video
+My HLS Stream | hls | USER_CONFIGURED_HLS_URL | multi | false | 51 | false | user-provided HLS stream
+My Magnet | magnet | USER_CONFIGURED_MAGNET_URI | multi | false | 52 | false | user-provided magnet; requires confirmation
+My Torrent URL | torrent_url | USER_CONFIGURED_TORRENT_URL | multi | false | 53 | false | user-provided torrent URL; requires confirmation
