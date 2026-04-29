@@ -12,3 +12,26 @@ LostFilm | api | https://lostfilm.tv/ | ru | enabled | 92 | true | LostFilm
 Rutor | api | https://rutor.info/ | ru | enabled | 93 | false | Rutor
 Filmix | api | https://filmix.ac/ | ru | enabled | 94 | false | Filmix
 Rezka | api | https://rezka.ag/ | ru | enabled | 95 | false | Rezka
+# name | type | url_or_template | language | enabled | priority | auth_required | notes
+
+# Legal / public / reference sources - disabled for manual testing
+Internet Archive | archive | https://archive.org | multi | enabled | 1 | false | disabled public archive
+Internet Archive Movies | archive | https://archive.org/details/movies | multi | enabled | 2 | false | disabled public archive movies
+Internet Archive Search API | api | https://archive.org/advancedsearch.php?q=mediatype:movies&fl[]=identifier&fl[]=title&fl[]=description&fl[]=year&output=json&rows=50 | multi | false | 3 | false | disabled archive search api
+Wikimedia Commons | commons | https://commons.wikimedia.org | multi | enabled | 4 | false | disabled creative commons media
+Wikimedia Commons API | api | https://commons.wikimedia.org/w/api.php?action=query&format=json&generator=search&gsrsearch={query}&gsrnamespace=6&prop=imageinfo&iiprop=url|mime|size | multi | false | 5 | false | disabled commons media api
+NASA Images API | api | https://images-api.nasa.gov/search?q={query}&media_type=image,video,audio | en | false | 6 | false | disabled nasa public media api
+YouTube Official | official_youtube | https://www.youtube.com | multi | enabled | 7 | false | disabled official youtube platform
+Open Library Search API | api | https://openlibrary.org/search.json?q={query} | multi | false | 8 | false | disabled metadata api
+
+# RSS movie / TV news - disabled
+Rotten Tomatoes News RSS | rss | https://editorial.rottentomatoes.com/feed/ | en | enabled | 20 | false | disabled movie and tv news rss
+The Movie Blog RSS | rss | https://www.themovieblog.com/feed/ | en | enabled | 21 | false | disabled movie news rss
+ComingSoon RSS | rss | https://www.comingsoon.net/feed | en | enabled | 22 | enabled | disabled movie and tv release news rss
+ScreenRant Movies RSS | rss | https://screenrant.com/feed/category/movie-news/ | en | enabled | 23 | false | disabled movie news rss
+ScreenRant TV RSS | rss | https://screenrant.com/feed/category/tv-news/ | en | enabled | 24 | enabled | disabled tv news rss
+
+# Demo / custom catalogs - disabled
+Demo JSON Catalog | json | https://your-domain.com/catalog.json | multi | false | 30 | enabled | disabled legal demo json catalog
+Demo XML Catalog | xml | https://your-domain.com/catalog.xml | multi | false | 31 | enabled | disabled legal demo xml catalog
+External Search Template | search_template | https://example.com/search?q={query} | multi | false | 32 | enabled | disabled external search template
