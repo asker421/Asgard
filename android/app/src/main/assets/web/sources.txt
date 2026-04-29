@@ -18,18 +18,18 @@ ScreenRant Movies RSS | rss | https://screenrant.com/feed/category/movie-news/ |
 ScreenRant TV RSS | rss | https://screenrant.com/feed/category/tv-news/ | en | true | 24 | false | tv news rss
 
 # Demo / custom catalogs - disabled until real URLs are configured
-Demo JSON Catalog | json | https://your-domain.com/catalog.json | multi | false | 30 | false | disabled placeholder demo json catalog
-Demo XML Catalog | xml | https://your-domain.com/catalog.xml | multi | false | 31 | false | disabled placeholder demo xml catalog
-External Search Template | search_template | https://example.com/search?q={query} | multi | false | 32 | false | disabled placeholder external search template
+Demo JSON Catalog | json | https://your-domain.com/catalog.json | multi | true | 30 | false | disabled placeholder demo json catalog
+Demo XML Catalog | xml | https://your-domain.com/catalog.xml | multi | true | 31 | false | disabled placeholder demo xml catalog
+External Search Template | search_template | https://example.com/search?q={query} | multi | true | 32 | false | disabled placeholder external search template
 
 # User-provided torrent/magnet placeholders - disabled
-User Magnet List | magnet_list | user://manual-magnets | multi | false | 80 | false | disabled manual user magnet list; rights not verified
-User Torrent File | torrent_file | user://manual-torrent-file | multi | false | 81 | false | disabled manual user torrent file; rights not verified
+User Magnet List | magnet_list | user://manual-magnets | multi | true | 80 | false | disabled manual user magnet list; rights not verified
+User Torrent File | torrent_file | user://manual-torrent-file | multi | true | 81 | false | disabled manual user torrent file; rights not verified
 
 # User-provided / rights not verified sources - disabled
-RuTracker | api | https://rutracker.org/forum/index.php | ru | false | 90 | true | disabled user-provided source; rights not verified
-Kinozal | api | https://kinozal.tv/ | ru | false | 91 | true | disabled user-provided source; rights not verified
-LostFilm | api | https://lostfilm.tv/ | ru | false | 92 | true | disabled user-provided source; rights not verified
-Rutor | api | https://rutor.info/ | ru | false | 93 | false | disabled user-provided source; rights not verified
-Filmix | api | https://filmix.ac/ | ru | false | 94 | false | disabled user-provided source; rights not verified
-Rezka | api | https://rezka.ag/ | ru | false | 95 | false | disabled user-provided source; rights not verified
+RuTracker | api | https://rutracker.org/forum/index.php | ru | true | 90 | true | disabled user-provided source; rights not verified
+Kinozal | api | https://kinozal.tv/ | ru | true | 91 | true | disabled user-provided source; rights not verified
+LostFilm | api | https://lostfilm.tv/ | ru | true | 92 | true | disabled user-provided source; rights not verified
+Rutor | api | https://rutor.info/ | ru | true | 93 | false | disabled user-provided source; rights not verified
+Filmix | api | https://filmix.ac/ | ru | true | 94 | false | disabled user-provided source; rights not verified
+Rezka | api | https://rezka.ag/ | ru | true | 95 | false | disabled user-provided source; rights not verified
