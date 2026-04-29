@@ -15,6 +15,10 @@ import android.webkit.WebViewClient
 import android.widget.Toast
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class MainActivity : Activity() {
     private lateinit var webView: WebView
@@ -140,6 +144,56 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun nativeHttpGet(url: String): String {
+        val result = arrayOfNulls<String>(1)
+        val latch = CountDownLatch(1)
+        Thread {
+            val obj = JSONObject()
+            var connection: HttpURLConnection? = null
+            try {
+                val parsed = URL(url)
+                if (parsed.protocol != "http" && parsed.protocol != "https") {
+                    obj.put("ok", false)
+                    obj.put("status", -1)
+                    obj.put("error", "Unsupported URL scheme")
+                    result[0] = obj.toString()
+                    latch.countDown()
+                    return@Thread
+                }
+                connection = (parsed.openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 9000
+                    readTimeout = 9000
+                    requestMethod = "GET"
+                    instanceFollowRedirects = true
+                    setRequestProperty("User-Agent", "AsgardTV/${getVersionNameCompat()} AndroidTV")
+                    setRequestProperty("Accept", "application/json,text/plain,text/html,application/rss+xml,application/xml;q=0.9,*/*;q=0.8")
+                }
+                val status = connection.responseCode
+                val stream = if (status in 200..399) connection.inputStream else connection.errorStream
+                val body = stream?.bufferedReader()?.use { it.readText() } ?: ""
+                obj.put("ok", status in 200..399)
+                obj.put("status", status)
+                obj.put("url", connection.url.toString())
+                obj.put("contentType", connection.contentType ?: "")
+                obj.put("body", body.take(1_000_000))
+                if (status !in 200..399) obj.put("error", "HTTP $status")
+            } catch (e: Exception) {
+                obj.put("ok", false)
+                obj.put("status", -1)
+                obj.put("error", e.javaClass.simpleName + ": " + (e.message ?: "network error"))
+            } finally {
+                connection?.disconnect()
+                result[0] = obj.toString()
+                latch.countDown()
+            }
+        }.start()
+        return if (latch.await(11, TimeUnit.SECONDS)) {
+            result[0] ?: JSONObject(mapOf("ok" to false, "error" to "Empty native response")).toString()
+        } else {
+            JSONObject(mapOf("ok" to false, "status" to -1, "error" to "Native timeout")).toString()
+        }
+    }
+
     inner class AsgardBridge {
         @JavascriptInterface fun showToast(message: String) {
             this@MainActivity.showToast(message)
@@ -148,6 +202,8 @@ class MainActivity : Activity() {
         @JavascriptInterface fun readAsset(fileName: String): String {
             return try { assets.open("web/$fileName").bufferedReader().use { it.readText() } } catch (_: Exception) { "" }
         }
+
+        @JavascriptInterface fun nativeFetch(url: String): String = nativeHttpGet(url)
 
         @JavascriptInterface fun readConfig(): String = readAsset("config.txt")
 
