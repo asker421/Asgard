@@ -9,60 +9,19 @@
   ];
   function esc(v){return window.AsUI&&AsUI.escape?AsUI.escape(v):String(v||'')}
   function toast(msg){const b=window.AsgardBridge;if(b&&b.showToast)b.showToast(msg);else console.log(msg)}
-  function attachCatalog(){
-    if(!window.AsApp)return false;
-    AsApp.catalog=OPEN_CATALOG.map(function(x){return Object.assign({},x,{demo:true,open:true});});
-    return true;
-  }
+  function data(){return OPEN_CATALOG.map(function(x){return Object.assign({},x,{demo:true,open:true});});}
   function button(label,action,cls){return '<button class="btn focusable '+(cls||'')+'" onclick="'+action+'">'+label+'</button>'}
   function poster(m){return '<div class="poster art1"><span>'+esc(m.tag||'Open Demo')+'</span></div>'}
+  function cardsHtml(items){return items.map(function(x){return '<article tabindex="0" class="card focusable" onclick="AsApp.openContent(\''+esc(x.id)+'\')">'+poster(x)+'<div class="card-body"><h3>'+esc(x.t)+'</h3><p class="muted">'+esc((x.y||'')+' · '+(x.g||'')+' · '+(x.ep||''))+'</p><span class="chip">'+esc(x.tag||'Open')+'</span></div></article>'}).join('')}
   function patch(){
     if(!window.AsApp||!window.AsUI){setTimeout(patch,100);return;}
-    attachCatalog();
-    AsApp.openContent=function(id){
-      attachCatalog();
-      const item=(AsApp.catalog||[]).find(function(x){return x.id===id})||AsApp.catalog[0];
-      if(!item){toast('Контент не найден');return;}
-      AsApp.details(item.id);
-    };
-    AsApp.play=function(itemOrId){
-      attachCatalog();
-      const item=typeof itemOrId==='string'?(AsApp.catalog||[]).find(function(x){return x.id===itemOrId}):itemOrId;
-      const media=item||AsApp.catalog[0];
-      if(!media||!media.url){toast('Нет ссылки для открытия');return;}
-      if(window.AsgardBridge&&AsgardBridge.openPlayer){
-        AsgardBridge.openPlayer(media.url,media.t||media.title||'Asgard open demo',0);
-      }else{
-        AsApp.shell('Open demo URL','Реальный ExoPlayer запускается только внутри Android APK. В браузере можно открыть прямую demo-ссылку.','<div class="panel"><h2>'+esc(media.t||media.title)+'</h2><p>'+esc(media.rights||'Open demo stream')+'</p><p class="muted">'+esc(media.url)+'</p>'+button('Открыть demo URL','window.open(\''+media.url+'\',\'_blank\')')+'</div>');
-      }
-    };
-    AsApp.details=function(id){
-      attachCatalog();
-      const m=(AsApp.catalog||[]).find(function(x){return x.id===id})||AsApp.catalog[0];
-      if(!m){toast('Контент не найден');return;}
-      AsApp.shell('Карточка контента','Open Demo Catalog · прямой легальный sample stream для проверки Android TV player flow.','<div class="detail">'+poster(m)+'<div><p class="eyebrow">'+esc((m.y||'')+' · '+(m.g||'')+' · '+(m.r||''))+'</p><h2>'+esc(m.t||m.title)+'</h2><p>'+esc(m.s||'Описание open demo контента.')+'</p><p class="muted">Почему в каталоге: '+esc(m.w||'Проверка player flow.')+'</p>'+button('▶ Смотреть','AsApp.play(\''+esc(m.id)+'\')')+button('Назад','asgardBack()','secondary')+'<h3>Источник</h3><p>'+esc(m.source||'Open demo source')+'</p><h3>Права</h3><p>'+esc(m.rights||'Open/Public sample stream')+'</p><h3>URL</h3><p class="muted">'+esc(m.url)+'</p></div></div>');
-      setTimeout(function(){if(window.AsInput&&AsInput.refresh)AsInput.refresh();},50);
-    };
-    AsApp.home=function(){
-      attachCatalog();
-      const m=AsApp.catalog[0];
-      const cards=AsApp.catalog.map(function(x){return '<article tabindex="0" class="card focusable" onclick="AsApp.openContent(\''+esc(x.id)+'\')">'+poster(x)+'<div class="card-body"><h3>'+esc(x.t)+'</h3><p class="muted">'+esc(x.y+' · '+x.g+' · '+x.ep)+'</p><span class="chip">'+esc(x.tag)+'</span></div></article>'}).join('');
-      AsApp.shell('Asgard TV','Open Demo Catalog. Здесь реальные прямые sample video links, чтобы проверить путь карточка → детали → ExoPlayer.','<div class="layout2"><div class="spotlight">'+poster(m)+'<div><p class="eyebrow">Open/Public demo stream</p><h2>'+esc(m.t)+'</h2><p>'+esc(m.s)+'</p>'+button('▶ Смотреть','AsApp.play(\''+m.id+'\')')+button('Подробнее','AsApp.details(\''+m.id+'\')','secondary')+'</div></div><div class="panel"><h2>Статус build</h2><p>Prototype / Demo catalog. Реальные пользовательские источники подключаются отдельно через Sources.</p><p class="muted">Torrent, AI, QR пока Experimental.</p></div></div><section class="shelf"><div class="shelf-head"><h2>Open Demo Catalog</h2><span>'+AsApp.catalog.length+' видео</span></div><div class="cards">'+cards+'</div></section>');
-      setTimeout(function(){if(window.AsInput&&AsInput.refresh)AsInput.refresh();},50);
-    };
-    AsApp.catalog=function(){
-      attachCatalog();
-      const cards=AsApp.catalog.map(function(x){return '<article tabindex="0" class="card focusable" onclick="AsApp.openContent(\''+esc(x.id)+'\')">'+poster(x)+'<div class="card-body"><h3>'+esc(x.t)+'</h3><p class="muted">'+esc(x.source+' · '+x.ep)+'</p><span class="chip">'+esc(x.rights)+'</span></div></article>'}).join('');
-      AsApp.shell('Каталог','Реальные open/public sample streams. Для smoke-теста плеера выберите карточку и нажмите Смотреть.','<section class="shelf"><div class="shelf-head"><h2>Open Demo Catalog</h2><span>'+AsApp.catalog.length+' видео</span></div><div class="cards">'+cards+'</div></section>');
-      setTimeout(function(){if(window.AsInput&&AsInput.refresh)AsInput.refresh();},50);
-    };
-    document.addEventListener('click',function(e){
-      const card=e.target.closest&&e.target.closest('.card');
-      if(!card)return;
-      const onclick=card.getAttribute('onclick')||'';
-      const m=onclick.match(/(?:details|openContent)\('([^']+)'\)/);
-      if(m){e.preventDefault();e.stopPropagation();AsApp.openContent(m[1]);}
-    },true);
+    AsApp.openCatalogData=data();
+    AsApp.openContent=function(id){const item=data().find(function(x){return x.id===id})||data()[0];if(!item){toast('Контент не найден');return;}AsApp.details(item.id);};
+    AsApp.play=function(itemOrId){const item=typeof itemOrId==='string'?data().find(function(x){return x.id===itemOrId}):itemOrId;const media=item||data()[0];if(!media||!media.url){toast('Нет ссылки для открытия');return;}if(window.AsgardBridge&&AsgardBridge.openPlayer){AsgardBridge.openPlayer(media.url,media.t||media.title||'Asgard open demo',0)}else{AsApp.shell('Open demo URL','Реальный ExoPlayer запускается только внутри Android APK. В браузере можно открыть прямую demo-ссылку.','<div class="panel"><h2>'+esc(media.t||media.title)+'</h2><p>'+esc(media.rights||'Open demo stream')+'</p><p class="muted">'+esc(media.url)+'</p>'+button('Открыть demo URL','window.open(\''+media.url+'\',\'_blank\')')+'</div>')}};
+    AsApp.details=function(id){const m=data().find(function(x){return x.id===id})||data()[0];if(!m){toast('Контент не найден');return;}AsApp.shell('Карточка контента','Open Demo Catalog · прямой легальный sample stream для проверки Android TV player flow.','<div class="detail">'+poster(m)+'<div><p class="eyebrow">'+esc((m.y||'')+' · '+(m.g||'')+' · '+(m.r||''))+'</p><h2>'+esc(m.t||m.title)+'</h2><p>'+esc(m.s||'Описание open demo контента.')+'</p><p class="muted">Почему в каталоге: '+esc(m.w||'Проверка player flow.')+'</p>'+button('▶ Смотреть','AsApp.play(\''+esc(m.id)+'\')')+button('Назад','asgardBack()','secondary')+'<h3>Источник</h3><p>'+esc(m.source||'Open demo source')+'</p><h3>Права</h3><p>'+esc(m.rights||'Open/Public sample stream')+'</p><h3>URL</h3><p class="muted">'+esc(m.url)+'</p></div></div>');setTimeout(function(){if(window.AsInput&&AsInput.refresh)AsInput.refresh();},50)};
+    AsApp.home=function(){const items=data();const m=items[0];AsApp.openCatalogData=items;AsApp.shell('Asgard TV','Open Demo Catalog. Здесь реальные прямые sample video links, а поиск работает по вашим user sources.','<div class="layout2"><div class="spotlight">'+poster(m)+'<div><p class="eyebrow">Open/Public demo stream</p><h2>'+esc(m.t)+'</h2><p>'+esc(m.s)+'</p>'+button('▶ Смотреть','AsApp.play(\''+m.id+'\')')+button('Подробнее','AsApp.details(\''+m.id+'\')','secondary')+button('Поиск в источниках','AsUI.nav(\'Поиск\')','secondary')+'</div></div><div class="panel"><h2>Статус build</h2><p>Prototype / Demo catalog. Реальные пользовательские источники ищутся через вкладку Поиск.</p><p class="muted">Torrent, AI, QR пока Experimental.</p></div></div><section class="shelf"><div class="shelf-head"><h2>Open Demo Catalog</h2><span>'+items.length+' видео</span></div><div class="cards">'+cardsHtml(items)+'</div></section>');setTimeout(function(){if(window.AsInput&&AsInput.refresh)AsInput.refresh();},50)};
+    AsApp.catalog=function(){const items=data();AsApp.openCatalogData=items;AsApp.shell('Каталог','Реальные open/public sample streams. Для ваших источников используйте вкладку Поиск.','<section class="shelf"><div class="shelf-head"><h2>Open Demo Catalog</h2><span>'+items.length+' видео</span></div><div class="cards">'+cardsHtml(items)+'</div></section>');setTimeout(function(){if(window.AsInput&&AsInput.refresh)AsInput.refresh();},50)};
+    document.addEventListener('click',function(e){const card=e.target.closest&&e.target.closest('.card');if(!card)return;const onclick=card.getAttribute('onclick')||'';const m=onclick.match(/(?:details|openContent)\('([^']+)'\)/);if(m){e.preventDefault();e.stopPropagation();AsApp.openContent(m[1]);}},true);
     if(AsUI.state.screen==='Главная')AsApp.home();
   }
   patch();
