@@ -61,8 +61,8 @@ jobs:
       - name: Prepare release asset
         run: |
           mkdir -p release-assets
-          cp android/app/build/outputs/apk/debug/app-debug.apk release-assets/asgard-tv-debug.apk
-          ls -lh release-assets/asgard-tv-debug.apk
+          cp android/app/build/outputs/apk/debug/app-debug.apk release-assets/asgard-tv-release.apk
+          ls -lh release-assets/asgard-tv-release.apk
 
       - name: Create or update GitHub Release
         env:
@@ -77,11 +77,11 @@ jobs:
             git push origin "$TAG_NAME"
           fi
 
-          NOTES="Asgard TV $VERSION_NAME\n\nversionCode: $VERSION_CODE\ncommit: $GITHUB_SHA\n\nAPK asset: asgard-tv-debug.apk"
+          NOTES="Asgard TV $VERSION_NAME\n\n{\n  \"versionCode\": $VERSION_CODE,\n  \"versionName\": \"$VERSION_NAME\",\n  \"apkAsset\": \"asgard-tv-release.apk\"\n}\n\ncommit: $GITHUB_SHA"
 
           if gh release view "$TAG_NAME" >/dev/null 2>&1; then
-            gh release upload "$TAG_NAME" release-assets/asgard-tv-debug.apk --clobber
+            gh release upload "$TAG_NAME" release-assets/asgard-tv-release.apk --clobber
             gh release edit "$TAG_NAME" --title "Asgard TV $TAG_NAME" --notes "$NOTES"
           else
-            gh release create "$TAG_NAME" release-assets/asgard-tv-debug.apk --title "Asgard TV $TAG_NAME" --notes "$NOTES"
+            gh release create "$TAG_NAME" release-assets/asgard-tv-release.apk --title "Asgard TV $TAG_NAME" --notes "$NOTES"
           fi
