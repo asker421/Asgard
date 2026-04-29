@@ -32,12 +32,37 @@
   window.AsJacRedAdapter={
     id:'jacred',name:'JacRed Parser Adapter',
     supports(source){return source&&source.type==='jacred'},
-    endpoints(baseUrl){return [baseUrl,joinUrl(baseUrl,'api/v2.0/indexers/all/results/torznab/api'),joinUrl(baseUrl,'api'),joinUrl(baseUrl,'torznab'),joinUrl(baseUrl,'api/torznab')]},
+    endpoints(baseUrl){
+      const base=String(baseUrl||'').replace(/\/+$/,'');
+      if(base.endsWith('/api/v2.0/indexers/all/results/torznab/api')) return [base];
+      return [
+        joinUrl(base,'api/v2.0/indexers/all/results/torznab/api'),
+        joinUrl(base,'api/v2.0/indexers/all/results/torznab/api/'),
+        joinUrl(base,'torznab/api'),
+        joinUrl(base,'api/torznab'),
+        joinUrl(base,'torznab'),
+        joinUrl(base,'api'),
+        base
+      ];
+    },
     async fetchText(url){return httpText(url)},
     classify(r){const ct=(r.contentType||'').toLowerCase();const t=String(r.text||'').trim().toLowerCase();if(ct.includes('json')||t.startsWith('{')||t.startsWith('['))return 'json';if(ct.includes('xml')||t.startsWith('<?xml')||t.includes('<rss')||t.includes('<item'))return 'torznab_xml';if(t.includes('<html')||t.includes('<!doctype html'))return 'html_ui';return 'unknown'},
     normalizeJson(raw,source){const arr=Array.isArray(raw)?raw:(raw.results||raw.items||raw.data||raw.torrents||[]);if(!Array.isArray(arr))return [];return arr.map((x,i)=>({id:x.id||x.guid||source.name+'_'+i,title:x.title||x.name||source.name,sourceName:source.name||'JacRed',sourceType:'jacred',url:x.magnetUrl||x.magnet||x.torrentUrl||x.link||x.url,magnetUrl:x.magnetUrl||x.magnet||'',torrentUrl:x.torrentUrl||x.link||x.url||'',classification:'torrent',size:x.size||0,seeders:Number(x.seeders||x.seed||0),peers:Number(x.peers||0),pubDate:x.pubDate||x.date||'',category:x.category||'',quality:x.quality||'',rightsStatus:'user_configured_parser',requiresUserConfirmation:true,raw:x}))},
-    async discover(settings){const base=settings.jacredBaseUrl;const apiKey=settings.jacredApiKey;const started=Date.now();if(!base)return {ok:false,status:'missing_base_url',error:'JacRed Base URL is empty',elapsedMs:0};for(const endpoint of this.endpoints(base)){try{const url=AsTorznabAdapter.buildSearchUrl(endpoint,apiKey,'test');const r=await this.fetchText(url);const kind=this.classify(r);if(kind==='html_ui')return {ok:false,status:'html_ui_detected',endpoint:r.url,httpStatus:r.status,error:'HTML UI detected; API endpoint required',elapsedMs:Date.now()-started,apiKeyPresent:!!apiKey};if(r.ok&&(kind==='torznab_xml'||kind==='json'))return {ok:true,status:'api_detected',kind,endpoint,detectedUrl:r.url,httpStatus:r.status,elapsedMs:Date.now()-started,apiKeyPresent:!!apiKey,native:!!r.native};}catch(e){}}
-      return {ok:false,status:'api_not_detected',error:'No JacRed/Torznab API endpoint detected',elapsedMs:Date.now()-started,apiKeyPresent:!!apiKey};
+    async discover(settings){
+      const base=settings.jacredBaseUrl;const apiKey=settings.jacredApiKey;const started=Date.now();
+      if(!base)return {ok:false,status:'missing_base_url',error:'JacRed Base URL is empty',elapsedMs:0};
+      const attempts=[];
+      for(const endpoint of this.endpoints(base)){
+        try{
+          const url=AsTorznabAdapter.buildSearchUrl(endpoint,apiKey,'test');
+          const r=await this.fetchText(url);
+          const kind=this.classify(r);
+          attempts.push({endpoint:url,httpStatus:r.status,responseType:kind,ok:r.ok,error:r.error||''});
+          if(r.ok&&(kind==='torznab_xml'||kind==='json'))return {ok:true,status:'api_detected',kind,endpoint,detectedUrl:r.url,httpStatus:r.status,elapsedMs:Date.now()-started,apiKeyPresent:!!apiKey,native:!!r.native,attempts};
+        }catch(e){attempts.push({endpoint,status:'exception',error:e.message||String(e)})}
+      }
+      const html=attempts.find(a=>a.responseType==='html_ui');
+      return {ok:false,status:html?'html_ui_detected':'api_not_detected',error:html?'HTML UI detected; API endpoint required':'No JacRed/Torznab API endpoint detected',elapsedMs:Date.now()-started,apiKeyPresent:!!apiKey,attempts};
     },
     async search(source,query,context){const settings=context&&context.settings?context.settings:AsStore.parserSettings();const started=Date.now();const d=await this.discover(settings);if(!d.ok)return {source:source.name,ok:false,status:d.status,error:d.error,diagnostics:d,results:[]};try{const url=AsTorznabAdapter.buildSearchUrl(d.endpoint,settings.jacredApiKey,query);const r=await this.fetchText(url);if(!r.ok)return {source:source.name,ok:false,status:'http_error',error:r.error||('HTTP '+r.status),diagnostics:d,results:[]};let results=[];if(d.kind==='torznab_xml')results=AsTorznabAdapter.parse(r.text,source);else results=this.normalizeJson(JSON.parse(r.text),source);return {source:source.name,ok:true,status:'ok',adapter:'jacred',endpoint:d.endpoint,elapsedMs:Date.now()-started,resultCount:results.length,results};}catch(e){return {source:source.name,ok:false,status:'parse_or_network_error',error:e.name==='AbortError'?'Timeout':e.message,diagnostics:d,results:[]}}
     },
