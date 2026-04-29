@@ -1,3 +1,14 @@
 # name | type | url_or_template | language | enabled | priority | auth_required | notes
-Internet Archive | archive | https://archive.org | multi | true | 1 | false | public archive
-Wikimedia Commons | commons | https://commons.wikimedia.org | multi | true | 2 | false | creative commons media
+
+
+# User-provided torrent/magnet placeholders - disabled
+User Magnet List | magnet_list | user://manual-magnets | multi | false | 80 | enabled | User Magnet List
+User Torrent File | torrent_file | user://manual-torrent-file | multi | false | 81 | enabled | User Torrent File
+
+# User-provided / rights not verified sources - disabled
+RuTracker | api | https://rutracker.org/forum/index.php | ru | enabled | 90 | true | RuTracker
+Kinozal | api | https://kinozal.tv/ | ru | enabled | 91 | true | Kinozal
+LostFilm | api | https://lostfilm.tv/ | ru | enabled | 92 | true | LostFilm
+Rutor | api | https://rutor.info/ | ru | enabled | 93 | false | Rutor
+Filmix | api | https://filmix.ac/ | ru | enabled | 94 | false | Filmix
+Rezka | api | https://rezka.ag/ | ru | enabled | 95 | false | Rezka
