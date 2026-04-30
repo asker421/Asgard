@@ -10,41 +10,40 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
-## 2.10.13 — Safe QR import confirmation flow
+## 2.10.14 — Unified Diagnostics v2
 
 Expected release:
 
 ```text
-Tag: v2.10.13
-Release: Asgard TV v2.10.13
+Tag: v2.10.14
+Release: Asgard TV v2.10.14
 Asset: asgard-tv-release.apk
-versionCode: 53
+versionCode: 54
 ```
 
 ### Added / Changed
 
-- Hardened `qr-import.js` for `ASG-050`.
-- TV confirmation now requires entering the active 6-digit PIN.
-- HTTP(S) links can be imported only as disabled user source rows.
-- Imported link rows are disabled by default until the user reviews and enables them in Source Manager.
-- JSON wrapper supports `sources_txt` and `link` preview/handling.
-- Unsupported or sensitive payload types remain preview-only.
-- Session remains one-time with expiry and local TV confirmation.
-- No silent import, no silent APK install, no bundled catalogs, no embedded source lists, no bypass features.
+- Added `diagnostics-v2.js` runtime layer for `ASG-090`.
+- Diagnostics screen now uses a unified troubleshooting view.
+- Added sections for Network, Player, Cache/Storage, Permissions, Version/Release, Source setup and Warnings.
+- Diagnostics includes native bridge method availability, source counts, parser/service status, saved progress/tasks, release asset expectation and local storage counters.
+- Added Copy JSON action.
+- Added links to Source diagnostics and Setup wizard.
+- No bundled catalogs, embedded source lists, engines, or bypass features were added.
 
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
 
-## 2.10.12 — Continue Watching runtime UX
+## 2.10.13 — Safe QR import confirmation flow
 
-- Added `continue-watching.js` runtime layer for `ASG-042`.
-- Home Continue Watching shelf now uses saved progress items from `AsStore.progress()`.
-- Added Resume, Start over, Remove and Info actions.
+- Hardened `qr-import.js` for `ASG-050`.
+- TV confirmation now requires entering the active 6-digit PIN.
+- HTTP(S) links import only as disabled user source rows.
 
 ## Previous releases
 
-See Git history for older release details from `2.10.11` and below.
+See Git history for older release details from `2.10.12` and below.
 
 ## Release verification checklist
 
@@ -52,7 +51,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.13`.
+3. GitHub Releases contains matching tag, for example `v2.10.14`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
