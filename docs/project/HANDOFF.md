@@ -27,39 +27,30 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-- Continued engineering work after user said "Дальше".
+- Continued engineering work after user asked to take the next task.
 - Completed mandatory pre-flight before starting the task.
-- Selected task: `ASG-TOR-SEARCH-002 — Search result to playable media task`.
-- Reason: `ASG-TOR-SEARCH-001` was code-wired in `2.10.4`, and `backlog-v2.json` / handoff list `ASG-TOR-SEARCH-002` as the next Critical item.
-- Inspected `torrent.js` and `store.js`.
-- Added `media-task.js` as a persistent media task runtime layer.
-- Added task creation from selected media search result:
-  - persistent task ID;
-  - input type detection;
-  - source/title/quality/size/seeds metadata;
-  - rights confirmation flag;
-  - direct URL stream-ready task state;
-  - metadata-pending state for configured service paths;
-  - raw result diagnostics.
-- Added Media Task screen:
-  - task status;
-  - source and target URL;
-  - metadata loading action;
-  - file list rendering;
-  - selected file state;
-  - open stream action;
-  - per-task diagnostics.
-- Patched Media Search `Create media task` action so it opens the Media Task screen instead of only showing an alert.
-- Loaded `media-task.js` last in `index.html`, after `media-search.js`, so it can patch the final Media Search runtime.
-- Bumped Android version to `2.10.5 (45)` for the release trigger.
-- Updated changelog and release status for 2.10.5.
+- Selected task: `ASG-TOR-005 — Player integration and seeking`.
+- Reason: `ASG-TOR-SEARCH-002` was code-wired in `2.10.5`, and `NEXT_ACTIONS.md` lists stream URL -> `PlayerActivity` as the next main flow step.
+- Inspected `media-task.js` and `PlayerActivity.kt`.
+- Confirmed `PlayerActivity` already accepts `url`, `title`, `itemId`, and `startPosition` and saves watch progress by `itemId`.
+- Hardened Media Task -> PlayerActivity handoff:
+  - stable task ID is now used as player `itemId` where bridge supports it;
+  - Resume action uses saved progress for task ID;
+  - Start over action opens at position `0`;
+  - direct playable task opens native player through same task flow;
+  - stream URL readiness detection added;
+  - unsupported URL scheme detection added;
+  - missing stream URL renders state-card error;
+  - player bridge failure renders state-card error;
+  - diagnostics now include bridge availability, stream URL presence and saved progress.
+- Bumped Android version to `2.10.6 (46)` for the release trigger.
+- Updated changelog and release status for 2.10.6.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
 ## Files Changed
 
 - `android/app/src/main/assets/web/media-task.js`
-- `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
@@ -67,11 +58,10 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Recent Commits
 
-- `3a28adfd735aefcca8dc2a4d6ae851642193defb` — `Add persistent media task flow`
-- media-task load commit was created after `index.html` update; verify exact SHA through commit history if needed.
-- `a0a16d133e609fc0d37b0bb94a55f19d297775e8` — `Bump version for media task release`
-- `0eaeadbca1ee09494fd9ff44962a6729d5c11877` — `Update changelog for 2.10.5 media task`
-- `9dc5cc6fbf5ad7a76da5b24d8711ab6446eff98f` — `Update release status for 2.10.5 media task`
+- `1b080406c60ed93072c5f784b11876ac13c9664a` — `Harden media task player handoff`
+- `4468ad537439b5dba4dc5d1b3c2913c212c19d59` — `Bump version for player handoff release`
+- `5b80d6b6bdfcbb28245fd030608895a1853a296a` — `Update changelog for 2.10.6 player handoff`
+- `5876d4060e599456d5f899317106be8bbd5448b6` — `Update release status for 2.10.6 player handoff`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -80,10 +70,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.10.5`
-- versionCode: `45`
-- expected tag: `v2.10.5`
-- expected release: `Asgard TV v2.10.5`
+- versionName: `2.10.6`
+- versionCode: `46`
+- expected tag: `v2.10.6`
+- expected release: `Asgard TV v2.10.6`
 - expected APK asset: `asgard-tv-release.apk`
 
 Current verification status:
@@ -92,46 +82,45 @@ Current verification status:
 - GitHub connector does not expose direct `workflow_dispatch` and did not confirm live workflow completion.
 - Release APK availability must still be verified in GitHub Actions / Releases before claiming success.
 - No Android TV / Mi Box S runtime QA has been completed in this session.
-- Media task flow is code-wired but not runtime-verified with real user-configured source/parser/service.
+- Player handoff is code-wired but not runtime-verified in Android APK.
 
 ## Current Highest Priority
 
-1. `ASG-TOR-005` — Player integration and seeking.
-2. `ASG-TOR-003` — Metadata and file selection.
-3. `ASG-QA-001` — Android TV build/install smoke test.
-4. Runtime QA for `ASG-TOR-SEARCH-001` and `ASG-TOR-SEARCH-002`.
+1. `ASG-TOR-003` — Metadata and file selection.
+2. `ASG-QA-001` — Android TV build/install smoke test.
+3. Runtime QA for `ASG-TOR-SEARCH-001`, `ASG-TOR-SEARCH-002`, and `ASG-TOR-005`.
+4. `ASG-TOR-004` — Streaming-first playback.
 
 ## Next Recommended Task
 
 Engineer:
 
-Implement `ASG-TOR-005` next.
+Implement `ASG-TOR-003` next.
 
 Expected direction:
 
-- Ensure selected task stream URL is reliably sent to `PlayerActivity`.
-- Add clear missing-stream / service-failure states.
-- Ensure direct playable task opens native ExoPlayer.
-- Ensure configured service task opens native ExoPlayer when stream URL exists.
-- Preserve rights confirmation for user-configured media where needed.
+- Strengthen metadata/file-selection handling.
+- Normalize configured service responses more reliably.
+- Persist selected file details.
+- Improve no-files / no-playable-video states.
+- Keep player handoff stable and reuse `AsMediaTask.openStream()`.
 
 QA:
 
-Run Android TV smoke test for `2.10.5`.
+Run Android TV smoke test for `2.10.6`.
 
-Minimum media task QA scope:
+Minimum player handoff QA scope:
 
 - Search with a user-configured source.
 - Select direct playable result.
 - Create media task.
-- Confirm task screen opens and persists.
-- Confirm direct playable task opens ExoPlayer.
-- Select a configured service result.
-- Confirm rights prompt.
-- Confirm metadata loading shows success or understandable error.
-- Confirm file list appears when service returns files.
-- Confirm selected file persists.
-- Confirm Open stream opens ExoPlayer or reports clear missing stream URL error.
+- Open stream and confirm native PlayerActivity starts.
+- Exit player and confirm progress is saved against task ID.
+- Reopen task and confirm Resume appears.
+- Confirm Resume starts from saved position.
+- Confirm Start over starts from 0.
+- Confirm missing stream URL shows readable error state.
+- Confirm bridge/player failure is shown clearly.
 - Confirm D-pad focus works on task screen.
 
 ## Blockers / Risks
@@ -139,7 +128,6 @@ Minimum media task QA scope:
 - GitHub connector did not confirm latest workflow result.
 - No evidence yet of completed Android TV / Mi Box S physical QA.
 - Media task flow depends on user-configured source/parser/service.
-- `ASG-TOR-005` still needs player integration hardening for task stream handoff.
 - `ASG-TOR-003` still needs stronger metadata/file-selection handling with real service responses.
 - Do not mark any backlog item DONE until acceptance criteria and Definition of Done are verified.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
