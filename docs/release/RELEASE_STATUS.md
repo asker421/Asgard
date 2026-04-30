@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.9.9 according to Android build configuration.
+2.10.0 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,39 +22,39 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.9.9 (39)` after Full Source Manager implementation.
+2026-04-30: Release trigger requested for `2.10.0 (40)` after secure QR import prototype implementation.
 
 This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by a push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.9.9`
-- release title: `Asgard TV v2.9.9`
+- tag: `v2.10.0`
+- release title: `Asgard TV v2.10.0`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
 Release verification is PENDING after release-trigger commits.
 
-Do not claim that `2.9.9` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.0` release APK is available until GitHub Actions / Releases confirm it.
 
-## New in 2.9.9 Scope
+## New in 2.10.0 Scope
 
-- Full TV-friendly Source Manager screen.
-- Source cards with status, type, priority, language and rights badge.
-- Enable / disable source action.
-- Priority increase / decrease actions.
-- Add source form with validation.
-- Edit source form with validation.
-- Delete source action with confirmation.
-- Per-source Test action.
-- Test enabled sources action.
-- Raw TXT editor preserved as advanced fallback.
-- Reset bundled/default sources action.
-- Manager is loaded as the final runtime layer so it overrides older textarea-only Sources screens.
+- Secure QR import runtime layer.
+- One-time local import session.
+- 6-digit PIN.
+- 10-minute expiry.
+- Session URL preview using `asgard://import?...`.
+- Paste/simulate phone payload area until real phone bridge/server is implemented.
+- Payload preview before import.
+- TV confirmation before import.
+- Sources TXT payload import into saved sources.
+- JSON and link payload preview-only states until schema/flow are finalized.
+- No silent import.
 
 ## Included Scope Since 2.9.5
 
+- Full TV-friendly Source Manager screen.
 - Hardened source-backed search runtime layer.
 - Real Continue Watching shelf from storage.
 - TorrServer playable stream preparation helper.
@@ -79,13 +79,13 @@ docs/release/CHANGELOG.md
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.9.9.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.9.9.
+- Confirm APK build for 2.10.0.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.0.
 - Confirm install on Android TV / Mi Box S.
 - Confirm remote navigation.
 - Confirm ExoPlayer playback.
 - Confirm Full Source Manager works with D-pad.
-- Confirm add/edit/delete/enable/disable/priority/test actions.
+- Confirm QR import session, PIN, expiry, preview and TV confirmation.
 - Confirm source-backed search shows results and errors correctly.
 - Confirm no first-launch crash.
 
@@ -93,9 +93,9 @@ docs/release/CHANGELOG.md
 
 - Full smoke test passed.
 - Mi Box S validation passed.
+- QR import runtime-verified.
 - Full source manager runtime-verified.
 - Source-backed search runtime-verified.
-- QR import implemented.
 - User-provided media handoff flow verified with real configured service.
 - Continue Watching UX runtime-verified.
 - Full diagnostics.
@@ -109,6 +109,7 @@ Stable release is blocked unless:
 - App opens without internet.
 - Remote navigation works.
 - Player works.
+- QR import works with TV confirmation.
 - Continue Watching works after real playback.
 - Source manager works on TV remote.
 - Source-backed search handles valid, empty and broken sources.
