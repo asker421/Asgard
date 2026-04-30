@@ -34,7 +34,7 @@ Expected result if GitHub Actions succeeds:
 
 ## Current Verification Status
 
-Release verification is PENDING after release-trigger commit.
+Release verification is PENDING after release-trigger commits.
 
 Do not claim that `2.9.6` release APK is available until GitHub Actions / Releases confirm it.
 
@@ -46,15 +46,21 @@ Do not claim that `2.9.6` release APK is available until GitHub Actions / Releas
 - Preserved legal-safe architecture: no bundled catalogs, no P2P engine inside APK, no DRM/Cloudflare/captcha bypass.
 - Playback requires user-configured TorrServer and explicit rights confirmation.
 
-## Installation Guide
+## Release Documentation
 
-Non-programmer APK installation guide:
+Installation guide:
 
 ```text
 docs/release/INSTALLATION_GUIDE.md
 ```
 
-The guide covers:
+Changelog:
+
+```text
+docs/release/CHANGELOG.md
+```
+
+The installation guide covers:
 
 - where to download `asgard-tv-release.apk`;
 - how to confirm version/tag/release metadata;
@@ -64,6 +70,14 @@ The guide covers:
 - handling signature/update failure by uninstalling old APK;
 - basic post-install smoke test;
 - bug report template.
+
+The changelog currently documents:
+
+- 2.9.6 release trigger / TorrServer handoff package;
+- 2.9.5 TorrServer → ExoPlayer handoff;
+- 2.9.4 TV UX P0 fixes / release baseline;
+- release verification checklist;
+- stable release rule.
 
 ## Missing Before Demo APK
 
@@ -84,7 +98,6 @@ The guide covers:
 - User-provided media handoff flow verified with real configured TorrServer.
 - Continue Watching UX complete.
 - Full diagnostics.
-- Changelog.
 
 ## Release Gates
 
