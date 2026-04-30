@@ -4,29 +4,58 @@ Last updated: 2026-04-30
 
 ## Current QA Status
 
-STATIC APP TEST COMPLETED for latest inspected code.
+`ASG-QA-001 — Android TV build/install smoke test` is **RUN_TRIGGERED / VERIFICATION PENDING**.
 
-ANDROID EMULATOR SMOKE WORKFLOW EXISTS, but latest run is not yet verified as passing.
+Static inspection confirms the Android emulator smoke workflow exists and is configured to:
 
-PHYSICAL ANDROID TV / MI BOX S QA remains BLOCKED / NOT COMPLETED from this chat environment.
+- build the debug APK;
+- start an Android emulator;
+- install the APK;
+- launch `com.asgard.tv`;
+- collect activity dump, logcat and screenshot;
+- fail on crash / ANR indicators;
+- upload `android-emulator-smoke-artifacts`.
 
-## Current Risk
+The workflow was force-triggered by a workflow-file commit:
 
-The app has a strong early-alpha foundation and the core runtime paths are increasingly code-wired, but it has not yet been verified as a stable Android TV build on real Android TV hardware or emulator through a completed CI run.
+```text
+be671178d74cb117423fb925b0a72053e96f897b — Trigger Android emulator smoke test for 2.10.9
+```
+
+GitHub connector did not expose the live workflow run/status for that SHA. Therefore this QA pass cannot claim PASS or FAIL for emulator execution.
+
+Physical Android TV / Mi Box S QA remains **BLOCKED / NOT COMPLETED** from this chat environment.
 
 ## Mandatory Pre-flight Used
 
+Refreshed:
+
+```text
+docs/project/CHAT_PROTOCOL.md
+docs/product/backlog-v2.json
+docs/project/PROJECT_STATE.md
+docs/project/HANDOFF.md
+docs/project/DECISIONS.md
+docs/project/NEXT_ACTIONS.md
+docs/project/BACKLOG_V2_MIGRATION.md
+docs/prompts/QA_CHAT_PROMPT.md
+```
+
 Active backlog:
 
-`docs/product/backlog-v2.json`
+```text
+docs/product/backlog-v2.json
+```
 
 Selected task:
 
-`ASG-QA-001 — Run Android TV build/install smoke test`
+```text
+ASG-QA-001 — Run Android TV build/install smoke test
+```
 
 Reason:
 
-User reported a failed GitHub Actions smoke run. The failure blocked the Android emulator smoke test before APK build/install, so fixing this is part of `ASG-QA-001`.
+`ASG-QA-001` is the current critical gate after the stream/media task flow was code-wired through `2.10.9`.
 
 ## Emulator Smoke Workflow
 
@@ -36,101 +65,99 @@ Workflow:
 .github/workflows/android-emulator-smoke.yml
 ```
 
-Purpose:
-
-- Build debug APK.
-- Start Android emulator in GitHub Actions.
-- Install APK.
-- Launch `com.asgard.tv`.
-- Wait for startup.
-- Capture active activity dump.
-- Capture logcat.
-- Capture screenshot.
-- Fail the job if `FATAL EXCEPTION`, ANR, or crash indicators for `com.asgard.tv` are detected.
-- Upload artifacts as `android-emulator-smoke-artifacts`.
-
-## Latest CI Issue — 2026-04-30
-
-### Failure
-
-The workflow failed in `gradle/actions/setup-gradle@v4` before building the APK:
+Current force-trigger commit:
 
 ```text
-Found unknown Gradle Wrapper JAR files:
-cc6aedaaf085917fce96d98ed8574ac9bd1295e62db696496671ed6a1409d7a6 android/gradle/wrapper/gradle-wrapper.jar
-At least one Gradle Wrapper Jar failed validation
+be671178d74cb117423fb925b0a72053e96f897b
 ```
 
-### Interpretation
-
-This was not an application crash and not a Kotlin/Gradle compilation error.
-
-It was a Gradle Wrapper JAR validation block from `setup-gradle@v4`.
-
-### Fix applied
-
-Updated only the Android emulator smoke workflow:
-
-- Removed `gradle/actions/setup-gradle@v4` from `.github/workflows/android-emulator-smoke.yml`.
-- Kept build execution through repository wrapper:
+Current verification status:
 
 ```text
-cd android
-chmod +x ./gradlew
-./gradlew --no-daemon :app:assembleDebug
+RUN_TRIGGERED
+LIVE STATUS UNKNOWN THROUGH CONNECTOR
+MANUAL GITHUB ACTIONS CHECK REQUIRED
 ```
 
-### Current status
-
-A new workflow-triggering commit was created after this fix.
-
-The new run must be checked in GitHub Actions. If it still fails, inspect the next failing step logs.
-
-## Static App Test Summary
+## What Was Verified Statically
 
 | Area | Static Result | Evidence / Notes | Recommended backlog status |
 |---|---|---|---|
-| APK build configuration | STATIC PASS / CI RUN PENDING | Emulator smoke workflow now avoids the wrapper-validation blocker and builds via `./gradlew --no-daemon :app:assembleDebug`. Latest run result not yet verified. | Keep `ASG-QA-001` TODO / QA needed |
-| APK install | CI WORKFLOW ADDED / RUN PENDING | Emulator smoke workflow performs `adb install -r app-debug.apk`. | Keep QA needed until run passes |
-| App launch | CI WORKFLOW ADDED / RUN PENDING | Emulator smoke workflow launches `com.asgard.tv` with `monkey`. | Keep QA needed until run passes |
-| No instant crash/ANR | CI WORKFLOW ADDED / RUN PENDING | Workflow checks logcat for crash/ANR indicators and uploads logs/screenshots. | Keep QA needed until run passes |
-| Runtime script load order | STATIC PASS | `index.html` loads base scripts and late runtime layers. | Runtime QA needed |
-| Remote navigation | STATIC PASS / RUNTIME QA NEEDED | `input.js` explicitly handles D-pad keys. | `ASG-002` remains READY_FOR_QA, not DONE |
-| Back behavior | STATIC PASS / RUNTIME QA NEEDED | `ui.js` and `MainActivity` provide Back bridge/history. | `ASG-002` remains READY_FOR_QA, not DONE |
-| Native bridge | STATIC PASS | `MainActivity` exposes `openPlayer`, `nativeFetch`, persistence APIs and `exitApp`. | Runtime QA needed |
-| ExoPlayer | STATIC PASS / QA NEEDED | `PlayerActivity` validates URL, opens Media3 ExoPlayer, handles errors and saves progress. | `ASG-040` READY_FOR_QA |
-| Media task/player handoff | STATIC PASS / QA NEEDED | Media task runtime is code-wired to native player handoff. | Runtime QA needed |
-| 15-minute stability | BLOCKED | Requires device/emulator long run. | Keep QA needed |
+| Workflow exists | PASS | `.github/workflows/android-emulator-smoke.yml` exists. | Keep `ASG-QA-001` QA_IN_PROGRESS / pending |
+| Workflow triggers | PASS | `workflow_dispatch` and `push` to `main` for `android/**` and workflow path. | Keep pending |
+| APK build step | STATIC PASS | Runs `cd android`, `chmod +x ./gradlew`, `./gradlew --no-daemon :app:assembleDebug`. | Runtime CI pass needed |
+| Emulator launch step | STATIC PASS | Uses `reactivecircus/android-emulator-runner@v2`, API 35, `tv_1080p`. | Runtime CI pass needed |
+| APK install step | STATIC PASS | Runs `adb install -r app-debug.apk`. | Runtime CI pass needed |
+| App launch step | STATIC PASS | Runs `adb shell monkey -p com.asgard.tv -c android.intent.category.LAUNCHER 1`. | Runtime CI pass needed |
+| Crash/ANR detection | STATIC PASS | Checks logcat for FATAL EXCEPTION / ANR / process crash indicators. | Artifact review needed |
+| Artifact upload | STATIC PASS | Uploads `android-emulator-smoke-artifacts`. | Artifact review needed |
 
-## Required Runtime Smoke Test
+## Runtime Smoke Status
 
 | Area | Status | Notes |
 |---|---|---|
-| APK builds | RUN PENDING | Re-run `Android Emulator Smoke Test` after validation fix. |
-| APK installs in CI emulator | TODO | Requires workflow pass. |
-| App launches in CI emulator | TODO | Requires workflow pass. |
-| No instant crash/ANR | TODO | Requires workflow pass and artifact review. |
-| APK installs on Android TV / Mi Box S | TODO | Requires real device/manual emulator. |
-| App opens without internet | TODO | Requires emulator/device run. |
-| Remote navigation works | TODO | Verify Arrow/Enter behavior on real Android TV WebView. |
-| Back behavior works | TODO | Verify Back from Home/Search/Details/Sources/Settings/Player. |
-| ExoPlayer opens video | TODO | Requires Android APK runtime test. |
-| App survives 15 minutes use | TODO | Requires device/emulator stability test. |
+| APK builds in CI | RUN_TRIGGERED / UNKNOWN | Connector did not expose latest Actions status. |
+| APK installs in emulator | RUN_TRIGGERED / UNKNOWN | Requires workflow pass. |
+| App launches in emulator | RUN_TRIGGERED / UNKNOWN | Requires workflow pass. |
+| No instant crash/ANR | RUN_TRIGGERED / UNKNOWN | Requires logcat artifact review. |
+| Screenshot captured | RUN_TRIGGERED / UNKNOWN | Requires artifact review. |
+| Android TV / Mi Box S physical install | BLOCKED | Requires real device. |
+| 15-minute stability | BLOCKED | Requires emulator/device long run. |
+
+## Manual GitHub Check Required
+
+Open:
+
+```text
+GitHub → asker421/Asgard → Actions → Android Emulator Smoke Test
+```
+
+Check latest run after commit:
+
+```text
+be671178d74cb117423fb925b0a72053e96f897b
+```
+
+If green, inspect artifact:
+
+```text
+android-emulator-smoke-artifacts
+```
+
+Required files:
+
+```text
+activity.txt
+logcat.txt
+launch.png
+```
+
+PASS only if:
+
+- workflow is green;
+- APK build step passed;
+- APK install step passed;
+- launch command passed;
+- `activity.txt` contains `com.asgard.tv`;
+- `logcat.txt` has no crash / ANR for `com.asgard.tv`;
+- screenshot confirms the app rendered.
 
 ## Recommendation
 
-Do not mark any backlog item DONE from this QA pass until the emulator workflow run passes and/or real device QA is completed.
+Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks DONE from this QA pass.
+
+Recommended status:
+
+```text
+ASG-QA-001: QA_IN_PROGRESS / RUN_TRIGGERED
+```
 
 Next action:
 
-1. Open GitHub Actions.
-2. Run or wait for `Android Emulator Smoke Test` after commit fixing Gradle validation.
-3. Inspect `android-emulator-smoke-artifacts`:
-   - `activity.txt`
-   - `logcat.txt`
-   - `launch.png`
-4. If workflow passes, update this file with CI PASS for build/install/launch/no-crash.
-5. Continue with manual Android TV/Mi Box S smoke checklist.
+1. Verify the GitHub Actions run manually.
+2. If it passed, update this file with CI PASS evidence.
+3. If it failed, inspect job logs and fix the first failing step.
+4. Continue with physical Android TV / Mi Box S smoke test when available.
 
 ## QA Rule
 
@@ -141,14 +168,3 @@ A task can move to DONE only when:
 - remote navigation works;
 - user-facing errors are understandable;
 - for TV UI tasks, focus behavior is verified.
-
-## QA Output Format
-
-For each tested area, write:
-
-- Test date
-- Device/emulator
-- Build/version
-- Result: PASS / FAIL / BLOCKED
-- Evidence / notes
-- Recommended backlog status
