@@ -2,7 +2,38 @@
 
 Source of truth: `docs/product/backlog.json`.
 
+Visual reference source of truth: `docs/product/VISUAL_REFERENCE.md`.
+
 This document translates the backlog into a TV-first interface model for the Android TV WebView shell. The goal is to make every module understandable, navigable with a remote, safe on errors and clear for a non-technical user.
+
+## Mandatory documents before UI work
+
+Before any UI change, engineering must read:
+
+1. `docs/product/backlog.json`
+2. `docs/product/UX_UI_CX_INTERFACE_SPEC.md`
+3. `docs/product/VISUAL_REFERENCE.md`
+4. `android/app/src/main/assets/web/menu.txt`
+
+## Critical menu rule
+
+Do **not** change the left menu content during visual redesign.
+
+The redesign may improve:
+
+- icons;
+- spacing;
+- focus state;
+- active state;
+- colors;
+- typography;
+- layout density.
+
+But it must not add, remove, reorder or rename left menu items unless a separate backlog story explicitly asks for that.
+
+The current menu content is defined in:
+
+`android/app/src/main/assets/web/menu.txt`
 
 ## Design principles
 
@@ -12,6 +43,7 @@ This document translates the backlog into a TV-first interface model for the And
 4. **No dead ends** — loading, empty and error states always give a next action.
 5. **User-controlled sources only** — source/media import screens must not bundle questionable catalogs.
 6. **AI must be optional** — AI recommendations degrade gracefully when AI is disabled or unavailable.
+7. **Premium streaming feel** — dark cinematic palette, large hero, horizontal shelves, clear CTAs and strong hierarchy.
 
 ## Module-to-screen mapping
 
@@ -27,6 +59,8 @@ This document translates the backlog into a TV-first interface model for the And
 
 ### 1. Главная
 Premium landing screen with hero content, Watch CTA, Details CTA, Continue Watching, Recommendations, New Releases and backlog module overview.
+
+Required visual direction is defined in `docs/product/VISUAL_REFERENCE.md`.
 
 ### 2. Каталог
 Full browsing screen with filters, grouped rows, large poster cards, year, genre, rating, episode and duration.
@@ -76,6 +110,8 @@ Playback, parental control, profile, AI assistant, cache/storage and source secu
 - User can use the app without knowing JSON.
 - User sees legal/source responsibility messaging where it matters.
 - User has a clear path from discovery → detail → playback → continue watching.
+- Visual redesign preserves the existing left menu content.
+- Home screen matches the premium TV streaming direction from `VISUAL_REFERENCE.md`.
 
 ## Implementation notes
 
