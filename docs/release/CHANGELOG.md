@@ -10,6 +10,39 @@ docs/product/backlog.json
 
 If the backlog JSON is truncated by the GitHub connector, do not overwrite it. Use the prioritized status layer and handoff documents for safe updates.
 
+## 2.9.8 — Hardened source-backed search
+
+Expected release:
+
+```text
+Tag: v2.9.8
+Release: Asgard TV v2.9.8
+Asset: asgard-tv-release.apk
+versionCode: 38
+```
+
+### Added
+
+- Runtime hardening layer for source-backed search.
+- Safer HTML link parsing with invalid URL protection.
+- Result dedupe by URL / magnet / title key.
+- Result ranking by playable type, query match, quality, size, seeders and source priority.
+- Result grouping by classification: playable, torrent, magnet, link and not playable.
+- Expanded search summary with source/report/error/empty counters.
+- Sequential source querying to avoid one failing source hiding all others.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Add valid direct video source.
+- Add invalid/broken source.
+- Search and confirm the app shows results plus understandable source errors.
+- Confirm duplicate results are not repeated.
+- Confirm playable result opens native player.
+
 ## 2.9.7 — Real Continue Watching shelf
 
 Expected release:
@@ -32,15 +65,6 @@ versionCode: 37
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Watch demo video.
-- Exit player after progress is saved.
-- Return to Home.
-- Confirm Continue Watching shows the real item.
-- Confirm Resume starts near saved position.
-- Confirm Start over starts at 0.
 
 ## 2.9.6 — Release trigger / TorrServer handoff package
 
@@ -132,7 +156,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.9.7`.
+3. GitHub Releases contains matching tag, for example `v2.9.8`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
