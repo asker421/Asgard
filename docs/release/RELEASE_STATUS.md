@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.5 according to Android build configuration.
+2.10.6 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,36 +22,36 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.10.5 (45)` after persistent media task flow implementation.
+2026-04-30: Release trigger requested for `2.10.6 (46)` after player handoff hardening.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.10.5`
-- release title: `Asgard TV v2.10.5`
+- tag: `v2.10.6`
+- release title: `Asgard TV v2.10.6`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
 Release verification is PENDING after release-trigger commits.
 
-Do not claim that `2.10.5` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.6` release APK is available until GitHub Actions / Releases confirm it.
 
-## New in 2.10.5 Scope
+## New in 2.10.6 Scope
 
-- Persistent media task runtime layer for `ASG-TOR-SEARCH-002`.
-- Selected media search result can become a saved media task.
-- Media task screen with status, source, target URL, selected file and diagnostics.
-- Metadata loading action.
-- Direct playable URL tasks are immediately stream-ready.
-- User-configured service results can load metadata/files where available.
-- File list rendering when metadata/files are available.
-- Select file action.
-- Open stream action.
-- Per-task diagnostics.
-- Media Search `Create media task` action now opens the media task screen.
+- Hardened Media Task → PlayerActivity handoff for `ASG-TOR-005`.
+- Media task now passes stable task ID into native player handoff where supported.
+- Added Resume action based on saved watch progress for media task ID.
+- Added Start over action from position 0.
+- Added explicit stream URL readiness detection.
+- Added player handoff diagnostics.
+- Missing stream URL now renders a clear state-card error.
+- Player bridge failure now renders a clear state-card error.
+- Direct playable task can open native player through the same task flow.
+- Browser fallback remains available outside Android APK.
 
 ## Included Scope Since 2.9.5
 
+- Persistent media task runtime layer.
 - Main media search runtime layer.
 - Global TV-friendly state component runtime.
 - TV-first first launch onboarding flow.
@@ -80,16 +80,17 @@ docs/release/CHANGELOG.md
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.5.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.5.
+- Confirm APK build for 2.10.6.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.6.
 - Confirm install on Android TV / Mi Box S.
-- Search with a user-configured source.
-- Select a direct playable result and create task.
-- Confirm task is persistent and stream-ready.
-- Confirm metadata loading shows success or understandable error.
-- Confirm file list appears when the configured service returns files.
-- Confirm selected file persists.
-- Confirm Open stream opens ExoPlayer or reports a clear missing stream URL error.
+- Create direct playable media task.
+- Open stream and confirm native PlayerActivity starts.
+- Exit player and confirm progress is saved against task ID.
+- Reopen task and confirm Resume appears.
+- Confirm Resume starts from saved position.
+- Confirm Start over starts from 0.
+- Confirm missing stream URL shows readable error state.
+- Confirm bridge/player failure is shown clearly.
 - Confirm remote navigation.
 - Confirm no first-launch crash.
 
@@ -97,6 +98,7 @@ docs/release/CHANGELOG.md
 
 - Full smoke test passed.
 - Mi Box S validation passed.
+- Media task-to-player runtime-verified.
 - Media search-to-task runtime-verified.
 - Media search-to-player runtime-verified.
 - Metadata/file selection runtime-verified.
@@ -113,8 +115,9 @@ Stable release is blocked unless:
 - App opens without internet.
 - Media search from title works with user-configured sources.
 - Selected result becomes a persistent media task.
-- Metadata/file loading has clear success/error state.
-- Selected playable result opens native player or clearly explains why not.
+- Media task reliably opens native player when stream URL exists.
+- Missing stream and bridge errors are understandable.
+- Resume and Start over work from saved progress.
 - User-configured service flow requires confirmation where needed.
 - Remote navigation works.
 - Player works.
