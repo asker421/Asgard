@@ -1,36 +1,15 @@
 # name | type | url_or_template | language | enabled | priority | auth_required | notes
 
-# Open/public direct video demo sources - enabled for testing
-Big Buck Bunny Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 | multi | true | 1 | false | legal open demo direct video
-Sintel Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4 | multi | true | 2 | false | legal open demo direct video
-Tears of Steel Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4 | multi | true | 3 | false | legal open demo direct video
-Elephants Dream Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4 | multi | true | 4 | false | legal open demo direct video
-For Bigger Blazes Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4 | multi | true | 5 | false | public sample stream
-For Bigger Escapes Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4 | multi | true | 6 | false | public sample stream
-
-# Open/public API/archive sources
-Internet Archive | archive | https://archive.org | multi | true | 10 | false | public archive
-Internet Archive Movies | archive | https://archive.org/details/movies | multi | true | 11 | false | public archive movies
-NASA Images API | api | https://images-api.nasa.gov/search?q={query}&media_type=image,video,audio | en | true | 12 | false | nasa public media api
-
 # User-configured parser placeholders
 # Real URLs should be entered in Settings -> Parser & TorrServer, not bundled here.
 My JacRed Parser | jacred | USER_CONFIGURED_PARSER_URL | multi | false | 40 | true | user-configured compatible parser
 My Torznab Parser | torznab | USER_CONFIGURED_TORZNAB_URL | multi | false | 41 | true | user-configured compatible parser
 My TorrServer | api | USER_CONFIGURED_TORRSERVER_URL | multi | false | 42 | false | user-configured media server
-
-# User-provided direct media examples - disabled placeholders
-My MP4 Stream | direct_video | USER_CONFIGURED_MP4_URL | multi | false | 50 | false | user-provided direct video
-My HLS Stream | hls | USER_CONFIGURED_HLS_URL | multi | false | 51 | false | user-provided HLS stream
-My Magnet | magnet | USER_CONFIGURED_MAGNET_URI | multi | false | 52 | false | user-provided magnet; requires confirmation
-My Torrent URL | torrent_url | USER_CONFIGURED_TORRENT_URL | multi | false | 53 | false | user-provided torrent URL; requires confirmation
-RuTracker | html | https://rutracker.org/forum/tracker.php?nm={query} | ru | true | 1 | true | search,torrent | Public / Account Required | Крупнейший русскоязычный трекер
-Rutor | html | http://rutor.info/search/0/0/100/0/{query} | ru | true | 2 | false | search,torrent | Public | Открытый торрент-трекер
-HDRezka | html | https://rezka.ag/search/?q={query} | ru | true | 5 | false | metadata,playable | Proprietary | Популярный онлайн-кинотеатр
-Filmix | html | https://filmix.ac/search/{query} | ru | true | 6 | false | metadata,playable | Proprietary | Онлайн-кинотеатр с 4K контентом
-KinoPoisk | api | https://api.kinopoisk.dev/v1.4/movie/search?query={query} | ru | true | 10 | true | metadata | Proprietary | Официальные метаданные (требуется API Token)
-Ivi | html | https://www.ivi.ru/search/?q={query} | ru | true | 15 | false | playable | Proprietary | Легальный онлайн-кинотеатр
-Okko | html | https://okko.tv/search/{query} | ru | true | 16 | false | playable | Proprietary | Легальный онлайн-кинотеатр
-KinoPub | api | https://api.kino.pub/items/search?q={query} | ru | false | 20 | true | search,metadata,playable | Proprietary / Subscription | Частный онлайн-кинотеатр
-Zetflix | html | https://zetfix.online/?s={query} | ru | true | 25 | false | playable | Proprietary | Стриминг сериалов и кино
-Anilibria | api | https://api.anilibria.tv/v3/title/search?search={query} | ru | true | 30 | false | metadata,playable,torrent | Public | Ресурс с аниме контентом
+RuTracker | search_template | https://rutracker.org/forum/tracker.php?nm={query} | ru | true | 10 | false | требуется браузерная авторизация
+Rutor | search_template | http://rutor.info/search/0/0/100/0/{query} | ru | true | 11 | false | открытый поиск
+HDRezka | search_template | https://rezka.ag/search/?q={query} | ru | true | 20 | false | онлайн просмотр через поиск
+Filmix | search_template | https://filmix.ac/search/{query} | ru | true | 21 | false | онлайн просмотр через поиск
+KinoPoisk | search_template | https://www.kinopoisk.ru/index.php?kp_query={query} | ru | true | 30 | false | метаданные через поиск
+Anilibria | json | https://api.anilibria.tv/v3/title/search?search={query} | ru | true | 40 | false | открытое API аниме-ресурса
+JacRed Local | jacred | http://127.0.0.1:9117/api/v2.0/indexers/all/results/torznab/api?q={query} | ru | true | 50 | false | локальный парсер без авторизации
+Torznab Local | torznab | http://127.0.0.1:9117/api/v2.0/indexers/all/results/torznab/api?q={query} | ru | true | 51 | false | совместимый torznab интерфейс
