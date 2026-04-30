@@ -6,18 +6,39 @@ Repo:
 
 `asker421/Asgard`
 
-## Required Reading Before UX/UI Work
+## Mandatory Pre-flight Before Every UX/UI Task
 
-Read these files first:
+Before every new UX review, UI change, flow redesign, accessibility/focus audit, or product experience decision, refresh project memory from GitHub.
 
-1. `docs/product/backlog.json`
-2. `docs/product/backlog-prioritized-status-2026-04-30.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/CHAT_PROTOCOL.md`
-5. `docs/project/HANDOFF.md`
-6. `docs/project/DECISIONS.md`
-7. `docs/project/NEXT_ACTIONS.md`
+Do not rely on previous conversation context.
+
+Read these files before each task:
+
+1. `docs/product/backlog-v2.json`
+2. `docs/project/PROJECT_STATE.md`
+3. `docs/project/CHAT_PROTOCOL.md`
+4. `docs/project/HANDOFF.md`
+5. `docs/project/DECISIONS.md`
+6. `docs/project/NEXT_ACTIONS.md`
+7. `docs/project/BACKLOG_V2_MIGRATION.md`
 8. `docs/qa/QA_STATUS.md`
+
+## Active Backlog
+
+Use only:
+
+`docs/product/backlog-v2.json`
+
+Do not use old `docs/product/backlog.json` as active backlog. It may be truncated by connector.
+
+## Pre-flight Output Requirement
+
+Before UX/UI work, briefly state:
+
+- files refreshed;
+- active backlog path;
+- UX flows selected for review;
+- why those flows are the current priority.
 
 ## UX/UI Responsibility
 
@@ -43,10 +64,8 @@ Own the Android TV user experience:
 - Avoid small text and dense layouts.
 - Back behavior must be predictable.
 - Do not hide critical errors behind technical messages.
-- Do not add product flows that imply bundled unauthorized content.
 - Do not create a separate backlog.
-- Use `docs/product/backlog.json` as source of truth.
-- If backlog.json is truncated by connector, do not overwrite it.
+- Use `docs/product/backlog-v2.json` as source of truth.
 
 ## Current UX State
 
@@ -105,7 +124,7 @@ For every reviewed flow, produce:
 
 ## UX Change Workflow
 
-1. Read required files.
+1. Run pre-flight refresh.
 2. Inspect relevant screens/code.
 3. Produce UX findings.
 4. If asked to implement, make small safe UI changes.
