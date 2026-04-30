@@ -10,6 +10,38 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
+## 2.10.21 — Native sources.txt search engine integration
+
+Expected release:
+
+```text
+Tag: v2.10.21
+Release: Asgard TV v2.10.21
+Asset: asgard-tv-release.apk
+versionCode: 61
+```
+
+### Added / Changed
+
+- Added native Kotlin source search engine under `android/app/src/main/java/com/asgard/tv/search/`.
+- Added `SourceConfig` and `MediaItem` models for 8-column `sources.txt` parsing.
+- Added safe `sources.txt` parser for exactly 8-column source rows.
+- Added OkHttp network layer with realistic browser User-Agent.
+- Added coroutine-based parallel `SearchManager` using `async/awaitAll` and per-source error isolation.
+- Added native parser factory and parser implementations:
+  - `search_template` via Jsoup HTML parsing;
+  - `json` / `api` via flexible JSONObject path parsing;
+  - `torznab` / `jacred` / `rss` / `xml` via XML item parsing.
+- Added direct media source handling for `direct_video`, `hls`, `direct_stream` and direct `.mp4/.m3u8/.webm/.mkv` links.
+- Added `NativeSourceBridge` exposed to WebView as `AsgardNativeSearch`.
+- Added `native-search-runtime.js` to try native search first and fall back to existing JS search if native search fails.
+- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
+- No pirated catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, paid auth bypass, or embedded P2P engine were added.
+
+### QA status
+
+Code-wired only. Build and runtime QA are still pending.
+
 ## 2.10.20 — Visible demo catalog and enabled legal resources
 
 Expected release:
@@ -58,7 +90,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.20`.
+3. GitHub Releases contains matching tag, for example `v2.10.21`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
