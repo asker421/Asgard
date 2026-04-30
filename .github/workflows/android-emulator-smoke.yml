@@ -1,4 +1,4 @@
-# Trigger note: 2026-04-30 force-run Android Emulator Smoke Test for ASG-QA-001 / v2.10.9.
+# Trigger note: 2026-04-30 ensure smoke artifacts are always created for ASG-QA-001 / v2.10.9.
 name: Android Emulator Smoke Test
 
 on:
@@ -14,9 +14,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
 
+    env:
+      SMOKE_ARTIFACTS_DIR: ${{ github.workspace }}/smoke-artifacts
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Prepare smoke artifact directory
+        if: always()
+        run: |
+          mkdir -p "$SMOKE_ARTIFACTS_DIR"
+          {
+            echo "Smoke artifact directory prepared before build/emulator steps."
+            echo "Run started at: $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            echo "GitHub SHA: $GITHUB_SHA"
+            echo "Workflow: $GITHUB_WORKFLOW"
+          } > "$SMOKE_ARTIFACTS_DIR/README.txt"
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -55,29 +69,30 @@ jobs:
           script: |
             set -euo pipefail
             mkdir -p "$GITHUB_WORKSPACE/smoke-artifacts"
-            adb devices
+            echo "Emulator smoke script started at $(date -u +'%Y-%m-%dT%H:%M:%SZ')" > "$GITHUB_WORKSPACE/smoke-artifacts/emulator-step.txt"
+            adb devices | tee "$GITHUB_WORKSPACE/smoke-artifacts/adb-devices.txt"
             adb shell input keyevent 82 || true
-            adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
+            adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk" | tee "$GITHUB_WORKSPACE/smoke-artifacts/adb-install.txt"
             adb logcat -c
-            adb shell monkey -p com.asgard.tv -c android.intent.category.LAUNCHER 1
+            adb shell monkey -p com.asgard.tv -c android.intent.category.LAUNCHER 1 | tee "$GITHUB_WORKSPACE/smoke-artifacts/monkey-launch.txt"
             sleep 15
             adb shell dumpsys activity activities | tee "$GITHUB_WORKSPACE/smoke-artifacts/activity.txt"
             adb logcat -d | tee "$GITHUB_WORKSPACE/smoke-artifacts/logcat.txt"
             adb exec-out screencap -p > "$GITHUB_WORKSPACE/smoke-artifacts/launch.png" || true
             if ! grep -q "com.asgard.tv" "$GITHUB_WORKSPACE/smoke-artifacts/activity.txt"; then
-              echo "Asgard TV package was not found in active activities" >&2
+              echo "Asgard TV package was not found in active activities" | tee "$GITHUB_WORKSPACE/smoke-artifacts/failure.txt" >&2
               exit 1
             fi
             if grep -E "FATAL EXCEPTION|Application Not Responding|ANR in com\.asgard\.tv|Process: com\.asgard\.tv" "$GITHUB_WORKSPACE/smoke-artifacts/logcat.txt"; then
-              echo "Crash or ANR found in logcat" >&2
+              echo "Crash or ANR found in logcat" | tee "$GITHUB_WORKSPACE/smoke-artifacts/failure.txt" >&2
               exit 1
             fi
-            echo "Smoke test passed: APK installed, app launched, no crash/ANR detected."
+            echo "Smoke test passed: APK installed, app launched, no crash/ANR detected." | tee "$GITHUB_WORKSPACE/smoke-artifacts/success.txt"
 
       - name: Upload smoke artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: android-emulator-smoke-artifacts
-          path: smoke-artifacts
+          path: ${{ github.workspace }}/smoke-artifacts
           if-no-files-found: warn
