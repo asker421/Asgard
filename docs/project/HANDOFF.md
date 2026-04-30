@@ -27,23 +27,29 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-080 — Settings / source-service setup UX
+### ASG-042 — Continue Watching runtime UX hardening
 
-- Selected task: `ASG-080 — Settings sections / source-service setup UX`.
-- Reason: Search → Media Task flow is code-wired, but non-programmer setup of user-configured sources/services was still too technical.
-- Inspected `parser-settings.js`.
-- Added `setup-wizard.js` as a TV-friendly setup layer:
-  - adds `Search setup wizard` card to Settings;
-  - Step 1: overview of what Asgard needs;
-  - Step 2: enabled sources overview and link to Source Manager;
-  - Step 3: parser/service status and link to Parser & service settings;
-  - Step 4: test setup summary;
-  - direct actions to Source Manager, Parser & service and Search;
-  - shows enabled sources count, parser URL status, service URL status and legal-safe notice;
-  - no bundled catalogs, embedded source lists, engines, or bypass features added.
-- Loaded `setup-wizard.js` after stream diagnostics runtime in `index.html`.
-- Bumped Android version to `2.10.11 (51)` for release trigger.
-- Updated changelog and release status for `2.10.11`.
+- Selected task: `ASG-042 — Continue Watching runtime UX hardening`.
+- Reason: playback/progress foundation exists, but Home Continue Watching needed a stable TV-first runtime layer with Resume / Start over / Remove / diagnostics.
+- Inspected:
+  - `store.js`
+  - `main.js`
+  - `content-fix.js`
+- Added `continue-watching.js` as a late runtime layer:
+  - reads saved progress from `AsStore.progress()`;
+  - filters incomplete items to 1–95% progress;
+  - sorts by `updatedAt` descending;
+  - maps saved progress to open demo catalog metadata where possible;
+  - replaces Home Continue Watching shelf with real saved progress items;
+  - adds TV-friendly empty state when no saved progress exists;
+  - adds Resume action from saved position;
+  - adds Start over action from position `0`;
+  - adds Remove action for individual progress items;
+  - adds Info diagnostics action for saved progress item;
+  - shows progress bar, percentage and timecode.
+- Loaded `continue-watching.js` last in `index.html`.
+- Bumped Android version to `2.10.12 (52)` for release trigger.
+- Updated changelog and release status for `2.10.12`.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
@@ -55,7 +61,7 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/setup-wizard.js`
+- `android/app/src/main/assets/web/continue-watching.js`
 - `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
@@ -64,11 +70,11 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Recent Commits
 
-- setup wizard runtime commit was created after `setup-wizard.js` creation; verify exact SHA through commit history if needed.
-- `722e2864843424ca4d6e3e2006438588cd9570ca` — `Load setup wizard runtime`
-- `e9e592d0550cc31d514e86ee8e7bf26d6b1d3104` — `Bump version for setup wizard release`
-- changelog update commit for `2.10.11` was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
-- `acfb85660ee02413d308be16f131d6a72eafb394` — `Update release status for 2.10.11 setup wizard`
+- `e85aee0ca3a61dc0285f4697b4bb42cb4b9790cb` — `Add Continue Watching runtime UX layer`
+- `8d5ded625863c134010758011c6ea63fb30c1518` — `Load Continue Watching runtime last`
+- `4fb868480a0d54ad06c7c5ff2883648f0ced8c34` — `Bump version for Continue Watching release`
+- changelog update commit for `2.10.12` was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
+- `e04687068849bab7d8bfb75d52be6a070b8c7030` — `Update release status for 2.10.12 Continue Watching`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -77,10 +83,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.10.11`
-- versionCode: `51`
-- expected tag: `v2.10.11`
-- expected release: `Asgard TV v2.10.11`
+- versionName: `2.10.12`
+- versionCode: `52`
+- expected tag: `v2.10.12`
+- expected release: `Asgard TV v2.10.12`
 - expected APK asset: `asgard-tv-release.apk`
 
 Current QA status:
@@ -91,7 +97,7 @@ ASG-QA-001: QA_IN_PROGRESS / WORKFLOW_PATCHED / RUN_REQUIRED_OR_VERIFY_MANUALLY
 
 Current verification status:
 
-- Setup wizard is code-wired.
+- Continue Watching runtime is code-wired.
 - Runtime QA is not verified.
 - Android emulator smoke workflow should still be verified in GitHub Actions.
 - Physical Android TV / Mi Box S QA still not completed.
@@ -99,32 +105,32 @@ Current verification status:
 ## Current Highest Priority
 
 1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after latest workflow patches.
-2. Verify release `v2.10.11` and asset `asgard-tv-release.apk` after Actions completes.
-3. Runtime QA Settings → Search setup wizard:
-   - card appears;
-   - D-pad focus works;
-   - Source Manager link works;
-   - Parser/service link works;
-   - Test setup renders status;
-   - Open Search works.
+2. Verify release `v2.10.12` and asset `asgard-tv-release.apk` after Actions completes.
+3. Runtime QA Home → Continue Watching:
+   - empty state appears when no progress;
+   - progress item appears after player saves progress;
+   - Resume opens native player from saved position;
+   - Start over opens native player from zero;
+   - Remove deletes only selected progress item;
+   - D-pad focus works on all actions.
 4. Continue physical Android TV / Mi Box S QA.
 
 ## Next Recommended Task
 
 QA:
 
-Verify Android Emulator Smoke Test and then test `2.10.11` setup wizard flow.
+Verify Android Emulator Smoke Test and then test `2.10.12` Continue Watching flow.
 
 Engineer if device QA remains unavailable:
 
-Implement `ASG-042 — Continue Watching runtime UX hardening`, because playback/progress exists but resume/start-over UX still needs stable TV-first validation and polish.
+Implement `ASG-050 — QR import from phone` only as a safe local/user-confirmed import flow, or improve `ASG-090 — Diagnostics screen` if QA needs better troubleshooting visibility.
 
 ## Blockers / Risks
 
 - GitHub connector did not expose latest workflow run.
 - Physical Android TV / Mi Box S QA still not completed.
-- Setup wizard depends on runtime load order and existing Settings overrides.
-- Need runtime QA before marking `ASG-080` DONE.
+- Continue Watching depends on native player progress save format and runtime bridge behavior.
+- Need runtime QA before marking `ASG-042` DONE.
 - Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks DONE until CI/manual QA evidence exists.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
