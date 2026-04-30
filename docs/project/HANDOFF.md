@@ -4,20 +4,19 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-Engineer / Release / QA coordination
+Engineer / QA / Release coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest engineering task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest QA status update, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
-1. `docs/project/CHAT_PROTOCOL.md`
-2. `docs/product/backlog-v2.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/HANDOFF.md`
-5. `docs/project/DECISIONS.md`
-6. `docs/project/NEXT_ACTIONS.md`
-7. `docs/project/BACKLOG_V2_MIGRATION.md`
-8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+1. `docs/product/backlog-v2.json`
+2. `docs/project/PROJECT_STATE.md`
+3. `docs/project/HANDOFF.md`
+4. `docs/project/DECISIONS.md`
+5. `docs/project/NEXT_ACTIONS.md`
+6. `docs/project/BACKLOG_V2_MIGRATION.md`
+7. Relevant role prompt / QA status context from repository
 
 Active backlog:
 
@@ -27,66 +26,32 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-TOR-005 — Player integration and seeking
+### ASG-QA-001 — Android TV build/install smoke test
 
-- Selected task: `ASG-TOR-005`.
-- Reason: `ASG-TOR-SEARCH-002` was code-wired and the next MVP step is media task → `PlayerActivity` handoff / seeking / resume.
-- Inspected:
-  - `PlayerActivity.kt`
-  - `MainActivity.kt`
-  - `media-task.js`
-  - previous media task creation / readiness layers
-- Found a key handoff issue:
-  - current Android bridge `openPlayer(url,title,startPosition)` always derived `itemId` from title;
-  - therefore media task progress/resume could be stored under title instead of stable task id.
-- Added `player-handoff-v2.js` as a late runtime layer:
-  - overrides `AsMediaTask.openStream`, `resume`, `startOver` and `diag`;
-  - checks stream URL before player launch;
-  - blocks unsupported URL schemes before native player handoff;
-  - missing stream URL shows readable error with Prepare stream / Load metadata / Diagnostics actions;
-  - Resume and Start over use the same task id based handoff path;
-  - diagnostics report bridge availability, `openPlayerWithItem` support, URL readiness and saved progress.
-- Updated `MainActivity.kt`:
-  - added private `openPlayerInternal(url,title,startPosition,itemId)`;
-  - preserved legacy `openPlayer(url,title,startPosition)`;
-  - added new bridge method `openPlayerWithItem(url,title,startPosition,itemId)`;
-  - new bridge method passes stable item id into `PlayerActivity`.
-- Loaded `player-handoff-v2.js` after `media-task-creation-v2.js` and before readiness/diagnostics layers.
-- Bumped Android version to `2.10.18 (58)` for release trigger.
-- Updated changelog and release status for `2.10.18`.
-- Did not mark any backlog item DONE.
-- Did not overwrite old `docs/product/backlog.json`.
+- User confirmed: Android Emulator Smoke Test passed successfully in GitHub Actions.
+- Recorded CI emulator smoke result in `docs/qa/QA_STATUS.md`.
+- CI emulator smoke is now considered PASS for:
+  - APK build in CI;
+  - emulator workflow completion;
+  - APK install/launch/no-instant-crash gate according to the successful workflow result.
+- Physical Android TV / Mi Box S manual QA is still not completed.
+- Did not mark `ASG-QA-001` fully DONE because manual Android TV remote/player/stability QA remains required.
 
 ### Previous MVP flow work preserved
 
 - `title-media-search.js` remains the Search screen runtime.
 - `media-task-creation-v2.js` remains the Search result → persistent media task creation runtime.
+- `player-handoff-v2.js` remains the media task → native player handoff runtime.
 - `streaming-readiness.js` and `stream-diagnostics.js` still run after task/player layers.
-
-### QA gate status preserved
-
-- `ASG-QA-001` remains QA_IN_PROGRESS / pending.
-- Android emulator smoke workflow must still be verified in GitHub Actions.
-- Physical Android TV / Mi Box S QA is still not completed.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/player-handoff-v2.js`
-- `android/app/src/main/java/com/asgard/tv/MainActivity.kt`
-- `android/app/src/main/assets/web/index.html`
-- `android/app/build.gradle.kts`
-- `docs/release/CHANGELOG.md`
-- `docs/release/RELEASE_STATUS.md`
+- `docs/qa/QA_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
 
-- `bac0f61b71b7bc14acaff5191f38fb0b2f9ad362` — `Add player handoff v2 runtime`
-- `5f0e39e820c6d462d00777d43b190dad38c294d0` — `Add stable item id player bridge`
-- load commit was created after `index.html` update; verify exact SHA through commit history if needed.
-- version bump commit was created after `android/app/build.gradle.kts` update; verify exact SHA through commit history if needed.
-- `79c036336efd514fb6077b2923dd2b998ae502df` — `Update changelog for 2.10.18 player handoff`
-- `0360cc12aab45fa3b68311626b8aba9e5bb0ceec` — `Update release status for 2.10.18 player handoff`
+- `f78476bab57cdea2be213b5d23d594b6034da8e0` — `Record successful emulator smoke test`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -97,7 +62,7 @@ Early alpha / working prototype.
 
 `NOT_READY_YET`
 
-Current release expectation:
+Current release expectation from prior handoff:
 
 - versionName: `2.10.18`
 - versionCode: `58`
@@ -107,30 +72,49 @@ Current release expectation:
 
 ## Current QA Status
 
-`ASG-QA-001` remains the main gate.
+```text
+ASG-QA-001: QA_IN_PROGRESS / CI_SMOKE_PASS / MANUAL_TV_QA_REQUIRED
+```
 
-Manual GitHub Actions verification is still required because connector did not expose reliable live Actions status.
+What is now verified:
+
+- CI emulator smoke workflow passed by user confirmation.
+- APK build/install/launch/no-instant-crash gate is passed in CI emulator.
+
+What is still not verified:
+
+- Full remote D-pad focus traversal.
+- Back behavior across all screens.
+- Native ExoPlayer real playback quality on Android TV device.
+- Configured source/parser/TorrServer flows.
+- QR import runtime flow.
+- 15-minute manual stability.
+- Mi Box S physical compatibility.
 
 ## Current Highest Priority
 
-1. Verify latest Android Emulator Smoke Test run in GitHub Actions.
-2. Verify release `v2.10.18` and `asgard-tv-release.apk` after Actions completes.
-3. Runtime QA media task → player:
-   - stream-ready task opens `PlayerActivity`;
-   - progress saves under stable task id;
-   - Resume starts from saved position;
-   - Start over starts from zero;
-   - missing stream URL shows readable error;
-   - bad/unsupported stream does not crash app.
-4. Continue MVP flow: metadata / file selection from configured service.
+1. Download or inspect `android-emulator-smoke-artifacts` from the passed workflow run if available.
+2. Verify `activity.txt`, `logcat.txt`, and `launch.png` for evidence completeness.
+3. Run manual Android TV / Mi Box S QA:
+   - D-pad focus traversal;
+   - Enter activation;
+   - Back behavior;
+   - player launch/play/pause/seek;
+   - Search → task → player flow;
+   - 15-minute stability.
+4. Continue MVP engineering flow: metadata / file selection from configured service.
 
 ## Next Recommended Task
 
+QA:
+
+Run manual Android TV / Mi Box S smoke test and update `docs/qa/QA_STATUS.md` with PASS / FAIL / BLOCKED rows.
+
 Engineer:
 
-Implement or harden `ASG-TOR-003 — Metadata and file selection`.
+Continue `ASG-TOR-003 — Metadata and file selection` if device QA remains unavailable.
 
-Expected result:
+Expected engineering result:
 
 - configured service metadata/files are normalized reliably;
 - file list persists on task;
@@ -138,16 +122,11 @@ Expected result:
 - selected file generates/keeps stream URL where service supports it;
 - no files / no playable file / service missing states are readable.
 
-QA:
-
-Verify Android Emulator Smoke Test and `v2.10.18` release asset.
-
 ## Blockers / Risks
 
 - No confirmed physical Android TV / Mi Box S QA.
-- GitHub connector did not expose latest Actions run.
-- Player handoff is code-wired but not runtime-verified.
-- Release APK availability must still be verified in GitHub Releases.
+- Player handoff is code-wired but not runtime-verified manually.
+- Release APK availability must still be verified in GitHub Releases if distributing.
 - Do not mark tasks DONE without QA evidence.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
