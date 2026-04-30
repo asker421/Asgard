@@ -6,23 +6,15 @@ Last updated: 2026-04-30
 
 `ASG-QA-001 — Android TV build/install smoke test` has **CI EMULATOR SMOKE PASS** based on user-confirmed GitHub Actions result.
 
+Manual QA found product/runtime issues. Current status is:
+
+```text
+QA_IN_PROGRESS / CI_SMOKE_PASS / BUGS_FOUND / MANUAL_TV_QA_REQUIRED
+```
+
 Physical Android TV / Mi Box S QA remains **BLOCKED / NOT COMPLETED** from this chat environment.
 
 ## Mandatory Pre-flight Used
-
-Refreshed:
-
-```text
-docs/project/CHAT_PROTOCOL.md
-docs/product/backlog-v2.json
-docs/project/PROJECT_STATE.md
-docs/project/HANDOFF.md
-docs/project/DECISIONS.md
-docs/project/NEXT_ACTIONS.md
-docs/project/BACKLOG_V2_MIGRATION.md
-docs/prompts/ENGINEER_CHAT_PROMPT.md
-docs/qa/QA_STATUS.md
-```
 
 Active backlog:
 
@@ -38,25 +30,7 @@ ASG-QA-001 — Run Android TV build/install smoke test
 
 Reason:
 
-User confirmed the Android Emulator Smoke Test workflow passed successfully after workflow hardening.
-
-## Emulator Smoke Workflow
-
-Workflow:
-
-```text
-.github/workflows/android-emulator-smoke.yml
-```
-
-Purpose:
-
-- build the debug APK;
-- start an Android emulator;
-- install the APK;
-- launch `com.asgard.tv`;
-- collect activity dump, logcat and screenshot;
-- fail on crash / ANR indicators;
-- upload `android-emulator-smoke-artifacts`.
+User provided manual QA results after CI emulator smoke pass. Findings affect Android TV UX, Home/catalog/search/source flows and input behavior.
 
 ## CI Emulator Smoke Result
 
@@ -71,10 +45,6 @@ What this proves:
 - APK build completed in CI.
 - Android emulator smoke workflow completed successfully.
 - APK install/launch/no-instant-crash gate passed according to workflow result.
-- Previous workflow blockers were resolved:
-  - Gradle wrapper validation failure;
-  - missing artifact directory warning;
-  - `/usr/bin/sh` exit code 2 from shell compatibility.
 
 What this does **not** prove:
 
@@ -86,90 +56,69 @@ What this does **not** prove:
 - 15-minute manual stability.
 - Mi Box S physical compatibility.
 
-## Latest CI Issues and Fixes
+## Manual QA Findings — User Report 2026-04-30
 
-### 1. Gradle wrapper validation failure
-
-Failure:
+User reported the following shorthand test results:
 
 ```text
-Found unknown Gradle Wrapper JAR files:
-cc6aedaaf085917fce96d98ed8574ac9bd1295e62db696496671ed6a1409d7a6 android/gradle/wrapper/gradle-wrapper.jar
-At least one Gradle Wrapper Jar failed validation
+1) +
+2.1 +
+2.2 +
+3.1: на главной странице все еще мок дата, нет новых фильмов сериалов и постеров
+3.2 +
+4.1 +
+4.2 +
+4.3 +
+5.1 +
+5.2: работает не правильно, при нажатии Backspace должно стираться, а тут кидает на главный экран
+5.3 +
+6.1 +
+6.2: не работает, или неразборчиво, может где-то и есть результат, но интерфейс не понятен
+6.3: вывод пишется внизу, надпись появляется но не в правильном месте
+6.4 +
+7
+```
+
+Interpretation / QA mapping:
+
+| Area | Result | Severity | Notes |
+|---|---|---|---|
+| Install / launch basics | PASS | - | User marked early checks as `+`. |
+| Home screen | BUG_FOUND | High | Home still shows mock data; no fresh/new movies/series/posters. This is currently expected only as demo/fallback, but UX makes it look like real content. Needs clear demo labeling or real configured-source content. |
+| Navigation basics | PASS | - | User marked several navigation sections as `+`. |
+| Text input Backspace | BUG_FOUND / FIXED_IN_CODE | Critical | Backspace in input fields was intercepted as global Back and returned to Home. Fixed in `input.js` by not intercepting Backspace/Delete/text-editing keys while focus is in input/textarea/contenteditable. |
+| Search / source results UX | BUG_FOUND | Critical | User reports search/source result flow does not work or is unclear; results may exist but UI is not understandable. Needs Search UX redesign, visible result area, source status, empty/error states and clear actions. |
+| Output/result placement | BUG_FOUND | High | User reports output appears at bottom/wrong place. Needs layout fix: validation/search results should render near the action/input area, not hidden below fold. |
+| Later checked section | PASS / PARTIAL | - | User marked `6.4 +` and `7`; exact mapping needs next QA form confirmation. |
+
+## Fix Applied From Manual QA
+
+### Backspace in text fields
+
+Bug:
+
+```text
+Backspace in input/textarea returned to Home instead of deleting text.
 ```
 
 Fix:
 
-- Removed `gradle/actions/setup-gradle@v4` from emulator smoke workflow.
-- Kept repository wrapper build:
-
-```text
-cd android
-chmod +x ./gradlew
-./gradlew --no-daemon :app:assembleDebug
-```
-
-Fix commit:
-
-```text
-789da66bc825dbde521bbb9b0809b531a823b422
-```
-
-### 2. Artifact upload warning
-
-Failure/warning:
-
-```text
-No files were found with the provided path: smoke-artifacts. No artifacts will be uploaded.
-```
-
-Fix:
-
-- Added `SMOKE_ARTIFACTS_DIR: ${{ github.workspace }}/smoke-artifacts`.
-- Added `Prepare smoke artifact directory` before build/emulator steps.
-- Creates `README.txt` before any later step can fail.
-- Changed upload path to absolute `${{ github.workspace }}/smoke-artifacts`.
-- Added extra diagnostic artifacts.
+- Updated `android/app/src/main/assets/web/input.js`.
+- Added editable element detection:
+  - input text-like fields;
+  - textarea;
+  - contenteditable.
+- Backspace/Delete/normal character input now pass through while editing.
+- Escape blurs active text input instead of immediately navigating back.
+- Global Back handling still works outside text editing controls.
 
 Fix commit:
 
 ```text
-b8eb579c67b39c98fef89a3502f8375f1239030b
+cba83c117b1fa221f8cf208c83aae77ca9fbae2d
 ```
 
-### 3. `/usr/bin/sh` exit code 2
-
-Failure:
-
-```text
-Error: The process '/usr/bin/sh' failed with exit code 2
-```
-
-Fixes applied:
-
-- Replaced `set -euo pipefail` with `set -eu` in the inline runner script.
-- Later moved smoke commands into dedicated bash script:
-
-```text
-.github/scripts/android-emulator-smoke.sh
-```
-
-- Workflow now calls the smoke script through bash.
-
-Relevant commits:
-
-```text
-8acb559f228ccf126570bbb0e3eaeb4eefee1fac
-```
-
-## Current Verification Status
-
-```text
-CI EMULATOR SMOKE PASS
-MANUAL ANDROID TV / MI BOX S QA STILL REQUIRED
-```
-
-## Runtime Smoke Status
+## Current Runtime Smoke Status
 
 | Area | Status | Notes |
 |---|---|---|
@@ -177,29 +126,44 @@ MANUAL ANDROID TV / MI BOX S QA STILL REQUIRED
 | APK installs in emulator | PASS | Covered by successful smoke workflow. |
 | App launches in emulator | PASS | Covered by successful smoke workflow. |
 | No instant crash/ANR | PASS | Covered by successful smoke workflow result. |
-| Screenshot captured | PASS / ASSUMED | Workflow captures `launch.png`; artifact review still recommended. |
 | Android TV / Mi Box S physical install | BLOCKED | Requires real device. |
-| Remote focus traversal | TODO | Requires manual Android TV/emulator test. |
-| Back behavior by screen | TODO | Requires manual Android TV/emulator test. |
+| Remote focus traversal | PARTIAL PASS / NEEDS MORE QA | User marked several navigation checks as `+`; full focus-trap audit still needed. |
+| Text input editing | BUG_FOUND / FIXED_IN_CODE / NEEDS RETEST | Backspace fix committed; retest required in search/source fields. |
+| Home content | BUG_FOUND | Mock content still appears as main content; needs demo labeling or real content source integration. |
+| Search/source results | BUG_FOUND | User reports unclear or not working. |
+| Result placement | BUG_FOUND | Output appears at bottom / wrong place. |
+| Back behavior by screen | NEEDS MORE QA | Backspace bug fixed; Back/Escape outside inputs still needs screen-by-screen QA. |
 | ExoPlayer playback | TODO | Requires manual Android TV/emulator test. |
-| Configured media source/service flow | TODO | Requires configured source/service. |
+| Configured media source/service flow | TODO / BUG_FOUND UX | Requires configured source/service; UI currently unclear. |
 | 15-minute stability | BLOCKED | Requires emulator/device long run. |
 
 ## Recommendation
 
-Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks fully DONE yet.
+Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-003`, `ASG-011`, `ASG-012`, `ASG-030`, `ASG-031`, `ASG-040`, or media playback tasks fully DONE yet.
 
-Recommended status:
+Recommended statuses:
 
 ```text
-ASG-QA-001: QA_IN_PROGRESS / CI_SMOKE_PASS / MANUAL_TV_QA_REQUIRED
+ASG-QA-001: QA_IN_PROGRESS / CI_SMOKE_PASS / BUGS_FOUND / MANUAL_TV_QA_REQUIRED
+ASG-002: BUG_FOUND or READY_FOR_QA_AFTER_INPUT_FIX
+ASG-003: BUG_FOUND — Home still looks like mock content
+ASG-011/ASG-012: BUG_FOUND — Search/results unclear
+ASG-030/ASG-031: BUG_FOUND — Output placement/source UX unclear
 ```
 
 Next action:
 
-1. Download or inspect `android-emulator-smoke-artifacts` from the passed run.
-2. Verify `activity.txt`, `logcat.txt`, and `launch.png` if available.
-3. Run manual Android TV / Mi Box S QA:
+1. Re-run manual tests for text input Backspace in Search and Sources.
+2. Fix Home mock-data presentation:
+   - either show clear Demo/Fallback labels;
+   - or populate Home from configured source/search results where possible;
+   - avoid implying that mock data is fresh real content.
+3. Redesign Search/source result layout:
+   - result output directly under input/action;
+   - visible loading/empty/error states;
+   - clear playable/source/task action buttons;
+   - no hidden result blocks below fold.
+4. Continue manual Android TV QA:
    - D-pad focus traversal;
    - Enter activation;
    - Back behavior;
@@ -214,5 +178,6 @@ A task can move to DONE only when:
 - acceptance criteria passed;
 - no critical crash;
 - remote navigation works;
+- text input editing behaves correctly;
 - user-facing errors are understandable;
 - for TV UI tasks, focus behavior is verified.
