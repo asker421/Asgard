@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.9.6 according to Android build configuration.
+2.9.7 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,21 +22,29 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.9.6 (36)`.
+2026-04-30: Release trigger requested for `2.9.7 (37)` after real Continue Watching shelf implementation.
 
 This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by a push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.9.6`
-- release title: `Asgard TV v2.9.6`
+- tag: `v2.9.7`
+- release title: `Asgard TV v2.9.7`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
 Release verification is PENDING after release-trigger commits.
 
-Do not claim that `2.9.6` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.9.7` release APK is available until GitHub Actions / Releases confirm it.
+
+## New in 2.9.7 Scope
+
+- Home `Continue Watching` shelf now reads real saved watch progress from storage.
+- Progress percent is calculated from saved `position/duration`.
+- Added `Resume` action with saved position.
+- Added `Start over` action from position 0.
+- Added empty state for no saved progress.
 
 ## Included Scope Since 2.9.5
 
@@ -60,33 +68,15 @@ Changelog:
 docs/release/CHANGELOG.md
 ```
 
-The installation guide covers:
-
-- where to download `asgard-tv-release.apk`;
-- how to confirm version/tag/release metadata;
-- USB install;
-- Send file to TV install;
-- ADB install;
-- handling signature/update failure by uninstalling old APK;
-- basic post-install smoke test;
-- bug report template.
-
-The changelog currently documents:
-
-- 2.9.6 release trigger / TorrServer handoff package;
-- 2.9.5 TorrServer → ExoPlayer handoff;
-- 2.9.4 TV UX P0 fixes / release baseline;
-- release verification checklist;
-- stable release rule.
-
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.9.6.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.9.6.
+- Confirm APK build for 2.9.7.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.9.7.
 - Confirm install on Android TV / Mi Box S.
 - Confirm remote navigation.
 - Confirm ExoPlayer playback.
-- Confirm TorrServer handoff failure states when TorrServer is not configured.
+- Confirm Continue Watching appears after player progress is saved.
+- Confirm Resume and Start over behavior.
 - Confirm no first-launch crash.
 
 ## Missing Before Stable 1.0
@@ -96,7 +86,7 @@ The changelog currently documents:
 - Real source search hardened.
 - QR import implemented.
 - User-provided media handoff flow verified with real configured TorrServer.
-- Continue Watching UX complete.
+- Continue Watching UX runtime-verified.
 - Full diagnostics.
 
 ## Release Gates
@@ -108,6 +98,7 @@ Stable release is blocked unless:
 - App opens without internet.
 - Remote navigation works.
 - Player works.
+- Continue Watching works after real playback.
 - No critical crash.
 - Basic source/parser screens work.
 - QA smoke test passed.
