@@ -10,6 +10,45 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.7 — Metadata and file selection hardening
+
+Expected release:
+
+```text
+Tag: v2.10.7
+Release: Asgard TV v2.10.7
+Asset: asgard-tv-release.apk
+versionCode: 47
+```
+
+### Added / Changed
+
+- Hardened metadata and file selection flow for `ASG-TOR-003`.
+- Configured service adapter now normalizes more metadata response shapes.
+- Hash/task id extraction now checks add response and original result fields.
+- File normalization now includes index, name, path, size, extension and video detection.
+- Clear distinction between `no_files_returned` and `no_playable_video_file`.
+- Media Task now persists selected file object, not only selected index.
+- Media Task now shows total/playable/other file summary.
+- Non-playable file selection is blocked with clear task state.
+- Metadata diagnostics now include file count, playable count and selected file.
+- Player handoff remains routed through `AsMediaTask.openStream()`.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Configure a compatible user service.
+- Search and create media task.
+- Load metadata where service returns files.
+- Confirm total/playable/other summary is accurate.
+- Select playable file and confirm selected file persists.
+- Try selecting non-playable file and confirm readable error state.
+- Confirm no-files and no-playable states are readable.
+- Confirm Open stream still uses selected playable stream path.
+
 ## 2.10.6 — Player handoff hardening
 
 Expected release:
@@ -37,17 +76,6 @@ versionCode: 46
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Create direct playable media task.
-- Open stream and confirm native PlayerActivity starts.
-- Exit player and confirm progress is saved against task ID.
-- Reopen task and confirm Resume appears.
-- Confirm Resume starts from saved position.
-- Confirm Start over starts from 0.
-- Confirm missing stream URL shows readable error state.
-- Confirm bridge/player failure is shown clearly.
 
 ## 2.10.5 — Search result to playable media task
 
@@ -401,7 +429,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.6`.
+3. GitHub Releases contains matching tag, for example `v2.10.7`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
