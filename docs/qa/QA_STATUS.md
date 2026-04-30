@@ -4,18 +4,18 @@ Last updated: 2026-04-30
 
 ## Current QA Status
 
-STATIC QA COMPLETED for `2.9.8 (38)`.
+STATIC APP TEST COMPLETED for `2.10.6 (46)`.
 
 PHYSICAL ANDROID TV QA remains BLOCKED / NOT COMPLETED from this chat environment.
 
 ## Current Risk
 
-The app has a strong early-alpha foundation, but it has not yet been verified as a stable Android TV build on real Android TV hardware or emulator through this QA pass.
+The app has a strong early-alpha foundation and the core runtime paths are increasingly code-wired, but it has not yet been verified as a stable Android TV build on real Android TV hardware or emulator through this QA pass.
 
 Latest inspected Android version from `android/app/build.gradle.kts`:
 
-- versionName: `2.9.8`
-- versionCode: `38`
+- versionName: `2.10.6`
+- versionCode: `46`
 
 ## Mandatory Pre-flight Used
 
@@ -29,13 +29,13 @@ Selected task:
 
 Reason:
 
-It is the first item in `current_next_tasks`, and `NEXT_ACTIONS.md` requires Android TV build/install smoke testing before claiming release readiness.
+User requested app testing. This is the QA task for Android TV build/install/runtime smoke validation. Physical/device execution is still required for final PASS.
 
-## Static QA Run — 2026-04-30
+## Static App Test — 2026-04-30
 
 ### Scope
 
-Repository-level smoke readiness inspection using GitHub file reads/search. No physical Android TV emulator or Mi Box S interaction was possible inside this chat environment.
+Repository-level app smoke test using GitHub file reads/search. No physical Android TV emulator or Mi Box S interaction was possible inside this chat environment.
 
 ### Device / Emulator
 
@@ -43,38 +43,38 @@ None.
 
 ### Build / Version
 
-`2.9.8 (38)` from `android/app/build.gradle.kts`.
+`2.10.6 (46)` from `android/app/build.gradle.kts`.
 
 ### Static Result Summary
 
 | Area | Static Result | Evidence / Notes | Recommended backlog status |
 |---|---|---|---|
-| APK build configuration | STATIC PASS / RUNTIME BLOCKED | `Build APK` workflow uses Java 17, Android SDK 35, Gradle 8.10.2 and `./gradlew :app:assembleDebug`; wrapper points to `gradle-8.10.2-bin.zip`. Latest workflow run/result was not visible through connector. | Keep `ASG-QA-001` TODO / QA needed |
+| APK build configuration | STATIC PASS / RUNTIME BLOCKED | `Build APK` workflow uses Java 17, Android SDK 35, Gradle 8.10.2 and `./gradlew :app:assembleDebug`; wrapper is configured. Latest workflow run/result was not visible through connector. | Keep `ASG-QA-001` TODO / QA needed |
 | APK install | BLOCKED | Requires Android TV emulator or Mi Box S. | Keep QA needed |
 | Offline launch | BLOCKED | Requires emulator/device; local WebView assets exist. | Keep QA needed |
-| Remote navigation | STATIC PASS / RUNTIME QA NEEDED | `input.js` now explicitly handles ArrowUp/Down/Left/Right, Enter/NumpadEnter, Backspace/Escape, uses visible focusable elements, `getBoundingClientRect()`, `scrollIntoView()` and prevents default for handled keys. | `ASG-002` remains READY_FOR_QA, not DONE |
+| Runtime script load order | STATIC PASS | `index.html` loads base scripts and late runtime layers including `source-manager.js`, `qr-import.js`, `diagnostics-health.js`, `onboarding.js`, `states.js`, `media-search.js`, and `media-task.js`. | Runtime QA needed |
+| Remote navigation | STATIC PASS / RUNTIME QA NEEDED | `input.js` explicitly handles ArrowUp/Down/Left/Right, Enter/NumpadEnter, Backspace/Escape, visible focusable elements, `getBoundingClientRect()`, `scrollIntoView()` and prevents default for handled keys. | `ASG-002` remains READY_FOR_QA, not DONE |
 | Focus visibility | STATIC PASS / RUNTIME QA NEEDED | Focusable refresh and movement exist; visual focus still needs screen-by-screen TV QA. | QA needed |
-| Back behavior | STATIC PASS / RUNTIME QA NEEDED | `ui.js` defines `history`, `nav()`, `back()` and `window.asgardBack=function(){return AsUI.back()}`; Android `MainActivity` calls `window.asgardBack`. | `ASG-002` remains READY_FOR_QA, not DONE |
-| Home screen | STATIC PASS | Home/open demo catalog exists through `content-fix.js`. | Needs runtime QA |
-| Mock/open catalog | STATIC PASS | Open/public demo streams exist in `content-fix.js`; no bundled prohibited catalogs found in this inspected path. | READY_FOR_QA still needs device QA |
-| Search screen | STATIC PASS / QA NEEDED | `index.html` loads `source-search-hardening.js` before source search UI; `source-search.js` patches Search to use parser/source-backed flow and enabled sources. | `ASG-011` CODE_REVIEW / QA needed |
-| Source-backed search hardening | STATIC PASS / QA NEEDED | `source-search-hardening.js` adds safe URL handling, dedupe, ranking, grouping, summary/error counters and isolated source query errors. Needs real configured source/parser QA. | `ASG-012` remains IN_PROGRESS |
-| Detail page | STATIC PASS | `content-fix.js` patches demo detail pages and Watch buttons. | Needs runtime QA |
-| Watch -> native ExoPlayer | STATIC PASS / QA NEEDED | `content-fix.js` routes Watch to `AsgardBridge.openPlayer()` when Android bridge exists. | Needs APK runtime QA |
-| Native bridge | STATIC PASS | `MainActivity` exposes `AsgardBridge` with `openPlayer`, `nativeFetch`, source persistence, torrent tasks, watch progress, favorites/history and version info. | Runtime QA needed |
+| Back behavior | STATIC PASS / RUNTIME QA NEEDED | `ui.js` defines `history`, `nav()`, `back()` and `window.asgardBack=function(){return AsUI.back()}`; Android `MainActivity` calls `window.asgardBack`; `MainActivity` exposes `exitApp()`. | `ASG-002` remains READY_FOR_QA, not DONE |
+| Home screen | STATIC PASS | Home/open demo catalog exists through runtime layer. | Needs runtime QA |
+| Mock/open catalog | STATIC PASS | Open/public demo streams exist; no bundled prohibited catalog behavior found in inspected path. | READY_FOR_QA still needs device QA |
+| Search screen | STATIC PASS / QA NEEDED | Current app includes source search and media search runtime layers; backlog focus is search movie -> configured media/torrent result -> player. | Runtime QA needed |
+| Media search flow | STATIC PASS / QA NEEDED | Handoff and `index.html` indicate `media-search.js` is loaded; `media-task.js` patches `AsMediaSearch.createTask()`. Needs runtime search test with configured source/parser. | `ASG-TOR-SEARCH-001/002` need QA |
+| Media task creation | STATIC PASS / QA NEEDED | `media-task.js` can create persistent tasks from selected search results, detect input type, preserve diagnostics, and render task screen. | `ASG-TOR-SEARCH-002` QA needed |
+| Direct playable media task | STATIC PASS / QA NEEDED | `media-task.js` sets direct_video task to `stream_ready` and opens native player via `AsgardBridge.openPlayer()` when stream URL exists. | Runtime QA needed |
+| Configured service metadata | STATIC PASS / RUNTIME BLOCKED | `media-task.js` can call `AsTorrServerAdapter.preparePlayableFromResult()` and render metadata/files, but no service endpoint was available in this chat. | `ASG-TOR-003` remains IN_PROGRESS |
+| File selection | STATIC PASS / QA NEEDED | `media-task.js` renders file rows and selected file state from service metadata. Needs real service response QA. | `ASG-TOR-003` QA needed |
+| Player stream handoff | STATIC PASS / QA NEEDED | `media-task.js` calls `openNative()` -> `AsgardBridge.openPlayer()`; `MainActivity.openPlayer()` starts `PlayerActivity`. | `ASG-TOR-005` still needs runtime QA |
+| Native bridge | STATIC PASS | `MainActivity` exposes `AsgardBridge` with `openPlayer`, `nativeFetch`, source persistence, torrent tasks, watch progress, favorites/history, version info and `exitApp`. | Runtime QA needed |
 | ExoPlayer | STATIC PASS / QA NEEDED | `PlayerActivity` validates URL, creates Media3 ExoPlayer, uses controller, handles player errors, D-pad play/pause/seek and saves valid progress. | `ASG-040` READY_FOR_QA |
 | Play/pause | STATIC PASS / QA NEEDED | `PlayerActivity.dispatchKeyEvent()` toggles play/pause on Enter/DPAD_CENTER. | QA needed |
 | Seek | STATIC PASS / QA NEEDED | DPAD left/right and media rewind/fast-forward seek with duration clamp. | QA needed |
-| Progress save | STATIC PASS / QA NEEDED | Saves valid progress when duration is known; `content-fix.js` reads stored progress for Continue Watching shelf. Needs restart/resume QA. | `ASG-042` remains IN_PROGRESS |
-| Continue Watching | STATIC PASS / QA NEEDED | `content-fix.js` builds Continue Watching from `AsStore.progress()` and offers Resume / Start over. Needs real playback progress test. | `ASG-042` remains IN_PROGRESS |
-| Sources screen | STATIC PASS / QA NEEDED | Previous runtime layers wire Sources preview/save/reset; current static scope did not execute UI. | QA needed |
-| TXT parser | STATIC PASS | `sources.js` parser foundation exists per backlog and prior inspection; runtime invalid/valid row test needed. | QA needed |
-| Parser settings | STATIC PASS / QA NEEDED | `index.html` loads parser/settings layers; Search references parser settings. Needs runtime QA. | QA needed |
-| Configured media service / TorrServer | STATIC PASS / RUNTIME BLOCKED | TorrServer adapter/handoff files exist, but no configured service endpoint was available in this chat. | Keep IN_PROGRESS |
-| User-provided media validation | STATIC PASS / QA NEEDED | Kotlin picker/import foundation and JS torrent validation exist. Real metadata/service handoff not verified. | Keep IN_PROGRESS |
-| File picker | STATIC PASS / QA NEEDED | `MainActivity.pickTorrentFile()` uses `ACTION_OPEN_DOCUMENT`. Needs Android TV QA. | QA needed |
-| Media diagnostics | STATIC PASS / QA NEEDED | Source/torrent diagnostics foundations exist. Needs runtime QA. | QA needed |
-| Update screen | STATIC PASS / QA NEEDED | Release status and update scripts exist; runtime/network behavior unverified. | QA needed |
+| Progress save | STATIC PASS / QA NEEDED | Saves valid progress when duration is known; Continue Watching wiring exists from prior layers. Needs restart/resume QA. | `ASG-042` remains IN_PROGRESS |
+| Sources / parser settings | STATIC PASS / QA NEEDED | Source/parser/settings layers are loaded. Needs valid/invalid configured source QA. | QA needed |
+| TXT parser | STATIC PASS / QA NEEDED | Parser foundation exists; runtime invalid/valid row test needed. | QA needed |
+| QR import | STATIC PASS / QA NEEDED | `qr-import.js` is loaded, but real phone end-to-end flow was not executed. | `ASG-050` remains IN_PROGRESS |
+| Diagnostics health | STATIC PASS / QA NEEDED | `diagnostics-health.js` is loaded; runtime checks not executed here. | QA needed |
+| Update screen | STATIC PASS / QA NEEDED | Release/update docs and update scripts exist; runtime/network behavior unverified. | QA needed |
 | 15-minute stability | BLOCKED | Requires device/emulator. | Keep QA needed |
 
 ## Required Physical Smoke Test
@@ -90,6 +90,12 @@ None.
 | Home screen opens | TODO | Requires APK/browser runtime verification. |
 | Mock catalog works | TODO | Requires runtime verification. |
 | Search opens | TODO | Requires runtime verification. |
+| Media search returns configured results | TODO | Requires configured source/parser. |
+| Search result creates media task | TODO | Requires media search runtime QA. |
+| Direct playable media task opens ExoPlayer | TODO | Requires Android APK runtime test. |
+| Configured service task loads metadata/files | TODO | Requires configured service/TorrServer. |
+| Selected file persists | TODO | Requires service metadata result. |
+| Stream URL opens ExoPlayer | TODO | Requires service/direct playable URL. |
 | Detail page opens | TODO | Requires runtime verification. |
 | ExoPlayer opens video | TODO | Requires Android APK runtime test. |
 | Play/pause works | TODO | Requires Android APK runtime test. |
@@ -101,10 +107,8 @@ None.
 | Sources screen opens | TODO | Requires runtime verification. |
 | TXT parser works | TODO | Requires invalid/valid source-row test. |
 | Parser settings open | TODO | Requires runtime verification. |
-| Configured media service test works | TODO | Requires user-configured service or mock failure-state test. |
-| User-provided media validation works | TODO | Requires runtime test. |
-| File picker opens where supported | TODO | Requires Android APK runtime test. |
-| Media diagnostics screen opens | TODO | Requires runtime verification. |
+| QR import opens | TODO | Requires runtime verification. |
+| Diagnostics screen opens | TODO | Requires runtime verification. |
 | Update screen opens | TODO | Requires runtime verification. |
 | App survives 15 minutes use | TODO | Requires device/emulator stability test. |
 
@@ -112,7 +116,7 @@ None.
 
 ### Scope
 
-Static repository smoke readiness check for current 2.9.8 code.
+Static repository smoke readiness check for current 2.10.6 code.
 
 ### Device / Emulator
 
@@ -120,19 +124,21 @@ None. No Android TV emulator or Mi Box S was available inside this chat environm
 
 ### Build / Version
 
-`2.9.8 (38)` from `android/app/build.gradle.kts`.
+`2.10.6 (46)` from `android/app/build.gradle.kts`.
 
 ### Result
 
-STATIC PASS for several core code paths, but BLOCKED for full physical QA.
+STATIC PASS for core code paths, but BLOCKED for full physical QA.
 
 ### Findings
 
 - Build workflow and Gradle wrapper definitions are present and look correct.
 - Latest workflow run/result was not available through the connector.
-- D-pad and Back are now implemented in inspected Web assets, unlike earlier static QA state.
-- Watch → native ExoPlayer, PlayerActivity controls, and Continue Watching storage wiring are present statically.
-- No APK install, launch, real D-pad traversal, Back runtime behavior, ExoPlayer playback or 15-minute stability result can be claimed from this chat session.
+- D-pad and Back are implemented in inspected Web assets.
+- Native bridge includes `exitApp()`, `openPlayer()`, source/torrent/progress persistence and native fetch.
+- PlayerActivity has ExoPlayer, URL validation, D-pad controls, error Toast and progress save.
+- Media task flow is code-wired for direct playable result -> task -> native player, and for configured service metadata where service exists.
+- No APK install, launch, real D-pad traversal, Back runtime behavior, ExoPlayer playback, real configured source/service test or 15-minute stability result can be claimed from this chat session.
 
 ### Recommendation
 
