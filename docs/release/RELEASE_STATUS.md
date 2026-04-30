@@ -24,7 +24,7 @@ Not ready for stable release.
 
 2026-04-30: Release trigger requested for `2.9.4 (34)`.
 
-This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by this push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
+This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by a push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
 
 Expected result if GitHub Actions succeeds:
 
@@ -34,9 +34,28 @@ Expected result if GitHub Actions succeeds:
 
 ## Current Verification Status
 
-Release verification is PENDING after the release-trigger commit.
+Release verification is PENDING after release-trigger commits.
 
 Do not claim that `2.9.4` release APK is available until GitHub Actions / Releases confirm it.
+
+## Installation Guide
+
+Non-programmer APK installation guide added:
+
+```text
+docs/release/INSTALLATION_GUIDE.md
+```
+
+The guide covers:
+
+- where to download `asgard-tv-release.apk`;
+- how to confirm version/tag/release metadata;
+- USB install;
+- Send file to TV install;
+- ADB install;
+- handling signature/update failure by uninstalling old APK;
+- basic post-install smoke test;
+- bug report template.
 
 ## Missing Before Demo APK
 
@@ -46,7 +65,6 @@ Do not claim that `2.9.4` release APK is available until GitHub Actions / Releas
 - Confirm remote navigation.
 - Confirm ExoPlayer playback.
 - Confirm no first-launch crash.
-- Add basic installation guide.
 
 ## Missing Before Stable 1.0
 
@@ -57,7 +75,6 @@ Do not claim that `2.9.4` release APK is available until GitHub Actions / Releas
 - User-provided media handoff flow working.
 - Continue Watching UX complete.
 - Full diagnostics.
-- Installation guide for non-programmer.
 - Changelog.
 
 ## Release Gates
@@ -73,4 +90,3 @@ Stable release is blocked unless:
 - Basic source/parser screens work.
 - QA smoke test passed.
 - Changelog exists.
-- Installation guide exists.
