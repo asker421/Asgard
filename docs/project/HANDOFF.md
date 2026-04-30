@@ -4,11 +4,11 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-Release / Engineer / QA coordination
+Engineer / Release / QA coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest release-documentation task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest engineering task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
 1. `docs/project/CHAT_PROTOCOL.md`
 2. `docs/product/backlog-v2.json`
@@ -27,41 +27,39 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-101 — Simple installation and update guide
+### ASG-TOR-SEARCH-001 — Torrent/media search from movie title
 
-- Selected task: `ASG-101 — Simple installation and update guide`.
-- Reason: after Diagnostics v2, the product had many release increments and needed a non-programmer installation/update/source/setup guide before demo distribution.
-- Inspected existing `docs/release/INSTALLATION_GUIDE.md`.
-- Found it was still written for old expected release `v2.9.4 / versionCode 34`.
-- Updated `docs/release/INSTALLATION_GUIDE.md` for current release track:
-  - current expected release now points to `2.10.14 / 54` as the latest runtime feature baseline before the guide-only bump;
-  - explains where to download `asgard-tv-release.apk` from GitHub Releases;
-  - explains how to verify release tag, APK asset and release metadata;
-  - includes install methods for USB, phone-to-TV transfer and ADB;
-  - includes update failure recovery when debug APK signatures differ;
-  - includes first-launch checklist;
-  - includes setup flow through Settings → Search setup wizard → Sources → Parser/service → Search;
-  - includes safe demo source row;
-  - includes Continue Watching test;
-  - includes QR import test;
-  - includes Diagnostics test;
-  - includes minimum smoke test checklist;
-  - includes bug report template and quick recovery checklist.
-- Bumped Android version to `2.10.15 (55)` for guide-only release trigger.
-- Updated changelog and release status for `2.10.15`.
-- Did not modify app runtime code.
+- Selected task: `ASG-TOR-SEARCH-001`.
+- Reason: `NEXT_ACTIONS.md` defines the MVP path as Search movie → user-configured media result → file selection → ExoPlayer.
+- Inspected:
+  - `sources.js`
+  - `media-search.js`
+  - `search-normalization-v2.js`
+- Found that `media-search.js` already called `AsSources.searchContent(query)`, but UX still looked like generic source search and did not clearly handle no configured source/parser state.
+- Added `title-media-search.js` as a late runtime layer:
+  - makes Search screen explicitly movie/series title based;
+  - checks for enabled user-configured sources or parser URL before querying;
+  - no configured source now shows setup actions instead of silent empty results;
+  - result view shows source, type, rights status, quality, size, seed/peer data where available;
+  - summary shows query, total, playable, torrent, magnet, link, errors and source count;
+  - actions remain compatible with existing flow: Watch, Create media task, Prepare stream, Open link, Diagnostics;
+  - preserves legal-safe architecture: no bundled catalogs, no embedded source lists, no engines, no bypass features.
+- Loaded `title-media-search.js` after `search-normalization-v2.js` and before media task/readiness layers.
+- Bumped Android version to `2.10.16 (56)` for release trigger.
+- Updated changelog and release status for `2.10.16`.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
 ### QA gate status preserved
 
-- `ASG-QA-001` remains pending / QA_IN_PROGRESS depending on latest backlog status.
+- `ASG-QA-001` remains QA_IN_PROGRESS / pending.
 - Android emulator smoke workflow must still be verified in GitHub Actions.
 - Physical Android TV / Mi Box S QA is still not completed.
 
 ## Files Changed
 
-- `docs/release/INSTALLATION_GUIDE.md`
+- `android/app/src/main/assets/web/title-media-search.js`
+- `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
@@ -69,10 +67,11 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Recent Commits
 
-- installation guide update commit was created after `INSTALLATION_GUIDE.md` update; verify exact SHA through commit history if needed.
+- title media search runtime commit was created after `title-media-search.js` creation; verify exact SHA through commit history if needed.
+- `1f8cd6325fdef8ae509d820ea29e7598b66756c5` — `Load title media search runtime`
 - version bump commit was created after `android/app/build.gradle.kts` update; verify exact SHA through commit history if needed.
 - changelog update commit was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
-- `6a9f55a0099c487c006b3a919ed40a975687ce80` — `Update release status for 2.10.15 installation guide`
+- `519f3242c37a82a9c5f6a9291d6213c0ddf36537` — `Update release status for 2.10.16 title media search`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -85,10 +84,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.10.15`
-- versionCode: `55`
-- expected tag: `v2.10.15`
-- expected release: `Asgard TV v2.10.15`
+- versionName: `2.10.16`
+- versionCode: `56`
+- expected tag: `v2.10.16`
+- expected release: `Asgard TV v2.10.16`
 - expected APK asset: `asgard-tv-release.apk`
 
 ## Current QA Status
@@ -100,32 +99,40 @@ Manual GitHub Actions verification is still required because connector did not e
 ## Current Highest Priority
 
 1. Verify latest Android Emulator Smoke Test run in GitHub Actions.
-2. Verify release `v2.10.15` and `asgard-tv-release.apk` after Actions completes.
-3. Run manual install/update flow using `docs/release/INSTALLATION_GUIDE.md`.
-4. Validate physical Android TV / Mi Box S install and first-launch flow.
-5. Continue MVP runtime QA: Search → media task → file selection → player.
+2. Verify release `v2.10.16` and `asgard-tv-release.apk` after Actions completes.
+3. Runtime QA Search screen:
+   - no configured source shows setup state;
+   - configured safe demo source returns playable result;
+   - configured parser/source returns normalized media result;
+   - summary counters are understandable;
+   - result actions still work.
+4. Continue MVP flow: selected result → media task.
 
 ## Next Recommended Task
 
-QA:
-
-Verify Android Emulator Smoke Test and `v2.10.15` release asset.
-
 Engineer:
 
-If QA remains unavailable, return to the product-critical path from backlog-v2:
+Implement `ASG-TOR-SEARCH-002 — Search result to playable media task`.
 
-1. `ASG-TOR-SEARCH-001` — Torrent/media search from movie title.
-2. `ASG-TOR-SEARCH-002` — Search result to playable media task.
-3. `ASG-TOR-005` — Player integration and seeking.
-4. `ASG-TOR-003` — Metadata and file selection.
+Expected result:
+
+- selected normalized search result becomes persistent media task;
+- direct playable URL creates stream-ready task;
+- torrent/magnet/file result creates metadata-pending task;
+- user confirmation is required for torrent/magnet-like result;
+- task screen opens immediately after creation;
+- failures show readable state.
+
+QA:
+
+Verify Android Emulator Smoke Test and `v2.10.16` release asset.
 
 ## Blockers / Risks
 
 - No confirmed physical Android TV / Mi Box S QA.
 - GitHub connector did not expose latest Actions run.
+- Search result quality depends on user-configured sources/parsers.
 - Release APK availability must still be verified in GitHub Releases.
-- Guide accuracy depends on current GitHub Release asset being produced successfully.
 - Do not mark tasks DONE without QA evidence.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
