@@ -1,32 +1,38 @@
-# Asgard TV — APK Installation Guide
+# Asgard TV — Simple Installation and Update Guide
 
 Last updated: 2026-04-30
 
-## Purpose
+## Who this guide is for
 
-This guide is for non-programmer installation and smoke testing of Asgard TV on Android TV / Mi Box S / TV Box.
+This guide is for a non-programmer who wants to install and test Asgard TV on:
 
-No Android Studio is required for normal installation.
+- Android TV;
+- Mi Box S;
+- Smart Box / TV Box on Android;
+- Android TV emulator.
 
-## Expected APK
+Normal use does **not** require Android Studio.
 
-The release APK should be downloaded from GitHub Releases:
+## Current expected release
+
+Current Android build configuration should point to:
 
 ```text
-asgard-tv-release.apk
+versionName: 2.10.14
+versionCode: 54
+expected tag: v2.10.14
+expected APK asset: asgard-tv-release.apk
 ```
 
-Current expected release version:
+Before downloading, verify that the latest GitHub Release matches the current version in:
 
 ```text
-v2.9.4
-versionName: 2.9.4
-versionCode: 34
+android/app/build.gradle.kts
 ```
 
-## Where to download
+## Where to download APK
 
-1. Open GitHub repository:
+1. Open repository:
 
 ```text
 https://github.com/asker421/Asgard
@@ -38,77 +44,78 @@ https://github.com/asker421/Asgard
 Releases
 ```
 
-3. Open latest release, expected:
+3. Open the latest release, expected format:
 
 ```text
-Asgard TV v2.9.4
+Asgard TV v2.10.14
 ```
 
-4. Download asset:
+4. Download this asset:
 
 ```text
 asgard-tv-release.apk
 ```
 
-## How to confirm that the release is correct
+Do not download random APKs from other sites.
 
-Check three places.
+## How to confirm the APK is the right release
 
-### 1. Android build version
+Check three things.
 
-`android/app/build.gradle.kts` should contain:
+### 1. Release tag
 
-```kotlin
-versionCode = 34
-versionName = "2.9.4"
-```
-
-### 2. GitHub Release tag
-
-The release should be tagged:
+Expected:
 
 ```text
-v2.9.4
+v2.10.14
 ```
 
-### 3. Release notes metadata
+### 2. APK asset name
 
-Release notes should contain JSON like:
+Expected:
+
+```text
+asgard-tv-release.apk
+```
+
+### 3. Release metadata
+
+Release notes should contain metadata similar to:
 
 ```json
 {
-  "versionCode": 34,
-  "versionName": "2.9.4",
+  "versionCode": 54,
+  "versionName": "2.10.14",
   "apkAsset": "asgard-tv-release.apk"
 }
 ```
 
-If these three values match, the release corresponds to the current Android build configuration.
+If the latest release is newer than this guide, use the latest matching `versionName/versionCode` from GitHub Releases and `build.gradle.kts`.
 
 ## Install on Android TV / Mi Box S / TV Box
 
-### Option A — USB drive
+### Option A — USB flash drive
 
-1. Download `asgard-tv-release.apk` on a computer or phone.
-2. Copy it to a USB drive.
-3. Insert USB drive into Android TV / TV Box.
-4. Open a file manager on the TV device.
+1. Download `asgard-tv-release.apk` on a computer.
+2. Copy the APK to a USB flash drive.
+3. Insert USB into the TV Box / Mi Box S.
+4. Open a file manager on TV.
 5. Open `asgard-tv-release.apk`.
 6. If Android asks for permission, allow installation from this file manager.
-7. Install the app.
-8. Open Asgard TV from the Android TV launcher.
+7. Install.
+8. Open **Asgard TV** from Android TV launcher.
 
-### Option B — Send file to TV app
+### Option B — Send APK from phone to TV
 
-1. Install a trusted file transfer app on phone and TV device.
-2. Send `asgard-tv-release.apk` to the TV device.
-3. Open the APK on the TV device.
+1. Install a trusted file-transfer app on phone and TV.
+2. Send `asgard-tv-release.apk` to TV.
+3. Open the APK file on TV.
 4. Allow installation from unknown sources when Android asks.
-5. Install and open Asgard TV.
+5. Install and open **Asgard TV**.
 
 ### Option C — ADB install
 
-Use this only if ADB is already available.
+Use only if ADB is already available.
 
 ```bash
 adb install -r asgard-tv-release.apk
@@ -126,91 +133,263 @@ or:
 adb shell am start -n com.asgard.tv/.MainActivity
 ```
 
-## If installation over old version fails
+## If update over old version fails
 
-Debug APK signatures can differ between build environments.
+Because current APK is still a debug-style release artifact, Android may reject update over an older APK if signatures differ.
 
-If Android shows an install/update error:
+If update fails:
 
 1. Open Android TV Settings.
-2. Go to Apps.
-3. Find Asgard TV.
+2. Open Apps.
+3. Find **Asgard TV**.
 4. Uninstall it.
 5. Install the new `asgard-tv-release.apk` again.
 
-Important: uninstalling may remove local app data, sources and watch progress.
+Important: uninstalling can remove local app data, sources, favorites and watch progress.
 
-## Basic smoke test after install
+## First launch checklist
 
-Use the Android TV remote only.
+Use only TV remote / D-pad.
 
-### Launch
+Expected:
 
 - App appears in Android TV launcher.
 - App opens without crash.
-- App opens without internet or shows understandable error.
+- Left menu is visible.
+- Focus ring is visible.
+- D-pad moves focus.
+- OK / Enter activates selected item.
+- Back returns to previous screen where possible.
 
-### Remote navigation
-
-- D-pad moves focus visibly.
-- Focus ring is always visible.
-- OK / Enter activates focused element.
-- Back returns to previous screen where appropriate.
-- Home + Back shows a friendly exit message.
-
-### Main flow
-
-1. Open Home.
-2. Focus `Смотреть`.
-3. Press OK.
-4. Native ExoPlayer should open.
-5. Press OK for play/pause.
-6. Press Left / Right for seek.
-7. Press Back to exit player.
-
-### Search flow
-
-1. Open Search.
-2. Search for:
+If the app opens but something is unclear, go to:
 
 ```text
-bunny
+Диагностика
 ```
 
-3. Confirm results show mock/open catalog item.
-4. Confirm summary is visible.
-5. Confirm app does not crash if sources are empty or broken.
-
-### Sources flow
-
-1. Open Sources.
-2. Paste invalid row:
+and use:
 
 ```text
-bad row
+Copy JSON
 ```
 
-3. Press Preview / Save.
-4. Save should be blocked with errors.
-5. Paste valid row:
+for a bug report.
+
+## Basic safe setup path
+
+### Step 1 — Open Settings
+
+Open:
+
+```text
+Настройки
+```
+
+Find card:
+
+```text
+Search setup wizard
+```
+
+This wizard explains what is configured and what is missing.
+
+### Step 2 — Add or review Sources
+
+Open:
+
+```text
+Источники
+```
+
+Safe demo direct video source example:
 
 ```text
 Demo MP4 | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 | multi | true | 1 | false | legal demo direct video
 ```
 
-6. Save should succeed.
-7. Search should be able to use enabled sources.
+Rules:
 
-## What is not stable yet
+- Only add sources you have rights to use.
+- Asgard does not include bundled catalogs.
+- User-added links are your responsibility.
+- Unknown links should stay disabled until checked.
 
-Do not treat this as stable 1.0 until QA confirms:
+### Step 3 — Parser / service settings
 
-- real Android TV / Mi Box S smoke test passed;
+Open:
+
+```text
+Настройки → Search setup wizard → Parser & service
+```
+
+Use this only if you have your own compatible parser/service URL.
+
+Expected fields may include:
+
+- parser URL;
+- API key;
+- service URL.
+
+Do not paste passwords, cookies or private tokens.
+
+### Step 4 — Test setup
+
+In the setup wizard, press:
+
+```text
+Test setup
+```
+
+Expected:
+
+- enabled sources count is visible;
+- parser status is visible;
+- service status is visible;
+- errors are readable.
+
+### Step 5 — Search
+
+Open:
+
+```text
+Поиск
+```
+
+Try safe query:
+
+```text
+bunny
+```
+
+Expected:
+
+- search summary is visible;
+- results are grouped;
+- direct playable result can open player;
+- invalid/broken sources show readable errors instead of crashing.
+
+## Continue Watching test
+
+1. Open a playable demo video.
+2. Watch for at least 20–30 seconds.
+3. Press Back to leave player.
+4. Return to Home.
+5. Check:
+
+```text
+Continue Watching
+```
+
+Expected:
+
+- saved item appears;
+- progress bar appears;
+- Resume opens from saved position;
+- Start over opens from zero;
+- Remove deletes only selected item.
+
+## QR import test
+
+Open:
+
+```text
+QR импорт
+```
+
+Expected safe flow:
+
+1. Create QR session.
+2. Confirm 6-digit PIN appears.
+3. Paste payload into TV paste area.
+4. Press Preview.
+5. Enter PIN.
+6. Press Confirm import on TV.
+
+Wrong PIN must block import.
+
+HTTP(S) link imports only as disabled source row. Review and enable it manually in Source Manager.
+
+Unsupported payloads remain preview-only.
+
+## Diagnostics test
+
+Open:
+
+```text
+Диагностика
+```
+
+Expected sections:
+
+- Network;
+- Player;
+- Cache / Storage;
+- Permissions;
+- Version / Release;
+- Source setup;
+- Warnings.
+
+Use:
+
+```text
+Copy JSON
+```
+
+when reporting bugs.
+
+## Minimum smoke test after every APK install
+
+### Launch
+
+- APK installs.
+- App opens.
+- No crash on first screen.
+- Left menu appears.
+
+### Remote
+
+- D-pad focus is visible.
+- Up / Down / Left / Right work.
+- OK activates selected card/button.
+- Back behaves predictably.
+
+### Player
+
+- Direct demo video opens native player.
+- OK play/pause works.
+- Left / Right seek works.
+- Back exits player.
+
+### Search
+
+- Search screen opens.
+- Search with demo/source works.
+- Empty/broken sources do not crash the app.
+
+### Sources
+
+- Invalid row is blocked.
+- Valid row can be saved.
+- Disabled source stays disabled until user enables it.
+
+### Diagnostics
+
+- Diagnostics screen opens.
+- Copy JSON works or falls back to visible text.
+
+## What is still not stable
+
+Do not call the app stable 1.0 until:
+
+- GitHub Actions build/install smoke test is green;
+- Android TV / Mi Box S physical QA passes;
 - remote focus has no traps;
 - ExoPlayer playback is stable;
-- source import/search is stable;
-- app survives 15 minutes of use;
-- installation/update path is documented and tested.
+- Search → media task → player flow is verified;
+- Continue Watching is verified;
+- QR import is verified;
+- Diagnostics is verified;
+- app survives 15 minutes of navigation/use.
 
 ## Bug report template
 
@@ -222,6 +401,18 @@ Steps:
 Expected:
 Actual:
 Photo/video:
-Diagnostics text:
+Diagnostics JSON/text:
 Can reproduce: yes/no
 ```
+
+## Quick recovery checklist
+
+If something goes wrong:
+
+1. Restart app.
+2. Restart TV Box.
+3. Open Diagnostics and copy JSON.
+4. Check Sources for invalid rows.
+5. Disable suspicious user sources.
+6. If update/install failed, uninstall old Asgard TV and install APK again.
+7. Report bug with the template above.
