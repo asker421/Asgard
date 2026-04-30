@@ -3,9 +3,6 @@ name: Cloud Android TV Smoke Test
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'android/**'
-      - '.github/workflows/cloud-tv-smoke.yml'
   workflow_dispatch:
 
 permissions:
