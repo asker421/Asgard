@@ -6,15 +6,25 @@ This document defines how different ChatGPT chats must collaborate through GitHu
 
 GitHub is the project memory. No chat should work only from conversation memory.
 
-## Required reading for every chat
+## Mandatory pre-flight before every task
 
-Before doing work, every role must read:
+Before starting **every new task**, every chat must refresh project memory from GitHub.
+
+This means: even if the chat already read the project files earlier, it must reread the required files before each new implementation, QA pass, product decision, UX review, release action or backlog change.
+
+Do not rely on stale conversation context.
+
+## Required reading before every task
+
+Every role must read:
 
 1. `docs/product/backlog-v2.json`
 2. `docs/project/PROJECT_STATE.md`
 3. `docs/project/HANDOFF.md`
 4. `docs/project/DECISIONS.md`
 5. `docs/project/NEXT_ACTIONS.md`
+6. `docs/project/BACKLOG_V2_MIGRATION.md`
+7. The role-specific prompt from `docs/prompts/`
 
 Optional historical/reference files:
 
@@ -29,9 +39,19 @@ Formal compact backlog source of truth for chats:
 
 The old `docs/product/backlog.json` is too large for reliable connector reads and may be truncated. Do not use it for new chat-to-chat work unless it is explicitly replaced safely.
 
+## Pre-flight output requirement
+
+Before doing the actual task, the chat must briefly state:
+
+- which project files it refreshed;
+- which active backlog file it is using;
+- what the current next task is according to `backlog-v2.json` / `NEXT_ACTIONS.md`.
+
 ## Forbidden
 
+- Do not work from memory only.
 - Do not use `docs/BACKLOG.md` as source of truth.
+- Do not use old `docs/product/backlog.json` as active backlog.
 - Do not create a competing backlog.
 - Do not delete backlog tasks.
 - Do not silently change acceptance criteria.
