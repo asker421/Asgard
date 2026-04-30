@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.9 according to Android build configuration.
+2.10.10 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,39 +16,38 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.9`
-- versionCode: `49`
-- tag: `v2.10.9`
-- release title: `Asgard TV v2.10.9`
+- versionName: `2.10.10`
+- versionCode: `50`
+- tag: `v2.10.10`
+- release title: `Asgard TV v2.10.10`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.9 Scope
+## New in 2.10.10 Scope
 
-- Added `stream-diagnostics.js` runtime layer.
-- Media Task screen now gets a local Stream diagnostics panel.
-- Diagnostics report includes task state, stream state, URL readiness, URL scheme, selected file, file count, native bridge availability, configured service status, saved progress, storage information and last player open result.
-- Added Copy JSON action.
-- Added Refresh diagnostics action.
-- Added Clear snapshot action.
-- Diagnostics are local/task-based.
+- Added `search-normalization-v2.js` runtime layer for `ASG-012`.
+- Unified result schema for Search screen.
+- Better detection for direct playable, torrent file, magnet and link results.
+- Better quality/size/seed normalization.
+- Better scoring and grouping for TV search results.
+- Result diagnostics now include normalized fields and raw result snapshot.
 - No bundled catalogs, embedded source lists, engines, or bypass features were added.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.9` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.10` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.9.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.9.
+- Confirm APK build for 2.10.10.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.10.
 - Confirm install on Android TV / Mi Box S.
-- Confirm Stream diagnostics panel renders on Media Task screen.
-- Confirm Copy JSON works or falls back to alert.
-- Confirm Refresh updates after stream preparation/open player.
-- Confirm Clear snapshot works.
-- Confirm D-pad focus works on diagnostics buttons.
+- Search with user-configured sources.
+- Confirm unified search summary counters are accurate.
+- Confirm result grouping is correct.
+- Confirm Create media task still works after normalization.
+- Confirm diagnostics include normalized and raw fields.
 - Confirm no first-launch crash.
 
 ## Stable Release Gates
