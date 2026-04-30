@@ -4,11 +4,11 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-Engineer / Release / QA coordination
+Engineer / QA / Release coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest engineering task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest manual QA findings task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
 1. `docs/project/CHAT_PROTOCOL.md`
 2. `docs/product/backlog-v2.json`
@@ -17,7 +17,7 @@ For the latest engineering task, refreshed according to `docs/project/CHAT_PROTO
 5. `docs/project/DECISIONS.md`
 6. `docs/project/NEXT_ACTIONS.md`
 7. `docs/project/BACKLOG_V2_MIGRATION.md`
-8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+8. Relevant role prompt / QA status context from repository
 
 Active backlog:
 
@@ -27,52 +27,92 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-TOR-003 — Metadata and file selection
+### Manual QA findings processed
 
-- Selected task: `ASG-TOR-003`.
-- Reason: `ASG-TOR-005` was code-wired and the next MVP gap is configured service metadata/files → selected playable video → stream URL.
-- Inspected:
-  - `media-task.js`
-  - `torrserver-adapter.js`
-- Found current metadata/file logic existed but was mixed into base task UI and depended on service response shape.
-- Added `metadata-files-v2.js` as a late runtime layer:
-  - overrides `AsMediaTask.loadMetadata` and `AsMediaTask.selectFile`;
-  - normalizes files from multiple common configured-service response shapes;
-  - normalizes file index, name, path, size, extension and video/playable status;
-  - auto-selects the largest playable video file when available;
-  - persists `files`, `selectedFile`, `selectedFileIndex`, `taskHash`, service result and `streamUrl` where available;
-  - shows readable states for service missing, no files, no playable video, file selected and stream ready;
-  - adds `Metadata & file selection` panel to Media Task screen;
-  - adds diagnostics for file count, playable count, selected file and stream readiness;
-  - preserves legal-safe architecture: no bundled catalogs, no embedded source lists, no engines, no bypass features.
-- Loaded `metadata-files-v2.js` after `media-task-creation-v2.js` and before `player-handoff-v2.js`.
-- Bumped Android version to `2.10.19 (59)` for release trigger.
-- Updated changelog and release status for `2.10.19`.
-- Did not mark any backlog item DONE.
-- Did not overwrite old `docs/product/backlog.json`.
+User reported manual QA results:
 
-### QA status preserved
+```text
+1) +
+2.1 +
+2.2 +
+3.1: на главной странице все еще мок дата, нет новых фильмов сериалов и постеров
+3.2 +
+4.1 +
+4.2 +
+4.3 +
+5.1 +
+5.2: работает не правильно, при нажатии Backspace должно стираться, а тут кидает на главный экран
+5.3 +
+6.1 +
+6.2: не работает, или неразборчиво, может где-то и есть результат, но интерфейс не понятен
+6.3: вывод пишется внизу, надпись появляется но не в правильном месте
+6.4 +
+7
+```
 
-- `ASG-QA-001` has CI emulator smoke PASS by user confirmation from prior work.
-- Manual Android TV / Mi Box S QA is still not completed.
-- `ASG-TOR-003` is code-wired only and requires runtime QA with a configured service.
+Interpretation:
+
+- CI emulator smoke passed, but manual QA found product/runtime issues.
+- Home still looks like mock/demo content instead of real/fresh movies/series/posters.
+- Backspace in input fields was treated as global Back and returned to Home.
+- Search/source result flow is unclear or not working from user perspective.
+- Output/result placement is wrong: messages/results appear too low or outside expected area.
+
+### Fix applied
+
+Fixed confirmed critical input bug in:
+
+```text
+android/app/src/main/assets/web/input.js
+```
+
+Change:
+
+- Added editable element detection:
+  - text-like input;
+  - textarea;
+  - contenteditable.
+- Backspace/Delete/normal character input now pass through when focus is inside editable fields.
+- Escape blurs the text input instead of immediately navigating back.
+- Global Back handling remains outside text editing controls.
+
+Commit:
+
+```text
+cba83c117b1fa221f8cf208c83aae77ca9fbae2d
+```
+
+### QA documentation updated
+
+Updated:
+
+```text
+docs/qa/QA_STATUS.md
+```
+
+Recorded:
+
+- CI emulator smoke remains PASS.
+- Manual QA found bugs.
+- Backspace bug fixed in code and needs retest.
+- Home mock data and Search/Sources UX remain bugs.
+
+Commit:
+
+```text
+a72fb3374bee9c9044a713501e9e295423664244
+```
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/metadata-files-v2.js`
-- `android/app/src/main/assets/web/index.html`
-- `android/app/build.gradle.kts`
-- `docs/release/CHANGELOG.md`
-- `docs/release/RELEASE_STATUS.md`
+- `android/app/src/main/assets/web/input.js`
+- `docs/qa/QA_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
 
-- metadata files runtime commit was created after `metadata-files-v2.js` creation; verify exact SHA through commit history if needed.
-- load commit was created after `index.html` update; verify exact SHA through commit history if needed.
-- version bump commit was created after `android/app/build.gradle.kts` update; verify exact SHA through commit history if needed.
-- changelog update commit was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
-- `d8adb5562c5a13bd038f75ac5403d9ae0c2599c2` — `Update release status for 2.10.19 metadata files`
+- `cba83c117b1fa221f8cf208c83aae77ca9fbae2d` — `Fix Backspace behavior in text inputs`
+- `a72fb3374bee9c9044a713501e9e295423664244` — `Record manual QA findings and Backspace fix`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -83,64 +123,72 @@ Early alpha / working prototype.
 
 `NOT_READY_YET`
 
-Current release expectation:
-
-- versionName: `2.10.19`
-- versionCode: `59`
-- expected tag: `v2.10.19`
-- expected release: `Asgard TV v2.10.19`
-- expected APK asset: `asgard-tv-release.apk`
-
-## Current QA Status
+Current QA status:
 
 ```text
-ASG-QA-001: QA_IN_PROGRESS / CI_SMOKE_PASS / MANUAL_TV_QA_REQUIRED
+ASG-QA-001: QA_IN_PROGRESS / CI_SMOKE_PASS / BUGS_FOUND / MANUAL_TV_QA_REQUIRED
 ```
 
-What is now verified:
+What is verified:
 
 - CI emulator smoke workflow passed by user confirmation.
 - APK build/install/launch/no-instant-crash gate is passed in CI emulator.
+- Several basic manual checks passed according to user shorthand.
 
-What is still not verified:
+What is fixed and needs retest:
 
-- Full remote D-pad focus traversal.
-- Back behavior across all screens.
-- Native ExoPlayer real playback quality on Android TV device.
-- Configured source/parser/TorrServer flows.
-- Metadata/file selection with a real configured service.
-- QR import runtime flow.
-- 15-minute manual stability.
-- Mi Box S physical compatibility.
+- Backspace/Delete/text input editing inside input/textarea/contenteditable.
+
+What is still not fixed:
+
+- Home mock/demo data still appears as main content; no real fresh/new movies/series/posters.
+- Search/source results are unclear or not working from user perspective.
+- Output/result placement is wrong; messages/results appear too low or outside expected area.
+- Full remote D-pad focus traversal still needs structured QA.
+- Back behavior across all screens still needs structured QA after input fix.
+- Native ExoPlayer real playback quality on Android TV device remains unverified.
+- Configured source/parser/TorrServer flows remain unverified.
+- 15-minute manual stability remains unverified.
 
 ## Current Highest Priority
 
-1. Verify release `v2.10.19` and `asgard-tv-release.apk` after Actions completes.
-2. Runtime QA metadata/files:
-   - configure service URL;
-   - create metadata-pending media task;
-   - load metadata;
-   - confirm files appear;
-   - confirm largest playable file is auto-selected;
-   - confirm manual file selection persists;
-   - confirm stream URL is ready where service supports it;
-   - confirm no files / no playable / service missing states are readable.
-3. Run manual Android TV / Mi Box S QA for Search → media task → metadata → player flow.
+1. Re-run manual QA for Backspace behavior in Search/Sources fields after commit `cba83c117...`.
+2. Fix Home mock-data presentation:
+   - either label as Demo/Fallback clearly;
+   - or populate from configured source/search results where possible;
+   - avoid implying mock data is fresh real content.
+3. Redesign Search/source result layout:
+   - results directly under input/action;
+   - visible loading/empty/error states;
+   - clear playable/source/task actions;
+   - no hidden output at the bottom.
+4. Continue manual Android TV / Mi Box S QA for Search → media task → metadata → player flow.
 
 ## Next Recommended Task
 
+Engineer:
+
+Address manual QA BUG_FOUND items in this order:
+
+1. Home mock data / content labeling or real source-backed home.
+2. Search/source result clarity and placement.
+3. Sources output placement.
+4. Retest Backspace/input behavior.
+
 QA:
 
-Run manual Android TV / Mi Box S smoke test and update `docs/qa/QA_STATUS.md` with PASS / FAIL / BLOCKED rows.
+Retest the affected cases after new APK build:
 
-Engineer if device QA remains unavailable:
-
-Harden `ASG-TOR-004 — Streaming-first playback` around readiness/buffer states after metadata selection, or perform a release verification pass for `2.10.19`.
+- text input Backspace;
+- Search results visibility;
+- Sources preview/save output placement;
+- Home content expectation.
 
 ## Blockers / Risks
 
 - No confirmed physical Android TV / Mi Box S QA.
-- Metadata/file selection is code-wired but not runtime-verified with a real configured service.
+- Search/source UX is not understandable enough for user.
+- Home screen can mislead user because mock data looks like real fresh content.
 - Release APK availability must still be verified in GitHub Releases if distributing.
 - Do not mark tasks DONE without QA evidence.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
