@@ -5,10 +5,58 @@ Last updated: 2026-04-30
 This changelog documents release-facing changes only. It does not replace the formal backlog source of truth:
 
 ```text
-docs/product/backlog.json
+docs/product/backlog-v2.json
 ```
 
-If the backlog JSON is truncated by the GitHub connector, do not overwrite it. Use the prioritized status layer and handoff documents for safe updates.
+The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
+
+## 2.9.9 — Full Source Manager
+
+Expected release:
+
+```text
+Tag: v2.9.9
+Release: Asgard TV v2.9.9
+Asset: asgard-tv-release.apk
+versionCode: 39
+```
+
+### Added
+
+- Full TV-friendly Source Manager screen.
+- Source cards with status, type, priority, language and rights badge.
+- Enable / disable source action.
+- Priority increase / decrease actions.
+- Add source form with validation.
+- Edit source form with validation.
+- Delete source action with confirmation.
+- Per-source Test action.
+- Test enabled sources action.
+- Raw TXT editor preserved as advanced fallback.
+- Reset bundled/default sources action.
+- Manager is loaded as the final runtime layer so it overrides older textarea-only Sources screens.
+
+### Safety / Legal
+
+- No bundled prohibited catalogs were added.
+- Source management remains user-controlled.
+- UI includes legal-safe notice for user-added sources.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Open Sources screen.
+- Add a valid direct video source.
+- Add an invalid source and confirm validation blocks it.
+- Enable/disable a source.
+- Change priority.
+- Test one source.
+- Test enabled sources.
+- Use raw TXT editor and confirm invalid rows are blocked.
+- Confirm D-pad focus works on source cards and forms.
 
 ## 2.9.8 — Hardened source-backed search
 
@@ -34,14 +82,6 @@ versionCode: 38
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Add valid direct video source.
-- Add invalid/broken source.
-- Search and confirm the app shows results plus understandable source errors.
-- Confirm duplicate results are not repeated.
-- Confirm playable result opens native player.
 
 ## 2.9.7 — Real Continue Watching shelf
 
@@ -156,7 +196,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.9.8`.
+3. GitHub Releases contains matching tag, for example `v2.9.9`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
