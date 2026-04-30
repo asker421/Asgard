@@ -11,8 +11,8 @@ android {
         applicationId = "com.asgard.tv"
         minSdk = 23
         targetSdk = 35
-        versionCode = 59
-        versionName = "2.10.19"
+        versionCode = 60
+        versionName = "2.10.20"
     }
 
     buildFeatures {
@@ -20,7 +20,7 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion_17
         targetCompatibility = JavaVersion.VERSION_17
     }
 
