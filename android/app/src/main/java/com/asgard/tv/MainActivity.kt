@@ -199,6 +199,11 @@ class MainActivity : Activity() {
             this@MainActivity.showToast(message)
         }
 
+        @JavascriptInterface fun exitApp(): Boolean {
+            this@MainActivity.finish()
+            return true
+        }
+
         @JavascriptInterface fun readAsset(fileName: String): String {
             return try { assets.open("web/$fileName").bufferedReader().use { it.readText() } } catch (_: Exception) { "" }
         }
