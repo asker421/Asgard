@@ -1,4 +1,4 @@
-# Trigger note: update this file to run Android Emulator Smoke Test on push.
+# Trigger note: 2026-04-30 force-run Android Emulator Smoke Test for ASG-QA-001 / v2.10.9.
 name: Android Emulator Smoke Test
 
 on:
