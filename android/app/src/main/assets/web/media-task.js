@@ -1,0 +1,41 @@
+(function(){
+  function esc(v){return AsUI.escape(v)}
+  function chip(v){return '<span class="chip">'+esc(v)+'</span>'}
+  function btn(label,action,cls){return '<button class="btn focusable '+(cls||'')+'" onclick="'+action+'">'+esc(label)+'</button>'}
+  function id(){return 'media_task_'+Date.now()+'_'+Math.floor(Math.random()*10000)}
+  function sizeLabel(v){const n=Number(v||0);if(!n)return '';if(n>=1073741824)return (n/1073741824).toFixed(2)+' GB';if(n>=1048576)return (n/1048576).toFixed(1)+' MB';return n+' B'}
+  function targetOf(r){return r.magnetUrl||r.torrentUrl||r.url||''}
+  function inputType(r){const t=targetOf(r);if(/^magnet:\?/i.test(t)||r.magnetUrl)return 'magnet';if(/\.torrent($|\?)/i.test(t)||r.torrentUrl)return 'torrent_url';if(r.kind==='playable'||r.classification==='playable')return 'direct_video';return 'link'}
+  function read(){return AsStore.torrentTasks?AsStore.torrentTasks():JSON.parse(localStorage.getItem('media_tasks')||'[]')}
+  function saveTask(t){if(AsStore.updateTorrentTask)return AsStore.updateTorrentTask(t);const a=read().filter(x=>x.id!==t.id);a.push(t);localStorage.setItem('media_tasks',JSON.stringify(a));return true}
+  function find(taskId){return read().find(x=>x.id===taskId)||null}
+  function fileRows(task){const files=task.files||[];if(!files.length)return AsState.empty('Metadata files empty','No files are available yet.',[]);return files.map(f=>'<div tabindex="0" class="file-row focusable '+(Number(task.selectedFileIndex)===Number(f.index)?'selected':'')+'"><div><h3>'+esc(f.path||f.name||('file '+f.index))+'</h3><p>'+chip(f.isVideo?'video':'other')+chip(f.extension||'')+chip(f.sizeLabel||sizeLabel(f.sizeBytes))+'</p></div>'+btn('Select','AsMediaTask.selectFile(\''+task.id+'\','+Number(f.index)+')','secondary')+'</div>').join('')}
+  function taskView(task){const selected=(task.files||[]).find(f=>Number(f.index)===Number(task.selectedFileIndex));return '<div class="panel"><h2>'+esc(task.title||task.name||task.id)+'</h2><p>'+chip(task.status)+chip(task.inputType)+chip(task.sourceName||'source')+(task.quality?chip(task.quality):'')+(task.seeders!==undefined?chip('S '+task.seeders):'')+'</p><p class="muted">'+esc(task.target||'')+'</p><p class="muted">'+esc(task.lastError||'')+'</p><div class="source-actions">'+btn('Load metadata','AsMediaTask.loadMetadata(\''+task.id+'\')')+btn('Open stream','AsMediaTask.openStream(\''+task.id+'\')','secondary')+btn('Diagnostics','AsMediaTask.diag(\''+task.id+'\')','secondary')+'</div></div><section class="shelf"><div class="shelf-head"><h2>Files</h2><span>'+((task.files||[]).length)+'</span></div>'+fileRows(task)+'</section>'+(selected?'<div class="panel"><h2>Selected file</h2><p>'+esc(selected.path||selected.name)+'</p><p>'+chip(selected.sizeLabel||sizeLabel(selected.sizeBytes))+chip(selected.extension||'')+'</p></div>':'')}
+  async function serviceMetadata(task){
+    if(!window.AsTorrServerAdapter)return {ok:false,status:'service_adapter_missing'};
+    const res=await AsTorrServerAdapter.preparePlayableFromResult(task.rawResult||task);
+    if(!res.ok)return Object.assign({ok:false},res);
+    const files=(res.files||res.metadata&&res.metadata.files||[]).map((f,i)=>Object.assign({index:f.index!==undefined?f.index:i},f,{isVideo:AsTorrent.isVideoFile(f),extension:AsTorrent.ext(f.path||f.name),sizeLabel:AsTorrent.formatBytes(f.sizeBytes||f.length||f.size)}));
+    const selected=files.length?AsTorrent.chooseDefaultFile(files):-1;
+    return {ok:true,status:'metadata_ready',files,selectedFileIndex:selected,streamUrl:res.streamUrl||'',taskHash:res.taskHash||res.hash||'',service:res};
+  }
+  window.AsMediaTask={
+    tasks:read,
+    createFromResult(r){
+      const type=inputType(r);const target=targetOf(r);const task={id:id(),type:'media_search_result',inputType:type,title:r.title||r.name||'Media task',name:r.title||r.name||'Media task',target,sourceName:r.sourceName||r.source||'User source',quality:r.quality||'',size:r.size||0,seeders:r.seeders,peers:r.peers,rightsStatus:r.rightsStatus||'User Source / Unknown Rights',rightsConfirmed:!!r.rightsConfirmed,requiresUserConfirmation:type==='magnet'||type==='torrent_url',status:type==='direct_video'?'stream_ready':'metadata_pending',lastError:type==='direct_video'?'Direct playable URL is ready.':'Metadata not loaded yet.',createdAt:Date.now(),updatedAt:Date.now(),rawResult:r,files:[],selectedFileIndex:-1,streamUrl:type==='direct_video'?target:''};
+      saveTask(task);return task;
+    },
+    render(taskId){const task=find(taskId);if(!task){AsApp.shell('Media task','Task not found.',AsState.error('Task not found','The selected media task is missing.',[{label:'Search',action:"AsUI.nav('Поиск')"}]));return;}AsApp.shell('Media task','Selected search result converted into persistent media task with metadata/loading/error state.',taskView(task));setTimeout(()=>AsInput&&AsInput.refresh(),50)},
+    async loadMetadata(taskId){let task=find(taskId);if(!task)return;const app=document.getElementById('app');app.insertAdjacentHTML('afterbegin',AsState.loading('Loading metadata','Getting metadata/files from configured service or direct source.'));if(task.inputType==='direct_video'){task.status='stream_ready';task.streamUrl=task.target;task.lastError='Direct playable URL is ready.';task.updatedAt=Date.now();saveTask(task);this.render(task.id);return;}
+      const res=await serviceMetadata(task);
+      if(res.ok){task.files=res.files||[];task.selectedFileIndex=res.selectedFileIndex;task.streamUrl=res.streamUrl||task.streamUrl||'';task.taskHash=res.taskHash||task.taskHash||'';task.service=res.service||null;task.status=task.files.length?'metadata_ready':'stream_ready';task.lastError=task.files.length?'Metadata loaded. Select playable file or open stream.':'Service returned stream URL without file list.';}
+      else{task.status='metadata_error';task.lastError=res.error||res.status||'Metadata loading failed';task.serviceError=res;}
+      task.updatedAt=Date.now();saveTask(task);this.render(task.id);
+    },
+    selectFile(taskId,index){const task=find(taskId);if(!task)return;task.selectedFileIndex=Number(index);task.status='file_selected';task.lastError='Selected file index '+index;task.updatedAt=Date.now();saveTask(task);this.render(task.id)},
+    async openStream(taskId){let task=find(taskId);if(!task)return;if(!task.streamUrl&&task.status!=='metadata_error'){await this.loadMetadata(taskId);task=find(taskId);}if(task.streamUrl){if(window.AsgardBridge&&AsgardBridge.openPlayer)AsgardBridge.openPlayer(task.streamUrl,task.title||task.name,0);else window.open(task.streamUrl,'_blank');return;}alert(JSON.stringify({ok:false,status:task.status,error:task.lastError||'No stream URL available',taskId:task.id},null,2));},
+    diag(taskId){const task=find(taskId);if(!task)return;alert(JSON.stringify(task,null,2))}
+  };
+  function patch(){if(!window.AsMediaSearch||!window.AsApp||!window.AsState){setTimeout(patch,100);return;}if(AsMediaSearch.__taskPatch)return;AsMediaSearch.__taskPatch=true;AsMediaSearch.createTask=function(i){const r=this.items[i];if(!r)return;const ok=!r.requiresUserConfirmation||confirm('I confirm I have rights to access this content.');if(!ok)return;r.rightsConfirmed=true;const task=AsMediaTask.createFromResult(r);AsMediaTask.render(task.id)};}
+  patch();
+})();
