@@ -6,11 +6,13 @@ Last updated: 2026-04-30
 
 STATIC APP TEST COMPLETED for `2.10.6 (46)`.
 
-PHYSICAL ANDROID TV QA remains BLOCKED / NOT COMPLETED from this chat environment.
+ANDROID EMULATOR SMOKE WORKFLOW ADDED, but the workflow run result is not yet verified in this chat.
+
+PHYSICAL ANDROID TV / MI BOX S QA remains BLOCKED / NOT COMPLETED from this chat environment.
 
 ## Current Risk
 
-The app has a strong early-alpha foundation and the core runtime paths are increasingly code-wired, but it has not yet been verified as a stable Android TV build on real Android TV hardware or emulator through this QA pass.
+The app has a strong early-alpha foundation and the core runtime paths are increasingly code-wired, but it has not yet been verified as a stable Android TV build on real Android TV hardware or emulator through a completed CI run.
 
 Latest inspected Android version from `android/app/build.gradle.kts`:
 
@@ -29,7 +31,35 @@ Selected task:
 
 Reason:
 
-User requested app testing. This is the QA task for Android TV build/install/runtime smoke validation. Physical/device execution is still required for final PASS.
+User requested app testing and agreed to CI/cloud-emulator style testing. This is the QA task for Android TV build/install/runtime smoke validation.
+
+## Emulator Smoke Workflow
+
+Added workflow:
+
+```text
+.github/workflows/android-emulator-smoke.yml
+```
+
+Purpose:
+
+- Build debug APK.
+- Start Android emulator in GitHub Actions.
+- Install APK.
+- Launch `com.asgard.tv`.
+- Wait for startup.
+- Capture active activity dump.
+- Capture logcat.
+- Capture screenshot.
+- Fail the job if `FATAL EXCEPTION`, ANR, or crash indicators for `com.asgard.tv` are detected.
+- Upload artifacts as `android-emulator-smoke-artifacts`.
+
+Limitations:
+
+- This is not a full manual Android TV remote QA.
+- It does not verify every D-pad focus path.
+- It does not verify media playback quality, configured TorrServer, QR import, or 15-minute manual stability.
+- It is a first automated install/launch/no-crash gate.
 
 ## Static App Test — 2026-04-30
 
@@ -39,7 +69,7 @@ Repository-level app smoke test using GitHub file reads/search. No physical Andr
 
 ### Device / Emulator
 
-None.
+None for the static test. CI emulator workflow was added but not yet confirmed as completed.
 
 ### Build / Version
 
@@ -49,9 +79,11 @@ None.
 
 | Area | Static Result | Evidence / Notes | Recommended backlog status |
 |---|---|---|---|
-| APK build configuration | STATIC PASS / RUNTIME BLOCKED | `Build APK` workflow uses Java 17, Android SDK 35, Gradle 8.10.2 and `./gradlew :app:assembleDebug`; wrapper is configured. Latest workflow run/result was not visible through connector. | Keep `ASG-QA-001` TODO / QA needed |
-| APK install | BLOCKED | Requires Android TV emulator or Mi Box S. | Keep QA needed |
-| Offline launch | BLOCKED | Requires emulator/device; local WebView assets exist. | Keep QA needed |
+| APK build configuration | STATIC PASS / CI RUN PENDING | `Build APK` workflow uses Java 17, Android SDK 35, Gradle 8.10.2 and `./gradlew :app:assembleDebug`; new `Android Emulator Smoke Test` workflow builds and installs APK in emulator. Latest run/result not yet verified. | Keep `ASG-QA-001` TODO / QA needed |
+| APK install | CI WORKFLOW ADDED / RUN PENDING | New emulator smoke workflow performs `adb install -r app-debug.apk`. | Keep QA needed until run passes |
+| App launch | CI WORKFLOW ADDED / RUN PENDING | New emulator smoke workflow launches `com.asgard.tv` with `monkey`. | Keep QA needed until run passes |
+| No instant crash/ANR | CI WORKFLOW ADDED / RUN PENDING | New workflow checks logcat for crash/ANR indicators and uploads logs/screenshots. | Keep QA needed until run passes |
+| Offline launch | BLOCKED | Requires completed emulator/device run; local WebView assets exist. | Keep QA needed |
 | Runtime script load order | STATIC PASS | `index.html` loads base scripts and late runtime layers including `source-manager.js`, `qr-import.js`, `diagnostics-health.js`, `onboarding.js`, `states.js`, `media-search.js`, and `media-task.js`. | Runtime QA needed |
 | Remote navigation | STATIC PASS / RUNTIME QA NEEDED | `input.js` explicitly handles ArrowUp/Down/Left/Right, Enter/NumpadEnter, Backspace/Escape, visible focusable elements, `getBoundingClientRect()`, `scrollIntoView()` and prevents default for handled keys. | `ASG-002` remains READY_FOR_QA, not DONE |
 | Focus visibility | STATIC PASS / RUNTIME QA NEEDED | Focusable refresh and movement exist; visual focus still needs screen-by-screen TV QA. | QA needed |
@@ -75,15 +107,15 @@ None.
 | QR import | STATIC PASS / QA NEEDED | `qr-import.js` is loaded, but real phone end-to-end flow was not executed. | `ASG-050` remains IN_PROGRESS |
 | Diagnostics health | STATIC PASS / QA NEEDED | `diagnostics-health.js` is loaded; runtime checks not executed here. | QA needed |
 | Update screen | STATIC PASS / QA NEEDED | Release/update docs and update scripts exist; runtime/network behavior unverified. | QA needed |
-| 15-minute stability | BLOCKED | Requires device/emulator. | Keep QA needed |
+| 15-minute stability | BLOCKED | Requires device/emulator long run. | Keep QA needed |
 
-## Required Physical Smoke Test
+## Required Physical / Runtime Smoke Test
 
 | Area | Status | Notes |
 |---|---|---|
-| APK builds | BLOCKED | Workflow file exists, but latest run/result not visible through connector. |
-| APK installs on Android TV / Mi Box S | TODO | Requires emulator/device. |
-| App opens without internet | TODO | Requires emulator/device. |
+| APK builds | RUN PENDING | Emulator smoke workflow added; verify GitHub Actions result. |
+| APK installs on Android TV / Mi Box S | TODO | CI emulator install is automated, but real TV/Mi Box S install still needed. |
+| App opens without internet | TODO | Requires emulator/device run. |
 | Remote navigation works | TODO | Verify Arrow/Enter behavior on real Android TV WebView. |
 | Focus visible everywhere | TODO | Requires screen-by-screen TV QA. |
 | Back behavior works | TODO | Verify Back from Home/Search/Details/Sources/Settings/Player. |
@@ -116,11 +148,11 @@ None.
 
 ### Scope
 
-Static repository smoke readiness check for current 2.10.6 code.
+Static repository smoke readiness check for current 2.10.6 code plus CI emulator smoke workflow creation.
 
 ### Device / Emulator
 
-None. No Android TV emulator or Mi Box S was available inside this chat environment.
+GitHub Actions emulator workflow added, run result not yet confirmed.
 
 ### Build / Version
 
@@ -128,29 +160,37 @@ None. No Android TV emulator or Mi Box S was available inside this chat environm
 
 ### Result
 
-STATIC PASS for core code paths, but BLOCKED for full physical QA.
+STATIC PASS for core code paths.
+
+CI EMULATOR SMOKE RUN PENDING.
+
+FULL PHYSICAL QA BLOCKED.
 
 ### Findings
 
 - Build workflow and Gradle wrapper definitions are present and look correct.
-- Latest workflow run/result was not available through the connector.
+- New Android emulator smoke workflow was added to install and launch APK in CI and collect artifacts.
+- Latest workflow run/result was not available through the connector yet.
 - D-pad and Back are implemented in inspected Web assets.
 - Native bridge includes `exitApp()`, `openPlayer()`, source/torrent/progress persistence and native fetch.
 - PlayerActivity has ExoPlayer, URL validation, D-pad controls, error Toast and progress save.
 - Media task flow is code-wired for direct playable result -> task -> native player, and for configured service metadata where service exists.
-- No APK install, launch, real D-pad traversal, Back runtime behavior, ExoPlayer playback, real configured source/service test or 15-minute stability result can be claimed from this chat session.
+- No completed CI emulator result, real APK install, launch, real D-pad traversal, Back runtime behavior, ExoPlayer playback, real configured source/service test or 15-minute stability result can be claimed from this chat session.
 
 ### Recommendation
 
-Do not mark any backlog item DONE from this QA pass.
+Do not mark any backlog item DONE from this QA pass until the emulator workflow run passes and/or real device QA is completed.
 
 Recommended next action:
 
-1. Run `Build APK` or `Release APK` workflow manually if push workflow did not run.
-2. Download `asgard-tv-release.apk` or `asgard-tv-debug-apk`.
-3. Install on Android TV emulator or Mi Box S.
-4. Execute the full physical smoke checklist above.
-5. Update this file with PASS / FAIL / BLOCKED per row.
+1. Open GitHub Actions.
+2. Run or wait for `Android Emulator Smoke Test`.
+3. Inspect `android-emulator-smoke-artifacts`:
+   - `activity.txt`
+   - `logcat.txt`
+   - `launch.png`
+4. If workflow passes, update this file with CI PASS for build/install/launch/no-crash.
+5. Continue with manual Android TV/Mi Box S smoke checklist.
 
 ## QA Rule
 
