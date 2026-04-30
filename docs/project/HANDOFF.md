@@ -4,11 +4,11 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-QA / Release / Engineer coordination
+Engineer / QA / Release coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest QA task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest CI smoke artifact hardening task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
 1. `docs/project/CHAT_PROTOCOL.md`
 2. `docs/product/backlog-v2.json`
@@ -17,7 +17,8 @@ For the latest QA task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 5. `docs/project/DECISIONS.md`
 6. `docs/project/NEXT_ACTIONS.md`
 7. `docs/project/BACKLOG_V2_MIGRATION.md`
-8. `docs/prompts/QA_CHAT_PROMPT.md`
+8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+9. `docs/qa/QA_STATUS.md`
 
 Active backlog:
 
@@ -30,31 +31,37 @@ Do not use old `docs/product/backlog.json` as active backlog.
 ### ASG-QA-001 — Android TV build/install smoke test
 
 - Selected task: `ASG-QA-001 — Run Android TV build/install smoke test`.
-- Reason: after `2.10.9`, Android TV build/install smoke test is the critical gate before claiming runtime readiness.
-- Inspected `.github/workflows/android-emulator-smoke.yml`.
-- Confirmed workflow statically performs:
-  - debug APK build through repository Gradle wrapper;
-  - Android emulator startup;
-  - APK install;
-  - app launch via `monkey`;
-  - activity dump capture;
-  - logcat capture;
-  - screenshot capture;
-  - crash / ANR grep;
-  - artifact upload.
-- Connector did not expose live workflow runs/statuses for the latest commit.
-- Forced a fresh smoke workflow run by changing the workflow trigger note.
-- Force-trigger commit:
+- Reason: current reported issue was inside the Android emulator smoke workflow artifact collection.
+- User reported GitHub Actions warning:
 
 ```text
-be671178d74cb117423fb925b0a72053e96f897b — Trigger Android emulator smoke test for 2.10.9
+Run actions/upload-artifact@v4
+Warning: No files were found with the provided path: smoke-artifacts. No artifacts will be uploaded.
 ```
 
-- `get_commit_combined_status` returned no statuses for that commit.
-- `fetch_commit_workflow_runs` returned no workflow runs for that commit.
-- Therefore CI result is still not verified through connector.
-- Updated `docs/qa/QA_STATUS.md` as `RUN_TRIGGERED / VERIFICATION PENDING`.
+- Interpreted as artifact directory not guaranteed to exist if the emulator step failed before creating it, or path resolution mismatch.
+- Updated `.github/workflows/android-emulator-smoke.yml`:
+  - added `SMOKE_ARTIFACTS_DIR: ${{ github.workspace }}/smoke-artifacts`;
+  - added `Prepare smoke artifact directory` before build/emulator steps;
+  - writes `README.txt` before any later step can fail;
+  - changed artifact upload path to absolute `${{ github.workspace }}/smoke-artifacts`;
+  - added additional diagnostic files from emulator script:
+    - `emulator-step.txt`
+    - `adb-devices.txt`
+    - `adb-install.txt`
+    - `monkey-launch.txt`
+    - `activity.txt`
+    - `logcat.txt`
+    - `launch.png`
+    - `success.txt` or `failure.txt`
+- Updated `docs/qa/QA_STATUS.md` to record the artifact warning and fix.
 - Did not mark any backlog item DONE.
+- Did not overwrite old `docs/product/backlog.json`.
+
+### Previous CI smoke fixes preserved
+
+- Previous failure: `gradle/actions/setup-gradle@v4` rejected unknown `android/gradle/wrapper/gradle-wrapper.jar` checksum.
+- Previous fix: removed `setup-gradle@v4` from emulator smoke workflow and kept build via repository wrapper.
 
 ### Previous stream diagnostics work preserved
 
@@ -70,8 +77,9 @@ be671178d74cb117423fb925b0a72053e96f897b — Trigger Android emulator smoke test
 
 ## Recent Commits
 
-- `be671178d74cb117423fb925b0a72053e96f897b` — `Trigger Android emulator smoke test for 2.10.9`
-- `3d4afa4ce31894c6b505a56dd96a74a5fd54b09b` — `Update QA status for triggered emulator smoke`
+- `789da66bc825dbde521bbb9b0809b531a823b422` — `Fix emulator smoke Gradle wrapper validation failure`
+- `b8eb579c67b39c98fef89a3502f8375f1239030b` — `Ensure emulator smoke artifacts are always available`
+- `4b509b6369ae171d94101b23557235138eaa8b06` — `Record artifact directory hardening for emulator smoke`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -89,24 +97,32 @@ Current release expectation:
 Current QA status:
 
 ```text
-ASG-QA-001: RUN_TRIGGERED / VERIFICATION PENDING
+ASG-QA-001: QA_IN_PROGRESS / WORKFLOW_PATCHED / RUN_REQUIRED
 ```
 
 Current verification status:
 
-- GitHub Actions run was triggered by workflow-file commit.
+- Android emulator smoke workflow exists.
+- Gradle wrapper validation failure was patched.
+- Artifact upload missing-directory warning was patched.
+- New run after commit `b8eb579c67b39c98fef89a3502f8375f1239030b` must be checked in GitHub Actions.
 - GitHub connector did not expose live Actions run/status.
-- Manual GitHub Actions check is required.
 - No Android TV / Mi Box S runtime QA has been completed in this session.
 
 ## Current Highest Priority
 
-1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after commit `be671178d74cb117423fb925b0a72053e96f897b`.
+1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after commit `b8eb579c67b39c98fef89a3502f8375f1239030b`.
 2. If workflow is green, inspect `android-emulator-smoke-artifacts`:
+   - `README.txt`
+   - `emulator-step.txt`
+   - `adb-devices.txt`
+   - `adb-install.txt`
+   - `monkey-launch.txt`
    - `activity.txt`
    - `logcat.txt`
    - `launch.png`
-3. If workflow fails, inspect the first failing step logs.
+   - `success.txt` or `failure.txt`
+3. If workflow fails, inspect uploaded artifacts and the first failing step logs.
 4. After CI smoke result is known, update `docs/qa/QA_STATUS.md`.
 5. Then continue with physical Android TV / Mi Box S QA.
 
@@ -138,6 +154,7 @@ Continue with `ASG-012 — Unified search results and normalization hardening`, 
 
 - GitHub connector did not expose latest workflow run.
 - Physical Android TV / Mi Box S QA still not completed.
+- Emulator workflow may still fail at later build/emulator/install/launch steps; artifacts should now be available for diagnosis.
 - Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks DONE until CI/manual QA evidence exists.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
