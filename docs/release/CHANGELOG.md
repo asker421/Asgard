@@ -10,6 +10,38 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
+## 2.10.26 — Metadata Home actually enabled and enriched
+
+Expected release:
+
+```text
+Tag: v2.10.26
+Release: Asgard TV v2.10.26
+Asset: asgard-tv-release.apk
+versionCode: 66
+```
+
+### Added / Changed
+
+- Fixed Home screen remaining on demo/mock content.
+- `home-metadata-v7.js` is now actually loaded by `index.html` after `demo-catalog-runtime.js`.
+- Added `home-metadata-force-v8.js` to force metadata Home over demo fallback when the current screen is Home.
+- Added `home-metadata-enrich-v9.js` to enrich Details with actor/cast cards from TVMaze where available.
+- Home now shows metadata cards for series/episodes instead of only demo videos as the primary screen.
+- Home cards include poster, title, episode/date, genres and rating where available.
+- Details now include summary/description, genre/date/rating chips and actors/cast where available.
+- `▶ Включить фильм` on metadata cards routes to Search by title. Playback links are still resolved only from user-configured/search sources.
+- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
+- No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
+
+### Known limitation
+
+- Movie metadata provider is still limited. Current Home metadata uses TVMaze series/episode data. Proper movie metadata needs a configured provider such as TMDB and should be added as a settings-driven feature.
+
+### QA status
+
+Code-wired only. Build and Android TV runtime QA are still pending.
+
 ## 2.10.25 — Search cards and source variant selection
 
 Expected release:
@@ -44,10 +76,6 @@ versionCode: 65
 - Raw actions like `Create task`, `Open link`, and unclear link-first UI are no longer the main search UX.
 - Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
 - No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
-
-### Not completed in this patch
-
-- Metadata-driven Home screen was attempted, but the GitHub tool blocked the large runtime file. Home still needs a smaller safe metadata-only patch in the next step.
 
 ### QA status
 
@@ -135,7 +163,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.25`.
+3. GitHub Releases contains matching tag, for example `v2.10.26`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
