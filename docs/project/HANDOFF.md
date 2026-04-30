@@ -30,6 +30,7 @@ Read and used for this session:
 18. `android/app/src/main/assets/web/torrserver-adapter.js`
 19. `android/app/src/main/assets/web/stream.js`
 20. `android/app/src/main/assets/web/qa-stabilization-fix.js`
+21. `docs/release/CHANGELOG.md`
 
 Important note: `docs/product/backlog.json` may be truncated by the GitHub connector. It was not overwritten. Status interpretation used `docs/product/backlog-prioritized-status-2026-04-30.json` as the safe status layer.
 
@@ -48,20 +49,25 @@ Important note: `docs/product/backlog.json` may be truncated by the GitHub conne
 - User requested next release.
 - Bumped Android version to `2.9.6 (36)` for the next release trigger.
 - Updated release status for 2.9.6.
+- Added release changelog covering 2.9.4, 2.9.5 and 2.9.6.
+- Updated release status to reference changelog and installation guide.
+- Corrected the exact version-bump commit reference for 2.9.6 in current chat context.
 - Did not mark any backlog item DONE.
 - Did not overwrite `docs/product/backlog.json`.
 
 ## Files Changed
 
 - `android/app/build.gradle.kts`
+- `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
 
-- `21eec7a3d5c1e5892913e5389e16f03f566d8504` — `Bump version for TorrServer handoff release` / version `2.9.5 (35)`
-- `0b7eb2b68017e188c9b66d8a07331be8a23bc602` — `Update release status for 2.9.5 TorrServer handoff`
+- `6f79c531597348d8962704f4d0b58a414b69bcdc` — `Bump version for release 2.9.6`
 - `bcc6ef6ceb983db7fc23cba4dd570752e74ba8c4` — `Update release status for 2.9.6`
+- `4ebbe10daf74641ac0e3c9c89d69948feb49495c` — `Add release changelog`
+- `d2d1c11ac43be3e3a02155109e0fef026a6d25d1` — `Update release status with changelog reference`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -83,6 +89,7 @@ Current verification status:
 - Release APK availability must still be verified in GitHub Actions / Releases before claiming success.
 - No Android TV / Mi Box S runtime QA has been completed in this session.
 - TorrServer handoff is code-wired but not verified against a real configured TorrServer.
+- Changelog now exists, but release remains pre-release / early alpha until smoke QA passes.
 
 ## Current Highest Priority
 
