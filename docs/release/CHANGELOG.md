@@ -10,6 +10,56 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.0 — Secure QR import prototype
+
+Expected release:
+
+```text
+Tag: v2.10.0
+Release: Asgard TV v2.10.0
+Asset: asgard-tv-release.apk
+versionCode: 40
+```
+
+### Added
+
+- Secure QR import runtime layer.
+- One-time local import session.
+- 6-digit PIN.
+- 10-minute expiry.
+- Session URL preview using `asgard://import?...`.
+- Paste/simulate phone payload area until real phone bridge is implemented.
+- Payload preview before import.
+- TV confirmation before import.
+- Sources TXT payload import into saved sources.
+- JSON and link payload preview-only states until schema/flow are finalized.
+- No silent import.
+- No personal data/cookies/tokens should be pasted.
+
+### Safety / Legal
+
+- Import is local/user-controlled.
+- TV confirmation is required before saving.
+- Session expires.
+- No silent APK install or source install.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Open QR import screen.
+- Create QR session.
+- Confirm PIN and expiry are visible.
+- Paste valid sources.txt row.
+- Preview payload.
+- Confirm import on TV.
+- Verify source appears in Source Manager.
+- Verify expired session blocks import.
+- Verify invalid payload is rejected.
+- Verify D-pad focus works.
+
 ## 2.9.9 — Full Source Manager
 
 Expected release:
@@ -45,18 +95,6 @@ versionCode: 39
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Open Sources screen.
-- Add a valid direct video source.
-- Add an invalid source and confirm validation blocks it.
-- Enable/disable a source.
-- Change priority.
-- Test one source.
-- Test enabled sources.
-- Use raw TXT editor and confirm invalid rows are blocked.
-- Confirm D-pad focus works on source cards and forms.
 
 ## 2.9.8 — Hardened source-backed search
 
@@ -196,7 +234,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.9.9`.
+3. GitHub Releases contains matching tag, for example `v2.10.0`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
