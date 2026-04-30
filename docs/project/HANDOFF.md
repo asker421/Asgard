@@ -26,35 +26,33 @@ The old `docs/product/backlog.json` is historical/large and may be truncated by 
 
 ## Work Completed
 
-- Continued engineering work after user said to work.
+- Continued engineering work after user asked to act further.
 - Completed mandatory pre-flight before starting the task.
-- Selected task: `ASG-030 — Manual source management`.
-- Reason: device QA is unavailable in this chat environment; `NEXT_ACTIONS.md` lists Full source manager after hardened source-backed search.
-- Inspected current `main.js` and `qa-stabilization.js`; confirmed old Sources runtime was still textarea-only.
-- Added `source-manager.js` as the final runtime layer.
-- Added Full Source Manager UI:
-  - source cards;
-  - status badges;
-  - enable / disable;
-  - priority increase/decrease;
-  - add source form;
-  - edit source form;
-  - delete source with confirmation;
-  - per-source test;
-  - test enabled sources;
-  - raw TXT editor fallback;
-  - reset bundled/default sources;
-  - validation before save.
-- Added legal-safe notice to Source Manager.
-- Loaded `source-manager.js` last in `index.html`, after all legacy overlays, so it overrides older textarea-only Sources screens.
-- Bumped Android version to `2.9.9 (39)` for the release trigger.
-- Updated changelog and release status for 2.9.9.
+- Selected task: `ASG-050 / ASG-051 — QR phone import + QR security`.
+- Reason: device QA is unavailable in this chat environment; after Full Source Manager, `NEXT_ACTIONS.md` lists QR phone import as the next engineering focus.
+- Inspected existing `main.js`; confirmed QR import was still a placeholder/demo screen.
+- Added `qr-import.js` as a safe runtime layer.
+- Added secure local QR/session import prototype:
+  - one-time token;
+  - 6-digit PIN;
+  - 10-minute expiry;
+  - `asgard://import?...` session URL preview;
+  - paste/simulate phone payload area until real phone bridge/server is implemented;
+  - payload preview before import;
+  - TV confirmation before import;
+  - sources TXT payload import into saved sources;
+  - JSON and link payload preview-only states until schema/flow are finalized;
+  - invalid/unsupported payload rejection;
+  - no silent import.
+- Loaded `qr-import.js` last in `index.html`, after older overlays, so it overrides the placeholder QR screen.
+- Bumped Android version to `2.10.0 (40)` for the release trigger.
+- Updated changelog and release status for 2.10.0.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/source-manager.js`
+- `android/app/src/main/assets/web/qr-import.js`
 - `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
@@ -63,11 +61,11 @@ The old `docs/product/backlog.json` is historical/large and may be truncated by 
 
 ## Recent Commits
 
-- `58985710e260cd224f45248ee024e7363f646338` — `Add full source manager UI`
-- `72bc98dbc0b2577c28f10f3dbf1bc1d8e7807d76` — `Load full source manager last`
-- version bump commit for `2.9.9 (39)` was created after `build.gradle.kts` update; verify exact SHA through commit history if needed.
-- `773e0f0a6326e7c4522dd1abb4123de5b084cd0d` — `Update changelog for 2.9.9 source manager`
-- `8ae3474c394a82cdddd6822654bf266014954d8d` — `Update release status for 2.9.9 source manager`
+- `25081bde8214767e799ddb49d31388ab4e302bf3` — `Add secure QR import session prototype`
+- `6b1b5d5dad076fac4b2b40c4cd9c7f1a836be7bf` — `Load QR import runtime layer last`
+- `63e2e6a9654cdd3f3b7bb85ab93574e79bdeaba4` — `Bump version for QR import release`
+- `e05f664e1d8eb3a329a0e8b763ae62182b5e8a1f` — `Update changelog for 2.10.0 QR import`
+- `e94033aeff755832aae9a14a34c54a54ee4c0572` — `Update release status for 2.10.0 QR import`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -76,10 +74,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.9.9`
-- versionCode: `39`
-- expected tag: `v2.9.9`
-- expected release: `Asgard TV v2.9.9`
+- versionName: `2.10.0`
+- versionCode: `40`
+- expected tag: `v2.10.0`
+- expected release: `Asgard TV v2.10.0`
 - expected APK asset: `asgard-tv-release.apk`
 
 Current verification status:
@@ -88,52 +86,53 @@ Current verification status:
 - GitHub connector does not expose direct `workflow_dispatch` and did not confirm live workflow completion.
 - Release APK availability must still be verified in GitHub Actions / Releases before claiming success.
 - No Android TV / Mi Box S runtime QA has been completed in this session.
-- Full Source Manager is code-wired but not runtime-verified on Android TV.
+- QR import is code-wired but not runtime-verified on Android TV.
+- The QR feature is currently a local/offline prototype with paste/simulated phone payload; real phone web bridge/server is not implemented yet.
 
 ## Current Highest Priority
 
-1. Verify GitHub Actions `Release APK` or `Build APK` run for `2.9.9`.
-2. Verify GitHub Releases contains `Asgard TV v2.9.9`.
+1. Verify GitHub Actions `Release APK` or `Build APK` run for `2.10.0`.
+2. Verify GitHub Releases contains `Asgard TV v2.10.0`.
 3. Verify release asset `asgard-tv-release.apk` exists and downloads.
 4. Install APK on Android TV emulator or Mi Box S.
 5. Run physical smoke test and update `docs/qa/QA_STATUS.md`.
-6. Specifically validate Source Manager with D-pad.
+6. Specifically validate QR import with D-pad.
 
 ## Next Recommended Task
 
 QA / Engineer:
 
-Run the real Android TV smoke test for `2.9.9`.
+Run the real Android TV smoke test for `2.10.0`.
 
-Minimum Source Manager test scope:
+Minimum QR import test scope:
 
-- Open Sources screen.
-- Confirm Source Manager, not old textarea-only screen, is visible.
-- Add a valid direct video source.
-- Add invalid source and confirm validation blocks it.
-- Enable/disable a source.
-- Change priority.
-- Edit a source.
-- Delete a source.
-- Test one source.
-- Test enabled sources.
-- Open raw TXT editor.
-- Confirm invalid raw TXT rows are blocked.
-- Confirm D-pad focus works on cards, buttons, forms, selects and textareas.
+- Open QR import screen.
+- Confirm QR import screen is not old placeholder.
+- Create QR session.
+- Confirm PIN and expiry are visible.
+- Confirm session URL preview is visible.
+- Paste valid sources.txt row.
+- Preview payload.
+- Confirm import on TV.
+- Verify imported source appears in Source Manager.
+- Verify expired session blocks import.
+- Verify invalid payload is rejected.
+- Confirm D-pad focus works on buttons and textarea.
 
 Engineer if device QA is unavailable:
 
-Continue with the next engineering backlog item after Full Source Manager:
+Continue with the next engineering backlog item after QR import prototype:
 
-1. QR phone import (`ASG-050` / `ASG-051`).
-2. Diagnostics expansion (`ASG-090`).
+1. Diagnostics expansion (`ASG-090`).
+2. First launch onboarding (`ASG-005`).
 3. AI provider settings (`ASG-064`) only after core playback/search/source manager is stable.
 
 ## Blockers / Risks
 
 - GitHub connector did not confirm latest workflow result.
 - No evidence yet of completed Android TV / Mi Box S physical QA.
-- Full Source Manager needs runtime validation with remote/D-pad.
+- QR import needs runtime validation with remote/D-pad.
+- Real phone web bridge/server is not implemented yet; current QR import is local prototype with paste/simulated payload.
 - Do not mark any backlog item DONE until acceptance criteria and Definition of Done are verified.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
