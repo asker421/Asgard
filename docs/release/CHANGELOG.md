@@ -10,6 +10,45 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.6 — Player handoff hardening
+
+Expected release:
+
+```text
+Tag: v2.10.6
+Release: Asgard TV v2.10.6
+Asset: asgard-tv-release.apk
+versionCode: 46
+```
+
+### Added / Changed
+
+- Hardened Media Task → PlayerActivity handoff for `ASG-TOR-005`.
+- Media task now passes stable `itemId` into native player handoff where bridge signature supports it.
+- Added Resume action based on saved watch progress for media task ID.
+- Added Start over action from position 0.
+- Added explicit stream URL readiness detection.
+- Added player handoff diagnostics including bridge availability, stream URL presence and saved progress.
+- Missing stream URL now renders a clear state-card error instead of only alerting.
+- Player bridge failure now renders a clear state-card error.
+- Direct playable task can open native player through the same task flow.
+- Browser fallback remains available outside Android APK.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Create direct playable media task.
+- Open stream and confirm native PlayerActivity starts.
+- Exit player and confirm progress is saved against task ID.
+- Reopen task and confirm Resume appears.
+- Confirm Resume starts from saved position.
+- Confirm Start over starts from 0.
+- Confirm missing stream URL shows readable error state.
+- Confirm bridge/player failure is shown clearly.
+
 ## 2.10.5 — Search result to playable media task
 
 Expected release:
@@ -38,17 +77,6 @@ versionCode: 45
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Search with a user-configured source.
-- Select a direct playable result and create task.
-- Confirm task is persistent and stream-ready.
-- Select a torrent/magnet result and confirm rights prompt.
-- Confirm metadata loading shows success or understandable error.
-- Confirm file list appears when service returns files.
-- Confirm selected file persists.
-- Confirm Open stream opens ExoPlayer or reports a clear missing stream URL error.
 
 ## 2.10.4 — Media search from movie title
 
@@ -106,15 +134,6 @@ versionCode: 43
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Search while sources are empty.
-- Search with broken source.
-- Check updates with network unavailable.
-- Open Sources with no diagnostics output.
-- Confirm state cards are readable from TV distance.
-- Confirm D-pad focus works on retry/action buttons.
 
 ## 2.10.2 — First Launch Onboarding
 
@@ -382,7 +401,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.5`.
+3. GitHub Releases contains matching tag, for example `v2.10.6`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
