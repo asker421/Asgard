@@ -1,0 +1,85 @@
+name: Android Emulator Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'android/**'
+      - '.github/workflows/android-emulator-smoke.yml'
+
+jobs:
+  emulator-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.10.2
+
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew :app:assembleDebug
+
+      - name: Enable KVM for emulator acceleration
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm || true
+
+      - name: Run emulator smoke test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          target: google_apis
+          arch: x86_64
+          profile: tv_1080p
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            set -euo pipefail
+            mkdir -p "$GITHUB_WORKSPACE/smoke-artifacts"
+            adb devices
+            adb shell input keyevent 82 || true
+            adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
+            adb logcat -c
+            adb shell monkey -p com.asgard.tv -c android.intent.category.LAUNCHER 1
+            sleep 15
+            adb shell dumpsys activity activities | tee "$GITHUB_WORKSPACE/smoke-artifacts/activity.txt"
+            adb logcat -d | tee "$GITHUB_WORKSPACE/smoke-artifacts/logcat.txt"
+            adb exec-out screencap -p > "$GITHUB_WORKSPACE/smoke-artifacts/launch.png" || true
+            if ! grep -q "com.asgard.tv" "$GITHUB_WORKSPACE/smoke-artifacts/activity.txt"; then
+              echo "Asgard TV package was not found in active activities" >&2
+              exit 1
+            fi
+            if grep -E "FATAL EXCEPTION|Application Not Responding|ANR in com\.asgard\.tv|Process: com\.asgard\.tv" "$GITHUB_WORKSPACE/smoke-artifacts/logcat.txt"; then
+              echo "Crash or ANR found in logcat" >&2
+              exit 1
+            fi
+            echo "Smoke test passed: APK installed, app launched, no crash/ANR detected."
+
+      - name: Upload smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-emulator-smoke-artifacts
+          path: smoke-artifacts
+          if-no-files-found: warn
