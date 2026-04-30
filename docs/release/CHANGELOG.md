@@ -10,40 +10,43 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
-## 2.10.14 — Unified Diagnostics v2
+## 2.10.15 — Simple installation and update guide
 
 Expected release:
 
 ```text
-Tag: v2.10.14
-Release: Asgard TV v2.10.14
+Tag: v2.10.15
+Release: Asgard TV v2.10.15
 Asset: asgard-tv-release.apk
-versionCode: 54
+versionCode: 55
 ```
 
 ### Added / Changed
 
-- Added `diagnostics-v2.js` runtime layer for `ASG-090`.
-- Diagnostics screen now uses a unified troubleshooting view.
-- Added sections for Network, Player, Cache/Storage, Permissions, Version/Release, Source setup and Warnings.
-- Diagnostics includes native bridge method availability, source counts, parser/service status, saved progress/tasks, release asset expectation and local storage counters.
-- Added Copy JSON action.
-- Added links to Source diagnostics and Setup wizard.
-- No bundled catalogs, embedded source lists, engines, or bypass features were added.
+- Updated `docs/release/INSTALLATION_GUIDE.md` for `ASG-101`.
+- Guide now targets non-programmer installation and update flow.
+- Added APK download and release verification steps.
+- Added Android TV / Mi Box S / TV Box installation methods.
+- Added update-failure recovery when signatures differ.
+- Added first-launch checklist.
+- Added setup path through Settings → Search setup wizard → Sources → Parser/service → Search.
+- Added Continue Watching test.
+- Added QR import test.
+- Added Diagnostics test and bug report template.
+- No app runtime code was changed in this release.
 
 ### QA status
 
-Not verified on Android TV / Mi Box S in this chat environment.
+Guide updated. APK/runtime QA is still pending.
 
-## 2.10.13 — Safe QR import confirmation flow
+## 2.10.14 — Unified Diagnostics v2
 
-- Hardened `qr-import.js` for `ASG-050`.
-- TV confirmation now requires entering the active 6-digit PIN.
-- HTTP(S) links import only as disabled user source rows.
+- Added `diagnostics-v2.js` runtime layer for `ASG-090`.
+- Diagnostics screen now uses a unified troubleshooting view.
 
 ## Previous releases
 
-See Git history for older release details from `2.10.12` and below.
+See Git history for older release details from `2.10.13` and below.
 
 ## Release verification checklist
 
@@ -51,7 +54,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.14`.
+3. GitHub Releases contains matching tag, for example `v2.10.15`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
