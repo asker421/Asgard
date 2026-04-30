@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.1 according to Android build configuration.
+2.10.2 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,39 +22,35 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.10.1 (41)` after unified diagnostics dashboard implementation.
+2026-04-30: Release trigger requested for `2.10.2 (42)` after first launch onboarding implementation.
 
 This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by a push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.10.1`
-- release title: `Asgard TV v2.10.1`
+- tag: `v2.10.2`
+- release title: `Asgard TV v2.10.2`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
 Release verification is PENDING after release-trigger commits.
 
-Do not claim that `2.10.1` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.2` release APK is available until GitHub Actions / Releases confirm it.
 
-## New in 2.10.1 Scope
+## New in 2.10.2 Scope
 
-- Unified Diagnostics Health Dashboard.
-- Android bridge presence and method check.
-- App version report.
-- Device storage report where bridge support exists.
-- Source configuration summary.
-- Parser/service settings summary with masked API key status.
-- QR import module/session state.
-- Local storage counters for sources, progress, favorites, history and media tasks.
-- Static warnings for missing bridge, invalid source rows, no enabled sources and missing player bridge.
-- Raw health report JSON.
-- Copy JSON action.
-- Source diagnostics shortcut preserved.
+- TV-first first launch onboarding flow.
+- Six onboarding steps explaining Asgard TV, Sources, native ExoPlayer, QR import, Experimental screens and starting points.
+- Skip action.
+- Back / Next step navigation.
+- Completion flag in localStorage.
+- Reopen onboarding card in Settings.
+- Onboarding loaded as the final runtime layer so it can intercept first Home render after all overlays.
 
 ## Included Scope Since 2.9.5
 
+- Unified Diagnostics Health Dashboard.
 - Secure QR import runtime layer.
 - Full TV-friendly Source Manager screen.
 - Hardened source-backed search runtime layer.
@@ -81,9 +77,12 @@ docs/release/CHANGELOG.md
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.1.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.1.
+- Confirm APK build for 2.10.2.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.2.
 - Confirm install on Android TV / Mi Box S.
+- Confirm first launch onboarding appears after fresh install / clear data.
+- Confirm onboarding skip/complete persists across restart.
+- Confirm Settings → Reopen onboarding works.
 - Confirm remote navigation.
 - Confirm ExoPlayer playback.
 - Confirm Diagnostics dashboard opens and remains TV-focusable.
@@ -96,6 +95,7 @@ docs/release/CHANGELOG.md
 
 - Full smoke test passed.
 - Mi Box S validation passed.
+- First launch onboarding runtime-verified.
 - Diagnostics dashboard runtime-verified.
 - QR import runtime-verified.
 - Full source manager runtime-verified.
@@ -110,6 +110,7 @@ Stable release is blocked unless:
 - APK builds.
 - APK installs on Android TV / Mi Box S.
 - App opens without internet.
+- First launch onboarding works.
 - Remote navigation works.
 - Player works.
 - Diagnostics health dashboard works.
