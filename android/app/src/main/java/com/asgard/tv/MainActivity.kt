@@ -127,6 +127,15 @@ class MainActivity : Activity() {
         }
     }
 
+    private fun openPlayerInternal(url: String, title: String, startPosition: Long, itemId: String) {
+        val intent = Intent(this@MainActivity, PlayerActivity::class.java)
+        intent.putExtra("url", url)
+        intent.putExtra("title", title.ifBlank { url })
+        intent.putExtra("itemId", itemId.ifBlank { title.ifBlank { url } })
+        intent.putExtra("startPosition", startPosition.coerceAtLeast(0L))
+        startActivity(intent)
+    }
+
     private fun getVersionNameCompat(): String {
         return try {
             packageManager.getPackageInfo(packageName, 0).versionName ?: "unknown"
@@ -261,12 +270,11 @@ class MainActivity : Activity() {
         }
 
         @JavascriptInterface fun openPlayer(url: String, title: String, startPosition: Long) {
-            val intent = Intent(this@MainActivity, PlayerActivity::class.java)
-            intent.putExtra("url", url)
-            intent.putExtra("title", title)
-            intent.putExtra("itemId", title.ifBlank { url })
-            intent.putExtra("startPosition", startPosition)
-            startActivity(intent)
+            openPlayerInternal(url, title, startPosition, title.ifBlank { url })
+        }
+
+        @JavascriptInterface fun openPlayerWithItem(url: String, title: String, startPosition: Long, itemId: String) {
+            openPlayerInternal(url, title, startPosition, itemId)
         }
 
         @JavascriptInterface fun getTorrentTasks(): String = prefs.getString("torrent_tasks", "[]") ?: "[]"
