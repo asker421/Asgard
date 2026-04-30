@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.9.4 according to Android build configuration.
+2.9.5 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,25 +22,33 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.9.4 (34)`.
+2026-04-30: Release trigger requested for `2.9.5 (35)` after adding TorrServer → ExoPlayer handoff.
 
 This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by a push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.9.4`
-- release title: `Asgard TV v2.9.4`
+- tag: `v2.9.5`
+- release title: `Asgard TV v2.9.5`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
 Release verification is PENDING after release-trigger commits.
 
-Do not claim that `2.9.4` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.9.5` release APK is available until GitHub Actions / Releases confirm it.
+
+## New in 2.9.5 Scope
+
+- Added TorrServer playable stream preparation helper.
+- Added search-result action: `TorrServer → ExoPlayer` for torrent/magnet results.
+- Added Torrent screen action: `TorrServer → ExoPlayer` for user media tasks.
+- Preserved legal-safe architecture: no bundled catalogs, no P2P engine inside APK, no DRM/Cloudflare/captcha bypass.
+- Playback requires user-configured TorrServer and explicit rights confirmation.
 
 ## Installation Guide
 
-Non-programmer APK installation guide added:
+Non-programmer APK installation guide:
 
 ```text
 docs/release/INSTALLATION_GUIDE.md
@@ -59,11 +67,12 @@ The guide covers:
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.9.4.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.9.4.
+- Confirm APK build for 2.9.5.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.9.5.
 - Confirm install on Android TV / Mi Box S.
 - Confirm remote navigation.
 - Confirm ExoPlayer playback.
+- Confirm TorrServer handoff failure states when TorrServer is not configured.
 - Confirm no first-launch crash.
 
 ## Missing Before Stable 1.0
@@ -72,7 +81,7 @@ The guide covers:
 - Mi Box S validation passed.
 - Real source search hardened.
 - QR import implemented.
-- User-provided media handoff flow working.
+- User-provided media handoff flow verified with real configured TorrServer.
 - Continue Watching UX complete.
 - Full diagnostics.
 - Changelog.
