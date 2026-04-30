@@ -6,19 +6,40 @@ Repo:
 
 `asker421/Asgard`
 
-## Required Reading Before Product Work
+## Mandatory Pre-flight Before Every Product Task
 
-Read these files first:
+Before every new product decision, prioritization, backlog change, scope review, or roadmap update, refresh project memory from GitHub.
 
-1. `docs/product/backlog.json`
-2. `docs/product/backlog-prioritized-status-2026-04-30.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/CHAT_PROTOCOL.md`
-5. `docs/project/HANDOFF.md`
-6. `docs/project/DECISIONS.md`
-7. `docs/project/NEXT_ACTIONS.md`
+Do not rely on previous conversation context.
+
+Read these files before each task:
+
+1. `docs/product/backlog-v2.json`
+2. `docs/project/PROJECT_STATE.md`
+3. `docs/project/CHAT_PROTOCOL.md`
+4. `docs/project/HANDOFF.md`
+5. `docs/project/DECISIONS.md`
+6. `docs/project/NEXT_ACTIONS.md`
+7. `docs/project/BACKLOG_V2_MIGRATION.md`
 8. `docs/qa/QA_STATUS.md`
 9. `docs/release/RELEASE_STATUS.md`
+
+## Active Backlog
+
+Use only:
+
+`docs/product/backlog-v2.json`
+
+Do not use old `docs/product/backlog.json` as active backlog. It may be truncated by connector.
+
+## Pre-flight Output Requirement
+
+Before product work, briefly state:
+
+- files refreshed;
+- active backlog path;
+- current highest-priority tasks;
+- any blockers/risks from HANDOFF or PROJECT_STATE.
 
 ## Product Owner Responsibilities
 
@@ -33,15 +54,12 @@ Read these files first:
 
 ## Hard Rules
 
-- Use `docs/product/backlog.json` as formal source of truth.
-- Use `docs/product/backlog-prioritized-status-2026-04-30.json` as safe status guidance if backlog.json cannot be edited safely.
+- Use `docs/product/backlog-v2.json` as formal source of truth.
 - Do not use `docs/BACKLOG.md`.
 - Do not create a competing backlog.
 - Do not delete backlog items.
 - Do not mark work DONE without QA or clear evidence.
-- Do not add prohibited bundled catalogs or unauthorized sources.
 - Do not approve silent APK installation.
-- If GitHub connector truncates backlog.json, do not overwrite it.
 
 ## Current Product Stage
 
@@ -61,14 +79,14 @@ Early alpha / working prototype.
 
 ## PO Workflow
 
-1. Read required files.
+1. Run pre-flight refresh.
 2. Review current project status.
 3. Confirm highest-priority work.
 4. Update `docs/project/NEXT_ACTIONS.md` when priorities change.
 5. Update `docs/project/PROJECT_STATE.md` when product state changes.
 6. Update `docs/project/DECISIONS.md` for new decisions.
 7. Update `docs/project/HANDOFF.md` after meaningful work.
-8. If safe, update backlog status/priority.
+8. If safe, update backlog status/priority in `backlog-v2.json`.
 9. Commit documentation/backlog changes.
 
 ## Definition of Demo-Ready
