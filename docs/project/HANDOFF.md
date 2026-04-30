@@ -30,215 +30,143 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed In Latest Task
 
-### Native sources.txt search engine integration
+### Native source search hardening — 2.10.22
 
-User asked to integrate the previously proposed Kotlin engine into the project.
+User asked to continue integration of the safer native extraction engine.
 
-Implemented native Kotlin source search engine under:
+Implemented hardening on top of the existing native Kotlin search engine under:
 
 ```text
 android/app/src/main/java/com/asgard/tv/search/
 ```
 
-Added native components:
+Changed:
 
 - `Models.kt`
-  - `SourceConfig`
-  - `MediaItem`
-- `SourcesConfigParser.kt`
-  - parses 8-column `sources.txt` rows:
-
-```text
-name | type | url_template | language | enabled | priority | auth_required | notes
-```
+  - Enriched `MediaItem` with optional metadata fields:
+    - `year`
+    - `quality`
+    - `size`
+  - Added provider diagnostic status enum:
+    - `OK`
+    - `EMPTY`
+    - `DISABLED`
+    - `INVALID_CONFIG`
+    - `AUTH_REQUIRED`
+    - `UNSUPPORTED`
+    - `NETWORK_ERROR`
+    - `TIMEOUT`
+    - `PROVIDER_PROTECTED`
+    - `HUMAN_VERIFICATION_REQUIRED`
+    - `PARSE_ERROR`
+  - Added safe exception types for provider protection, human verification, and timeout handling.
 
 - `HttpLayer.kt`
-  - OkHttp client
-  - realistic browser User-Agent interceptor
-  - URL template builder
-  - safe HTTP GET helper
-- `ParserNotes.kt`
-  - key/value notes parser for selector/path configuration
-- `BaseParser.kt`
-  - parser interface
-  - parser factory
-- `HtmlParser.kt`
-  - `search_template` support through OkHttp + Jsoup
-  - generic CSS selector support through `notes`, e.g. `item=...;title=...;link=...`
-- `JsonParser.kt`
-  - `json` / `api` support through `JSONObject` / `JSONArray`
-  - flexible dotted path mapping through `notes`
-- `TorznabParser.kt`
-  - `torznab` / `jacred` / `rss` / `xml` support through XML item parsing
-  - extracts title and magnet/torrent links from `link`, `guid`, `enclosure`, and torznab attrs
+  - Hardened network headers.
+  - Added `ProviderGuard` that detects provider protection and human-verification pages.
+  - Such pages are not parsed as normal media pages; they become diagnostics.
+  - No bypass, no cookie extraction, no automated solving and no protected-provider circumvention was added.
+
 - `SearchManager.kt`
-  - Kotlin Coroutines parallel search using `async/awaitAll`
-  - per-source error isolation
-  - priority sorting
-  - direct media source support for `direct_video`, `hls`, `direct_stream` and direct `.mp4/.m3u8/.webm/.mkv` URLs
+  - Added per-source timeout through `withTimeout`.
+  - Added source status mapping for:
+    - protected provider pages;
+    - human-verification pages;
+    - timeout;
+    - parse errors;
+    - network errors;
+    - auth-required sources.
+  - Kept parallel querying with coroutine `async/awaitAll`.
+  - One failing/stuck source does not block other enabled sources.
+
+- `HtmlParser.kt`
+  - Added safe deep extraction of explicit direct media / P2P URLs already present in HTML/script text.
+  - Added selector mapping for `year`, `quality`, `size` through `notes`.
+  - Does not deobfuscate protected players.
+  - Does not bypass provider protection, human verification, paywalls, DRM or encrypted source maps.
+
+- `JsonParser.kt`
+  - Added `year`, `quality`, and `size` mapping through `notes`.
+
+- `TorznabParser.kt`
+  - Added extraction of `year`, `quality`, `size`, and enclosure length where present.
+
 - `NativeSearchJson.kt`
-  - converts native search results to WebView-compatible JSON shape
-- `NativeSourceBridge.kt`
-  - exposes native source search to WebView as `AsgardNativeSearch.searchSources(query)`
+  - Exposes provider `status` into WebView reports.
+  - Exposes `year`, `quality`, `size`, `poster_url` and `posterUrl` into WebView result objects.
 
-### WebView integration
-
-Updated:
+Version bumped:
 
 ```text
-android/app/src/main/java/com/asgard/tv/MainActivity.kt
+versionName = "2.10.22"
+versionCode = 62
 ```
 
-Added second JavaScript bridge:
-
-```text
-AsgardNativeSearch
-```
-
-It reads the current saved `sources_txt` from SharedPreferences, falling back to bundled `web/sources.txt`.
-
-Added:
-
-```text
-android/app/src/main/assets/web/native-search-runtime.js
-```
-
-Purpose:
-
-- wraps existing `AsSources.searchContent(query)`;
-- tries native search first through `AsgardNativeSearch.searchSources(query)`;
-- validates native report shape;
-- normalizes native results for existing UI;
-- falls back to the previous JS search path if native search fails.
-
-Updated:
-
-```text
-android/app/src/main/assets/web/index.html
-```
-
-Loaded `native-search-runtime.js` immediately after `sources.js`:
-
-```html
-<script src="sources.js"></script>
-<script src="native-search-runtime.js"></script>
-```
-
-### Dependencies / version
-
-Updated:
-
-```text
-android/app/build.gradle.kts
-```
-
-Added dependencies:
-
-```kotlin
-implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
-implementation("com.squareup.okhttp3:okhttp:4.12.0")
-implementation("org.jsoup:jsoup:1.17.2")
-```
-
-Bumped version:
-
-```text
-versionName = "2.10.21"
-versionCode = 61
-```
-
-Preserved:
-
-```text
-applicationId = "com.asgard.tv"
-namespace = "com.asgard.tv"
-branding = "Asgard TV"
-```
-
-### Release docs
-
-Updated:
+Updated release docs:
 
 ```text
 docs/release/CHANGELOG.md
 docs/release/RELEASE_STATUS.md
 ```
 
-New expected release:
+Expected release:
 
 ```text
-Tag: v2.10.21
-Release: Asgard TV v2.10.21
+Tag: v2.10.22
+Release: Asgard TV v2.10.22
 Asset: asgard-tv-release.apk
-versionCode: 61
+versionCode: 62
 ```
 
 ## Files Changed In Latest Task
 
 - `android/app/build.gradle.kts`
-- `android/app/src/main/java/com/asgard/tv/MainActivity.kt`
 - `android/app/src/main/java/com/asgard/tv/search/Models.kt`
-- `android/app/src/main/java/com/asgard/tv/search/SourcesConfigParser.kt`
 - `android/app/src/main/java/com/asgard/tv/search/HttpLayer.kt`
-- `android/app/src/main/java/com/asgard/tv/search/ParserNotes.kt`
-- `android/app/src/main/java/com/asgard/tv/search/BaseParser.kt`
+- `android/app/src/main/java/com/asgard/tv/search/SearchManager.kt`
 - `android/app/src/main/java/com/asgard/tv/search/HtmlParser.kt`
 - `android/app/src/main/java/com/asgard/tv/search/JsonParser.kt`
 - `android/app/src/main/java/com/asgard/tv/search/TorznabParser.kt`
-- `android/app/src/main/java/com/asgard/tv/search/SearchManager.kt`
 - `android/app/src/main/java/com/asgard/tv/search/NativeSearchJson.kt`
-- `android/app/src/main/java/com/asgard/tv/search/NativeSourceBridge.kt`
-- `android/app/src/main/assets/web/native-search-runtime.js`
-- `android/app/src/main/assets/web/index.html`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits From Latest Task
 
-- `5cc1d0de715080c4415b6e4f68d7a6496eb5afe8` — `Add native source search dependencies`
-- `12abf9d7707cdc369bb67455a54f7b355fa96782` — `Add native search models`
-- `e2a8bdd489d6d433fb5bedd55390ffbfcaca45c0` — `Add sources txt parser`
-- `c402e03fae9220809626ef85eff4fe5d0067dce9` — `Add OkHttp native search layer`
-- `7c997b2abd9edd108eda11a665df49b49cd04fb2` — `Add native parser factory`
-- `09e911a220c4a620e675f0f31805aa11ad21799c` — `Add native HTML parser`
-- `316055586b0b05cb926d580714d292eac21df1c9` — `Add native JSON parser`
-- `66611f3604d681264c789bc547e4580844bbfbb7` — `Add native Torznab XML parser`
-- `f3e0cb5d0dd26eea84c19bc36ee00b0f9e302238` — `Add native parallel search manager`
-- `9aea767bb4c11ee820f5d83c4d59668e48996fdd` — `Support native direct media source results`
-- `ab4cfbca0cf42992a5577157353a01d2ba4b56c0` — `Add native search JSON bridge formatter`
-- `f9ee55453ff5109030ee0dd7cb7edd5edd93e08f` — `Add native source search bridge`
-- `4009591fba0bb24fcd3561c5968bac02950835a9` — `Register native source search bridge`
-- `9d7a68720a016f32e839bc1819741ac0fce6e4ec` — `Add native-first search runtime override`
-- `b9607a6b0e27a0b1ad4161cab3d77de61e880a8d` — `Load native source search runtime`
-- `9eeefb6a02c53b12fcf661d5952ead0ccedc6972` — `Update changelog for native source search engine`
-- `69200df0d5a74dbd2a32368f3c2f5333f45bbafe` — `Update release status for native source search engine`
+- `eb48fd26e7657cb15fbf615a0d76a211dba582ae` — `Add safe provider guard to native network layer`
+- `f0cceb61dbecf5e0c7001fbeb2da231f502e7efb` — `Add source status handling and per-source timeout`
+- `3d23c645d632ae072442257552ee9f78c8abd430` — `Enrich native JSON parser metadata`
+- `fd1a44d31273bb9228b3e6ef2927b0a825ebb1cb` — `Enrich native Torznab parser metadata`
+- `758ffc6c1857bcea17cb236f5a05aac6f18d2183` — `Bump version for native search hardening`
+- `0538d8293111d67fa57bff35c520a75f05ee08a5` — `Update changelog for native source search hardening`
+- `ab394df3d5851dea9191d71faa31b17118a3832a` — `Update release status for native source search hardening`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Verified
 
 - Repository access and push permissions exist.
 - `applicationId` remains `com.asgard.tv`.
-- Android build config now shows:
+- Branding remains `Asgard TV`.
+- Android build config was bumped to:
 
 ```text
-versionName = "2.10.21"
-versionCode = 61
+versionName = "2.10.22"
+versionCode = 62
 ```
 
-- New runtime file is loaded after `sources.js` and before later search/runtime layers.
 - Legal-safe architecture preserved: user-configured sources/services only, plus public demo content from prior task.
+- No protected-provider circumvention, no automated human-verification solving, no unauthorized catalogs, no paid-access circumvention, and no embedded P2P engine were added.
 
 ## Inferred
 
-- If GitHub release workflow triggers on push to `main`, it should create/update release `v2.10.21` from the new `versionName`.
-- Native search should improve Android WebView search because parsing/network is now handled natively via OkHttp/Jsoup/XML instead of browser fetch/CORS-sensitive paths.
+- If GitHub release workflow triggers on push to `main`, it should create/update release `v2.10.22` from the new `versionName`.
+- Native source diagnostics should now be clearer because provider protection, human verification, timeout and parse error states are separated.
 
 ## Not Verified
 
 - Local Gradle build was not run in this chat environment.
-- GitHub Actions result for `2.10.21` is not yet confirmed.
-- Connector check after `b9607a6b0e27a0b1ad4161cab3d77de61e880a8d` returned no commit statuses and no workflow runs at that moment.
+- GitHub Actions result for `2.10.22` is not yet confirmed.
 - Android TV / Mi Box S runtime QA not completed.
 - Native search runtime behavior not manually tested on device/emulator.
 
@@ -262,14 +190,16 @@ Do not mark tasks DONE without QA evidence.
 
 ## Current Highest Priority
 
-1. Check GitHub Actions for the `2.10.21` build/release run.
+1. Check GitHub Actions for the `2.10.22` build/release run.
 2. If build fails, fix the first compile/build error only.
-3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.21`.
+3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.22`.
 4. Test:
    - app launches;
    - Home shows demo movies;
    - Catalog shows demo movies;
    - Search query `bunny` returns demo direct video source;
+   - native report contains `status` fields;
+   - protected/human-verification/timeouts show as diagnostics;
    - Search result opens native PlayerActivity;
    - fallback JS search still works if native search fails.
 5. Then continue `ASG-TOR-004` streaming-first playback hardening.
@@ -278,24 +208,24 @@ Do not mark tasks DONE without QA evidence.
 
 On Android TV / emulator / Mi Box S:
 
-1. Install APK `v2.10.21`.
+1. Install APK `v2.10.22`.
 2. Open app.
 3. Home: demo movies visible immediately.
 4. Catalog: demo movies visible immediately.
 5. Search: type `bunny`.
 6. Confirm result appears near search area and is not hidden below fold.
-7. Press Watch/Open on result.
-8. Confirm PlayerActivity opens.
-9. Press Back from player.
-10. Confirm Continue Watching/progress does not crash.
-11. Open Source Diagnostics and confirm failures from individual sources do not crash entire search.
+7. Confirm source diagnostics show provider statuses.
+8. Press Watch/Open on playable result.
+9. Confirm PlayerActivity opens.
+10. Press Back from player.
+11. Confirm Continue Watching/progress does not crash.
 
 ## Blockers / Risks
 
-- Build may fail due to new native Kotlin files or dependency resolution; must verify in GitHub Actions.
+- Build may fail due to Kotlin changes; verify in GitHub Actions.
 - Native search currently uses synchronous JavaScript bridge call backed by `runBlocking(Dispatchers.IO)`. It is acceptable for this small integration but should be reviewed if slow sources freeze UI.
 - Search template HTML parsing defaults to generic `a[href]` unless selectors are provided in `notes`; real websites may need explicit selectors.
-- Auth-required sources are skipped by native manager until secure auth/secrets design is implemented.
+- Auth-required sources are reported/skipped by native manager until secure auth/secrets design is implemented.
 - No embedded P2P/torrent engine was added; torrent/magnet results still require user-configured service flow.
 - Do not add bundled prohibited catalogs or bypass logic.
 
