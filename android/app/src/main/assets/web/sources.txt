@@ -1,9 +1,17 @@
 # name | type | url_or_template | language | enabled | priority | auth_required | notes
 
-# Open/public demo sources
-Internet Archive | archive | https://archive.org | multi | true | 1 | false | public archive
-Internet Archive Movies | archive | https://archive.org/details/movies | multi | true | 2 | false | public archive movies
-NASA Images API | api | https://images-api.nasa.gov/search?q={query}&media_type=image,video,audio | en | true | 6 | false | nasa public media api
+# Open/public direct video demo sources - enabled for testing
+Big Buck Bunny Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 | multi | true | 1 | false | legal open demo direct video
+Sintel Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4 | multi | true | 2 | false | legal open demo direct video
+Tears of Steel Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4 | multi | true | 3 | false | legal open demo direct video
+Elephants Dream Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4 | multi | true | 4 | false | legal open demo direct video
+For Bigger Blazes Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4 | multi | true | 5 | false | public sample stream
+For Bigger Escapes Demo | direct_video | https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4 | multi | true | 6 | false | public sample stream
+
+# Open/public API/archive sources
+Internet Archive | archive | https://archive.org | multi | true | 10 | false | public archive
+Internet Archive Movies | archive | https://archive.org/details/movies | multi | true | 11 | false | public archive movies
+NASA Images API | api | https://images-api.nasa.gov/search?q={query}&media_type=image,video,audio | en | true | 12 | false | nasa public media api
 
 # User-configured parser placeholders
 # Real URLs should be entered in Settings -> Parser & TorrServer, not bundled here.
