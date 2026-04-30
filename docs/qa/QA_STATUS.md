@@ -4,7 +4,7 @@ Last updated: 2026-04-30
 
 ## Current QA Status
 
-`ASG-QA-001 — Android TV build/install smoke test` is **RUN_TRIGGERED / VERIFICATION PENDING**.
+`ASG-QA-001 — Android TV build/install smoke test` is **WORKFLOW_PATCHED / RUN_REQUIRED**.
 
 Static inspection confirms the Android emulator smoke workflow exists and is configured to:
 
@@ -95,30 +95,50 @@ Failure/warning:
 No files were found with the provided path: smoke-artifacts. No artifacts will be uploaded.
 ```
 
-Interpretation:
-
-The upload step ran, but the artifact directory was not guaranteed to exist if the emulator step failed before the script created it, or if the path was resolved from a different working directory.
-
 Fix:
 
 - Added `SMOKE_ARTIFACTS_DIR: ${{ github.workspace }}/smoke-artifacts`.
 - Added `Prepare smoke artifact directory` before build/emulator steps.
 - Creates `README.txt` before any later step can fail.
 - Changed upload path to absolute `${{ github.workspace }}/smoke-artifacts`.
-- Added extra diagnostic artifacts:
-  - `emulator-step.txt`
-  - `adb-devices.txt`
-  - `adb-install.txt`
-  - `monkey-launch.txt`
-  - `activity.txt`
-  - `logcat.txt`
-  - `launch.png`
-  - `failure.txt` or `success.txt`
+- Added extra diagnostic artifacts.
 
 Fix commit:
 
 ```text
 b8eb579c67b39c98fef89a3502f8375f1239030b
+```
+
+### 3. `/usr/bin/sh` exit code 2
+
+Failure:
+
+```text
+Error: The process '/usr/bin/sh' failed with exit code 2
+```
+
+Interpretation:
+
+Most likely caused by `set -euo pipefail` inside the emulator runner `script`. The runner executes the script through `/usr/bin/sh`, and `pipefail` is not POSIX `sh` compatible.
+
+Fix:
+
+- Changed emulator script from:
+
+```text
+set -euo pipefail
+```
+
+- to POSIX-compatible:
+
+```text
+set -eu
+```
+
+Fix commit:
+
+```text
+8acb559f228ccf126570bbb0e3eaeb4eefee1fac
 ```
 
 ## Current Verification Status
@@ -136,7 +156,8 @@ GitHub connector did not expose live workflow run/status, so this QA file cannot
 |---|---|---|---|
 | Workflow exists | PASS | `.github/workflows/android-emulator-smoke.yml` exists. | Keep `ASG-QA-001` QA_IN_PROGRESS / pending |
 | Workflow triggers | PASS | `workflow_dispatch` and `push` to `main` for `android/**` and workflow path. | Keep pending |
-| Artifact directory | STATIC PASS | Directory is now created before build/emulator steps and upload uses absolute path. | Runtime CI pass needed |
+| Artifact directory | STATIC PASS | Directory is created before build/emulator steps and upload uses absolute path. | Runtime CI pass needed |
+| Shell compatibility | STATIC PASS | Emulator script now uses `set -eu`, not `pipefail`. | Runtime CI pass needed |
 | APK build step | STATIC PASS | Runs `cd android`, `chmod +x ./gradlew`, `./gradlew --no-daemon :app:assembleDebug`. | Runtime CI pass needed |
 | Emulator launch step | STATIC PASS | Uses `reactivecircus/android-emulator-runner@v2`, API 35, `tv_1080p`. | Runtime CI pass needed |
 | APK install step | STATIC PASS | Runs `adb install -r app-debug.apk`. | Runtime CI pass needed |
@@ -148,7 +169,7 @@ GitHub connector did not expose live workflow run/status, so this QA file cannot
 
 | Area | Status | Notes |
 |---|---|---|
-| APK builds in CI | RUN_REQUIRED / UNKNOWN | Verify latest Actions run after `b8eb579...`. |
+| APK builds in CI | RUN_REQUIRED / UNKNOWN | Verify latest Actions run after `8acb559...`. |
 | APK installs in emulator | RUN_REQUIRED / UNKNOWN | Requires workflow pass. |
 | App launches in emulator | RUN_REQUIRED / UNKNOWN | Requires workflow pass. |
 | No instant crash/ANR | RUN_REQUIRED / UNKNOWN | Requires logcat artifact review. |
@@ -167,7 +188,7 @@ GitHub → asker421/Asgard → Actions → Android Emulator Smoke Test
 Check latest run after commit:
 
 ```text
-b8eb579c67b39c98fef89a3502f8375f1239030b
+8acb559f228ccf126570bbb0e3eaeb4eefee1fac
 ```
 
 If green, inspect artifact:
@@ -176,7 +197,7 @@ If green, inspect artifact:
 android-emulator-smoke-artifacts
 ```
 
-Expected files now include at least:
+Expected files include at least:
 
 ```text
 README.txt
