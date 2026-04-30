@@ -27,24 +27,26 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-050 — QR import from phone
+### ASG-090 — Diagnostics screen
 
-- Selected task: `ASG-050 — QR import from phone`.
-- Reason: after Continue Watching runtime UX, the next backlog item is QR phone import with safe local/user-confirmed flow.
-- Inspected `qr-import.js`.
-- Hardened QR import confirmation flow:
-  - one-time token / 6-digit PIN / 10-minute expiry preserved;
-  - Confirm import now requires entering active TV PIN;
-  - wrong PIN blocks import;
-  - sources.txt payload still previews and imports only after TV confirmation;
-  - HTTP(S) links import only as disabled user source rows;
-  - imported link rows are disabled by default until user reviews and enables them in Source Manager;
-  - JSON wrapper supports `sources_txt` and `link` payload preview/handling;
-  - unsupported or sensitive payload types remain preview-only;
-  - session is consumed only after successful import;
-  - no silent import, no silent APK install, no bundled catalogs, no embedded source lists, no bypass features.
-- Bumped Android version to `2.10.13 (53)` for release trigger.
-- Updated changelog and release status for `2.10.13`.
+- Selected task: `ASG-090 — Diagnostics screen`.
+- Reason: after QR import hardening, next recommended engineering task was unified troubleshooting visibility.
+- Inspected `diagnostics-health.js`.
+- Added `diagnostics-v2.js` as a late runtime layer:
+  - overrides `AsApp.diagnostics()` with unified troubleshooting view;
+  - adds Network section with browser online and nativeFetch availability;
+  - adds Player section with openPlayer bridge availability, saved progress count and task count;
+  - adds Cache / Storage section with local counters and device storage info where bridge supports it;
+  - adds Permissions section with runtime-visible permission expectations;
+  - adds Version / Release section with app version and expected release asset;
+  - adds Source setup section with enabled/disabled/invalid source counts and parser/service status;
+  - adds Warnings section with actionable static issues;
+  - adds Copy JSON action;
+  - links to Source diagnostics and Setup wizard;
+  - no bundled catalogs, embedded source lists, engines, or bypass features added.
+- Loaded `diagnostics-v2.js` last in `index.html`.
+- Bumped Android version to `2.10.14 (54)` for release trigger.
+- Updated changelog and release status for `2.10.14`.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
@@ -56,7 +58,8 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/qr-import.js`
+- `android/app/src/main/assets/web/diagnostics-v2.js`
+- `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
@@ -64,10 +67,11 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Recent Commits
 
-- QR import hardening commit was created after `qr-import.js` update; verify exact SHA through commit history if needed.
-- `c6ad37baae3362ea9105ed82d9070df347bb8d08` — `Bump version for QR import release`
-- changelog update commit for `2.10.13` was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
-- `aa8b225bae3d912ad739d97ee6dc117ebdcb3841` — `Update release status for 2.10.13 QR import`
+- diagnostics v2 runtime commit was created after `diagnostics-v2.js` creation; verify exact SHA through commit history if needed.
+- `5a67e458e176876e5093dd906105c1cf1e440fc6` — `Load diagnostics v2 runtime last`
+- `51fec303c3c7d1954fbed0b6454621ead84656c7` — `Bump version for diagnostics v2 release`
+- changelog update commit for `2.10.14` was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
+- `053981ff5e93aefa83d93fc234935b3cea081b9d` — `Update release status for 2.10.14 diagnostics v2`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -76,10 +80,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.10.13`
-- versionCode: `53`
-- expected tag: `v2.10.13`
-- expected release: `Asgard TV v2.10.13`
+- versionName: `2.10.14`
+- versionCode: `54`
+- expected tag: `v2.10.14`
+- expected release: `Asgard TV v2.10.14`
 - expected APK asset: `asgard-tv-release.apk`
 
 Current QA status:
@@ -90,7 +94,7 @@ ASG-QA-001: QA_IN_PROGRESS / WORKFLOW_PATCHED / RUN_REQUIRED_OR_VERIFY_MANUALLY
 
 Current verification status:
 
-- QR import hardening is code-wired.
+- Diagnostics v2 is code-wired.
 - Runtime QA is not verified.
 - Android emulator smoke workflow should still be verified in GitHub Actions.
 - Physical Android TV / Mi Box S QA still not completed.
@@ -98,33 +102,32 @@ Current verification status:
 ## Current Highest Priority
 
 1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after latest workflow patches.
-2. Verify release `v2.10.13` and asset `asgard-tv-release.apk` after Actions completes.
-3. Runtime QA QR import:
-   - create QR session;
-   - preview sources.txt payload;
-   - wrong PIN blocks import;
-   - correct PIN imports valid sources;
-   - HTTP(S) link imports as disabled source only;
-   - unsupported payloads remain preview-only;
-   - D-pad focus works on QR actions.
+2. Verify release `v2.10.14` and asset `asgard-tv-release.apk` after Actions completes.
+3. Runtime QA Diagnostics:
+   - Diagnostics screen opens;
+   - Network / Player / Cache / Permissions / Version / Source setup sections render;
+   - Copy JSON works or falls back to alert;
+   - Source diagnostics link works;
+   - Setup wizard link works;
+   - D-pad focus works on diagnostics actions.
 4. Continue physical Android TV / Mi Box S QA.
 
 ## Next Recommended Task
 
 QA:
 
-Verify Android Emulator Smoke Test and then test `2.10.13` QR import flow.
+Verify Android Emulator Smoke Test and then test `2.10.14` Diagnostics flow.
 
 Engineer if device QA remains unavailable:
 
-Implement `ASG-090 — Diagnostics screen` to consolidate internet/player/cache/permissions/version diagnostics for troubleshooting.
+Implement `ASG-101 — Simple installation and update guide`, because the product now has many release increments but still needs a non-programmer install/update/source/setup guide.
 
 ## Blockers / Risks
 
 - GitHub connector did not expose latest workflow run.
 - Physical Android TV / Mi Box S QA still not completed.
-- QR import still simulates phone transfer by paste area; real local phone bridge/server is not implemented.
-- Need runtime QA before marking `ASG-050` DONE.
+- Diagnostics v2 depends on runtime bridge method availability.
+- Need runtime QA before marking `ASG-090` DONE.
 - Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks DONE until CI/manual QA evidence exists.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
