@@ -38,8 +38,12 @@ object NativeSearchJson {
             put("link", link)
             put("description", description ?: "")
             put("posterUrl", posterUrl ?: "")
+            put("poster_url", posterUrl ?: "")
             put("sourceName", sourceName)
             put("sourceType", sourceType)
+            put("year", year ?: "")
+            put("quality", quality ?: "")
+            put("size", size ?: "")
             put("type", when (classification) {
                 "playable" -> if (link.lowercase().contains(".m3u8")) "hls" else "direct_video"
                 "magnet" -> "magnet"
@@ -59,6 +63,7 @@ object NativeSearchJson {
             put("type", sourceType)
             put("priority", priority)
             put("ok", ok)
+            put("status", status.name.lowercase())
             put("error", error ?: "")
             put("resultCount", resultCount)
         }
@@ -80,7 +85,7 @@ object NativeSearchJson {
         return when {
             type == "magnet" || url.startsWith("magnet:?") -> "magnet"
             type in setOf("torrent_file", "torrent_url", "torznab", "jacred") || url.endsWith(".torrent") || url.contains(".torrent?") -> "torrent"
-            type in setOf("direct_video", "hls", "direct_stream") || url.endsWith(".mp4") || url.endsWith(".m3u8") || url.endsWith(".webm") || url.endsWith(".mkv") || url.contains(".mp4?") || url.contains(".m3u8?") -> "playable"
+            type in setOf("direct_video", "hls", "direct_stream") || url.endsWith(".mp4") || url.endsWith(".m3u8") || url.endsWith(".webm") || url.endsWith(".mkv") || url.contains(".mp4?") || url.contains(".m3u8?") || url.contains(".webm?") || url.contains(".mkv?") -> "playable"
             url.startsWith("http://") || url.startsWith("https://") -> "link"
             else -> "not_playable"
         }
