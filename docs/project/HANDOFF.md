@@ -35,40 +35,33 @@ Important note: `docs/product/backlog.json` may be truncated by the GitHub conne
 
 ## Work Completed
 
-- Continued engineering work from `NEXT_ACTIONS.md`: user-provided media metadata/playback handoff.
-- Inspected current torrent/user-media files.
-- Found that streaming UI previously stopped at placeholder buffering and blocked ExoPlayer until a real P2P engine.
-- Preserved the legal-safe architecture: no bundled catalogs, no APK P2P engine, no bypasses.
-- Added TorrServer helper path to prepare playable stream:
+- Continued engineering/release work.
+- Previously added TorrServer helper path to prepare playable stream:
   - validate configured TorrServer URL;
   - add magnet/torrent URL to TorrServer;
   - fetch metadata/files;
   - select largest supported video file;
   - generate TorrServer stream URL;
   - hand off stream URL to native ExoPlayer.
-- Wired search torrent/magnet results to `TorrServer → ExoPlayer` action with rights confirmation.
-- Wired Torrent screen tasks to `TorrServer → ExoPlayer` action with rights confirmation.
-- Bumped Android version to `2.9.5 (35)` for the new release scope.
-- Updated release status for 2.9.5.
+- Previously wired search torrent/magnet results to `TorrServer → ExoPlayer` action with rights confirmation.
+- Previously wired Torrent screen tasks to `TorrServer → ExoPlayer` action with rights confirmation.
+- User requested next release.
+- Bumped Android version to `2.9.6 (36)` for the next release trigger.
+- Updated release status for 2.9.6.
 - Did not mark any backlog item DONE.
 - Did not overwrite `docs/product/backlog.json`.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/torrserver-adapter.js`
-- `android/app/src/main/assets/web/qa-stabilization-fix.js`
-- `android/app/src/main/assets/web/stream.js`
 - `android/app/build.gradle.kts`
 - `docs/release/RELEASE_STATUS.md`
 - `docs/project/HANDOFF.md`
 
-## Commits From This Session
+## Recent Commits
 
-- `c11df55bc9afd2c6d9492bd8f1526be9c42a94eb` — `Add TorrServer playable stream preparation`
-- `4001a654540916b307d43d15da46a90fc5452834` — `Wire search torrent results to TorrServer ExoPlayer handoff`
-- `df376cd8af449cb5c2c981da57a84d0a087142d1` — `Add TorrServer ExoPlayer handoff to Torrent screen`
-- `21eec7a3d5c1e5892913e5389e16f03f566d8504` — `Bump version for TorrServer handoff release`
+- `21eec7a3d5c1e5892913e5389e16f03f566d8504` — `Bump version for TorrServer handoff release` / version `2.9.5 (35)`
 - `0b7eb2b68017e188c9b66d8a07331be8a23bc602` — `Update release status for 2.9.5 TorrServer handoff`
+- `bcc6ef6ceb983db7fc23cba4dd570752e74ba8c4` — `Update release status for 2.9.6`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -77,10 +70,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.9.5`
-- versionCode: `35`
-- expected tag: `v2.9.5`
-- expected release: `Asgard TV v2.9.5`
+- versionName: `2.9.6`
+- versionCode: `36`
+- expected tag: `v2.9.6`
+- expected release: `Asgard TV v2.9.6`
 - expected APK asset: `asgard-tv-release.apk`
 
 Current verification status:
@@ -93,8 +86,8 @@ Current verification status:
 
 ## Current Highest Priority
 
-1. Verify GitHub Actions `Release APK` run for `2.9.5`.
-2. Verify GitHub Releases contains `Asgard TV v2.9.5`.
+1. Verify GitHub Actions `Release APK` run for `2.9.6`.
+2. Verify GitHub Releases contains `Asgard TV v2.9.6`.
 3. Verify release asset `asgard-tv-release.apk` exists and downloads.
 4. Install on Android TV emulator or Mi Box S.
 5. Configure TorrServer URL in Settings → Parser & TorrServer.
@@ -106,9 +99,9 @@ Current verification status:
 
 QA / Engineer:
 
-Run the 2.9.5 smoke test with a real or test TorrServer.
+Run the 2.9.6 smoke test with a real or test TorrServer.
 
-Minimum added test scope for 2.9.5:
+Minimum added test scope for 2.9.6:
 
 - TorrServer URL empty → understandable `torrserver_not_configured` error.
 - TorrServer connection test works or fails gracefully.
