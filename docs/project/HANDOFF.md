@@ -27,28 +27,37 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-TOR-SEARCH-001 — Torrent/media search from movie title
+### ASG-TOR-SEARCH-002 — Search result to playable media task
 
-- Selected task: `ASG-TOR-SEARCH-001`.
-- Reason: `NEXT_ACTIONS.md` defines the MVP path as Search movie → user-configured media result → file selection → ExoPlayer.
+- Selected task: `ASG-TOR-SEARCH-002`.
+- Reason: `ASG-TOR-SEARCH-001` was code-wired and the next MVP step is selected search result → persistent media task.
 - Inspected:
-  - `sources.js`
-  - `media-search.js`
+  - `media-task.js`
+  - `title-media-search.js`
   - `search-normalization-v2.js`
-- Found that `media-search.js` already called `AsSources.searchContent(query)`, but UX still looked like generic source search and did not clearly handle no configured source/parser state.
-- Added `title-media-search.js` as a late runtime layer:
-  - makes Search screen explicitly movie/series title based;
-  - checks for enabled user-configured sources or parser URL before querying;
-  - no configured source now shows setup actions instead of silent empty results;
-  - result view shows source, type, rights status, quality, size, seed/peer data where available;
-  - summary shows query, total, playable, torrent, magnet, link, errors and source count;
-  - actions remain compatible with existing flow: Watch, Create media task, Prepare stream, Open link, Diagnostics;
+- Found that `media-task.js` already had `createFromResult`, but it did not strongly guard invalid/link-only results and did not show a clear creation summary before task handoff.
+- Added `media-task-creation-v2.js` as a late runtime layer:
+  - overrides only the Search → Create media task path;
+  - normalizes selected result target and input type;
+  - validates missing/unsupported/link-only results before task creation;
+  - direct playable result creates `stream_ready` task with `streamUrl`;
+  - torrent/magnet/torrent-file result creates `metadata_pending` task;
+  - torrent/magnet-like result requires explicit rights confirmation;
+  - created task is persisted through existing `AsStore.updateTorrentTask` or local fallback;
+  - created task opens immediately;
+  - creation diagnostics show normalized input type, target presence and validation result;
   - preserves legal-safe architecture: no bundled catalogs, no embedded source lists, no engines, no bypass features.
-- Loaded `title-media-search.js` after `search-normalization-v2.js` and before media task/readiness layers.
-- Bumped Android version to `2.10.16 (56)` for release trigger.
-- Updated changelog and release status for `2.10.16`.
+- Loaded `media-task-creation-v2.js` immediately after `media-task.js` and before readiness/diagnostics layers.
+- Bumped Android version to `2.10.17 (57)` for release trigger.
+- Updated changelog and release status for `2.10.17`.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
+
+### Previous ASG-TOR-SEARCH-001 work preserved
+
+- `title-media-search.js` remains loaded after `search-normalization-v2.js`.
+- Search screen remains movie/series title based.
+- No configured source still shows setup actions.
 
 ### QA gate status preserved
 
@@ -58,7 +67,7 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/title-media-search.js`
+- `android/app/src/main/assets/web/media-task-creation-v2.js`
 - `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
@@ -67,11 +76,11 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Recent Commits
 
-- title media search runtime commit was created after `title-media-search.js` creation; verify exact SHA through commit history if needed.
-- `1f8cd6325fdef8ae509d820ea29e7598b66756c5` — `Load title media search runtime`
+- media task creation runtime commit was created after `media-task-creation-v2.js` creation; verify exact SHA through commit history if needed.
+- load commit was created after `index.html` update; verify exact SHA through commit history if needed.
 - version bump commit was created after `android/app/build.gradle.kts` update; verify exact SHA through commit history if needed.
 - changelog update commit was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
-- `519f3242c37a82a9c5f6a9291d6213c0ddf36537` — `Update release status for 2.10.16 title media search`
+- `7502c18f65f7b86ffda945aa8fc35a564529f589` — `Update release status for 2.10.17 media task creation`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -84,10 +93,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.10.16`
-- versionCode: `56`
-- expected tag: `v2.10.16`
-- expected release: `Asgard TV v2.10.16`
+- versionName: `2.10.17`
+- versionCode: `57`
+- expected tag: `v2.10.17`
+- expected release: `Asgard TV v2.10.17`
 - expected APK asset: `asgard-tv-release.apk`
 
 ## Current QA Status
@@ -99,33 +108,33 @@ Manual GitHub Actions verification is still required because connector did not e
 ## Current Highest Priority
 
 1. Verify latest Android Emulator Smoke Test run in GitHub Actions.
-2. Verify release `v2.10.16` and `asgard-tv-release.apk` after Actions completes.
-3. Runtime QA Search screen:
-   - no configured source shows setup state;
-   - configured safe demo source returns playable result;
-   - configured parser/source returns normalized media result;
-   - summary counters are understandable;
-   - result actions still work.
-4. Continue MVP flow: selected result → media task.
+2. Verify release `v2.10.17` and `asgard-tv-release.apk` after Actions completes.
+3. Runtime QA Search → Media task:
+   - direct playable result creates stream-ready task;
+   - torrent/magnet result asks for rights confirmation;
+   - torrent/magnet result creates metadata-pending task;
+   - link-only result is blocked with readable state;
+   - created task opens immediately;
+   - task persists after screen navigation.
+4. Continue MVP flow: media task → player handoff / seeking.
 
 ## Next Recommended Task
 
 Engineer:
 
-Implement `ASG-TOR-SEARCH-002 — Search result to playable media task`.
+Implement `ASG-TOR-005 — Player integration and seeking`.
 
 Expected result:
 
-- selected normalized search result becomes persistent media task;
-- direct playable URL creates stream-ready task;
-- torrent/magnet/file result creates metadata-pending task;
-- user confirmation is required for torrent/magnet-like result;
-- task screen opens immediately after creation;
-- failures show readable state.
+- selected stream-ready task opens `PlayerActivity` reliably;
+- missing stream URL shows readable error;
+- resume/start-over use stable task id;
+- player handoff diagnostics are clear;
+- bad/unsupported stream does not crash app.
 
 QA:
 
-Verify Android Emulator Smoke Test and `v2.10.16` release asset.
+Verify Android Emulator Smoke Test and `v2.10.17` release asset.
 
 ## Blockers / Risks
 
