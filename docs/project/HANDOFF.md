@@ -18,44 +18,42 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed In Latest Task
 
-### Search cards and source variant selection — 2.10.25
+### Metadata Home actually enabled and enriched — 2.10.26
 
-User requested:
+User reported:
 
 ```text
-результаты поиска не должны быть просто линком или текстом
-там тоже должна быть красивая карточка фильма
-а вот выбор уже должен быть из линков
-там должен быть список, какой торрент я хочу включить
+главный экран не изменился, там по прежнему мок
+на карточках нет никакой информации что за фильм и о чем
+актеры рейтинги и все остальное не работает
 ```
+
+Root cause found:
+
+- `home-metadata-v7.js` existed in the repo but was not loaded by `index.html`.
+- Therefore the app could not run the metadata Home runtime and kept showing demo/mock content.
 
 Implemented:
 
-- Added `search-card-groups-v6.js`.
-- Search results are now grouped into movie/series cards instead of raw text/link rows.
-- Each card groups multiple source variants by cleaned title.
-- Each card shows:
-  - title;
-  - source count;
-  - best source type;
-  - quality where available;
-  - seed/peer chips where available;
-  - poster placeholder or poster image if available.
-- Added two-level selection flow:
-  1. choose movie/series card;
-  2. choose a specific source/variant.
-- Variant selection screen lists each available option with quality/source/size/seed/peer metadata where available.
-- Primary actions are now user-facing:
-  - `▶ Включить лучший`;
-  - `Выбрать источник`;
-  - `▶ Включить этот вариант`.
-- Raw actions like `Create task`, `Open link`, and unclear link-first UI are no longer the main search UX.
-- Updated `index.html` to load `search-card-groups-v6.js` after `one-click-playback-v5.js`.
+- Updated `index.html`:
+  - now loads `home-metadata-v7.js` after `demo-catalog-runtime.js`;
+  - now loads `home-metadata-force-v8.js`;
+  - now loads `home-metadata-enrich-v9.js`.
+
+- Added `home-metadata-force-v8.js`:
+  - forces metadata Home over demo fallback when current screen is Home;
+  - retries after short delays to override late demo/mock runtime rendering.
+
+- Added `home-metadata-enrich-v9.js`:
+  - overrides metadata Details to add actor/cast cards from TVMaze where available;
+  - Details now shows summary, genre/date/rating chips and cast section;
+  - `▶ Включить фильм` stays routed to existing search flow by title.
+
 - Updated version:
 
 ```text
-versionName = "2.10.25"
-versionCode = 65
+versionName = "2.10.26"
+versionCode = 66
 ```
 
 - Updated release docs:
@@ -68,29 +66,17 @@ docs/release/RELEASE_STATUS.md
 Expected release:
 
 ```text
-Tag: v2.10.25
-Release: Asgard TV v2.10.25
+Tag: v2.10.26
+Release: Asgard TV v2.10.26
 Asset: asgard-tv-release.apk
-versionCode: 65
+versionCode: 66
 ```
-
-### Attempted but not completed
-
-User also requested a metadata-driven Home screen with new movies, new series, episode releases, metadata, posters and details.
-
-Attempted to add `metadata-home-runtime-v6.js`, but the GitHub tool blocked the large runtime file twice. This is not implemented yet.
-
-Recommended next approach:
-
-- split Home metadata into smaller safe patches;
-- first add metadata-only Home without playback logic;
-- then add detail card;
-- then wire `Включить фильм` to existing search-card / one-click flow.
 
 ## Files Changed In Latest Task
 
-- `android/app/src/main/assets/web/search-card-groups-v6.js`
 - `android/app/src/main/assets/web/index.html`
+- `android/app/src/main/assets/web/home-metadata-force-v8.js`
+- `android/app/src/main/assets/web/home-metadata-enrich-v9.js`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
@@ -98,11 +84,13 @@ Recommended next approach:
 
 ## Recent Commits From Latest Task
 
-- `c1889ec0cea3ce2d0e95f86b7fbdd7b08e1e2daf` — `Group search results into movie cards`
-- `eaf51a947753bd752ffb170b5893d4b196912e29` — `Load grouped search card runtime`
-- `c36183943f18a2ffe1864662f8870b937e7ca6ba` — `Bump version for grouped search cards`
-- `86c9cb26300b87c41c95ca78cb3c6aa8b995ef62` — `Update release status for grouped search cards`
-- `5104d036035f54f08c770680668e383dc10b35c9` — `Update changelog for grouped search cards`
+- `6354bf84194708545e456bce0b469c1961129294` — `Load metadata home after demo runtime`
+- `7f83e6356249379e502bdc909719c2d68b3a8da8` — `Force metadata home over demo fallback`
+- `93f68bc8e8473c3c9a5e816212b329d20209f5bc` — `Enrich home metadata details with cast`
+- `76ab35bf335497aff01bbfe783f3c9e13ca0982c` — `Load enriched home metadata details`
+- `323ec5a3e1b311ccf14ec9a2073c15bb8a6eb0b4` — `Bump version for metadata home fix`
+- `d155238de05a1f7050fa348d090b0bcd57f7ca61` — `Update release status for metadata home fix`
+- `e9ab393a6c83da73d10ae6b0af0c1c3ba002116f` — `Update changelog for metadata home fix`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Verified
@@ -113,26 +101,35 @@ Recommended next approach:
 - Android build config was bumped to:
 
 ```text
-versionName = "2.10.25"
-versionCode = 65
+versionName = "2.10.26"
+versionCode = 66
 ```
 
-- `search-card-groups-v6.js` exists.
-- `index.html` loads `search-card-groups-v6.js` after `one-click-playback-v5.js`.
+- `index.html` now loads:
+
+```text
+home-metadata-v7.js
+home-metadata-force-v8.js
+home-metadata-enrich-v9.js
+```
+
+- Metadata Home is intended to override demo/mock Home.
 
 ## Not Verified
 
 - Local Gradle build was not run in this chat environment.
-- GitHub Actions result for `2.10.25` is not yet confirmed.
+- GitHub Actions result for `2.10.26` is not yet confirmed.
 - Android TV / Mi Box S runtime QA not completed.
-- Grouped-card search UX was not manually tested on device.
-- Metadata-driven Home screen is not implemented yet.
+- Runtime access to TVMaze API from device is not verified.
+- Home metadata UX was not manually tested on device.
+
+## Known Limitation
+
+Current metadata Home uses TVMaze series/episode data. Movie metadata is still limited. Proper movie metadata, actors, ratings and posters for films require a configured movie metadata provider such as TMDB and should be added as a settings-driven feature.
 
 ## Known Blocker / Risk
 
 Native POST bridge for service API is still not confirmed. If service metadata still fails, the next fix should add a small safe native POST bridge in `MainActivity.kt` or a separate bridge class, then route service POST calls through it.
-
-The Home screen still uses demo fallback / prior runtime layers until a smaller metadata-only Home patch is successfully added.
 
 ## Current Product Status
 
@@ -154,17 +151,18 @@ Do not mark tasks DONE without QA evidence.
 
 ## Current Highest Priority
 
-1. Check GitHub Actions for the `2.10.25` build/release run.
+1. Check GitHub Actions for the `2.10.26` build/release run.
 2. If build fails, fix the first compile/build error only.
-3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.25`.
+3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.26`.
 4. Test:
-   - Search results appear as movie/series cards;
-   - cards do not show only raw links;
-   - `Выбрать источник` opens source variants;
-   - source variants show quality/source/size/seed data where available;
-   - `▶ Включить этот вариант` routes to one-click playback;
-   - HTML/web pages are not opened directly in PlayerActivity.
-5. Next work: add metadata-driven Home screen in smaller patches.
+   - Home no longer shows only Big Buck Bunny/Sintel/Tears of Steel demo content;
+   - Home shows metadata cards with poster/title/episode/date/rating/genres where available;
+   - opening a card shows summary and actor/cast cards where available;
+   - `▶ Включить фильм` routes to Search by title;
+   - Search still shows grouped cards and source variant selection.
+5. Next work:
+   - add TMDB/settings-driven movie metadata provider;
+   - add native POST bridge if service metadata still fails.
 
 ## Notes for Next Chat
 
