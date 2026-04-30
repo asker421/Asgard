@@ -10,6 +10,48 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
+## 2.10.28 — TMDB metadata and resilient stream loader
+
+Expected release:
+
+```text
+Tag: v2.10.28
+Release: Asgard TV v2.10.28
+Asset: asgard-tv-release.apk
+versionCode: 68
+```
+
+### Added / Changed
+
+- Added `metadata-loader-v12.js`.
+- Metadata/files loading is more resilient:
+  - retries several times instead of failing after one attempt;
+  - extracts torrent hash from magnet btih where possible;
+  - uses service list/get fallback when add response does not immediately return hash;
+  - selects the largest supported video file;
+  - builds stream URL only after file selection is available;
+  - returns clearer states such as `metadata_pending`, `hash_pending`, `no_playable_video_file`, and `stream_ready`.
+- Added `metadata-provider-v13.js`.
+- Added TMDB metadata provider foundation with `ru-RU` language and region settings.
+- Supports trending movies, now playing movies, trending series, details, cast and seasons.
+- Added `home-tmdb-v14.js`.
+- Home no longer pretends random English TVMaze data is a real movie/top chart.
+- Without TMDB API key, Home shows a clear setup state instead of fake top charts.
+- With TMDB API key, Home shows real TMDB `ru-RU` metadata cards.
+- Details can show cast and season grouping for series.
+- `▶ Включить фильм` routes title into Search/source selection flow.
+- Updated `index.html` to load new runtime layers.
+- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
+- No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
+
+### Known limitation
+
+- Native POST bridge for service API is still not committed. If service metadata still fails with service/network/POST/CORS errors, next fix must add native POST bridge in Android.
+
+### QA status
+
+Code-wired only. Build and Android TV runtime QA are still pending.
+
 ## 2.10.27 — Metadata API compatibility and search timeout
 
 Expected release:
@@ -33,10 +75,6 @@ versionCode: 67
 - Updated `index.html` to load the new runtime layers.
 - Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
 - No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
-
-### Known limitation
-
-- Native POST bridge for service API is still not committed because full `MainActivity.kt` update was blocked by the tool. If metadata changes from `Metadata API missing` to service/network failure, next fix must add native POST bridge in Android.
 
 ### QA status
 
@@ -66,10 +104,6 @@ versionCode: 66
 - Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
 - No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
 
-### Known limitation
-
-- Movie metadata provider is still limited. Current Home metadata uses TVMaze series/episode data. Proper movie metadata needs a configured provider such as TMDB and should be added as a settings-driven feature.
-
 ### QA status
 
 Code-wired only. Build and Android TV runtime QA are still pending.
@@ -90,24 +124,13 @@ versionCode: 65
 - Added `search-card-groups-v6.js`.
 - Search results are now grouped into movie/series cards instead of raw text/link rows.
 - Each card groups multiple variants by cleaned title.
-- Each card shows:
-  - title;
-  - source count;
-  - best source type;
-  - quality where available;
-  - seed/peer chips where available;
-  - poster placeholder or poster image if available.
 - Added two-level selection flow:
   1. choose movie/series card;
   2. choose a specific source/variant.
-- Variant selection screen shows source options with quality/source/size/seed metadata where available.
 - Primary actions are now user-facing:
   - `▶ Включить лучший`;
   - `Выбрать источник`;
   - `▶ Включить этот вариант`.
-- Raw actions like `Create task`, `Open link`, and unclear link-first UI are no longer the main search UX.
-- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
-- No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
 
 ### QA status
 
@@ -123,7 +146,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.27`.
+3. GitHub Releases contains matching tag, for example `v2.10.28`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
