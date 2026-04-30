@@ -11,8 +11,8 @@ android {
         applicationId = "com.asgard.tv"
         minSdk = 23
         targetSdk = 35
-        versionCode = 34
-        versionName = "2.9.4"
+        versionCode = 35
+        versionName = "2.9.5"
     }
 
     buildFeatures {
