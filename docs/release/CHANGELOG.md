@@ -10,42 +10,42 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
-## 2.10.9 — Stream diagnostics snapshot
+## 2.10.10 — Unified search normalization v2
 
 Expected release:
 
 ```text
-Tag: v2.10.9
-Release: Asgard TV v2.10.9
+Tag: v2.10.10
+Release: Asgard TV v2.10.10
 Asset: asgard-tv-release.apk
-versionCode: 49
+versionCode: 50
 ```
 
 ### Added / Changed
 
-- Added `stream-diagnostics.js` runtime layer.
-- Media Task screen now gets a local Stream diagnostics panel.
-- Diagnostics report includes task state, URL readiness, URL scheme, selected file, file count, native bridge availability, configured service status, saved progress, storage information and last player open result.
-- Added Copy JSON action.
-- Added Refresh diagnostics action.
-- Added Clear snapshot action.
-- Diagnostics are local/task-based.
+- Added `search-normalization-v2.js` runtime layer for `ASG-012`.
+- Unified result schema for Search screen: title, source, kind, URL fields, quality, size, seeders, peers, rights status and score.
+- Better kind detection for direct playable, torrent file, magnet and link results.
+- Better quality detection from title/description/metadata.
+- Better size normalization and TV-readable size labels.
+- Better scoring by result type, title match, quality, size and seeders.
+- Search summary now uses unified counters.
+- Result diagnostics now include normalized fields and raw result snapshot.
 - No bundled catalogs, embedded source lists, engines, or bypass features were added.
 
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
 
-## 2.10.8 — Streaming-first playback readiness
+## 2.10.9 — Stream diagnostics snapshot
 
-- Added `streaming-readiness.js` runtime layer.
-- Added Streaming readiness panel to Media Task screen.
-- Added Prepare stream, Open stream and Cancel preparation actions.
-- Added readable ready / not ready / service missing / preparing / cancelled / failed states.
+- Added `stream-diagnostics.js` runtime layer.
+- Media Task screen now gets a local Stream diagnostics panel.
+- Added Copy JSON, Refresh diagnostics and Clear snapshot actions.
 
 ## Previous releases
 
-See Git history for older release details from `2.10.7` and below.
+See Git history for older release details from `2.10.8` and below.
 
 ## Release verification checklist
 
@@ -53,7 +53,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.9`.
+3. GitHub Releases contains matching tag, for example `v2.10.10`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
