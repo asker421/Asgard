@@ -4,7 +4,7 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-UX/UI
+Engineer / QA / Product Owner / UX/UI coordination
 
 ## Required Files Read
 
@@ -17,106 +17,96 @@ Read and used for this session:
 5. `docs/project/HANDOFF.md`
 6. `docs/project/DECISIONS.md`
 7. `docs/project/NEXT_ACTIONS.md`
-8. `docs/prompts/UX_UI_CHAT_PROMPT.md`
-9. `docs/qa/QA_STATUS.md`
-10. `docs/product/UX_UI_CX_INTERFACE_SPEC.md`
-11. `docs/product/VISUAL_REFERENCE.md`
-12. `android/app/src/main/assets/web/menu.txt`
-13. `android/app/src/main/assets/web/ui.js`
-14. `android/app/src/main/assets/web/input.js`
+8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+9. `docs/prompts/QA_CHAT_PROMPT.md`
+10. `docs/prompts/PO_CHAT_PROMPT.md`
+11. `docs/prompts/UX_UI_CHAT_PROMPT.md`
+12. `docs/qa/QA_STATUS.md`
+13. `docs/release/RELEASE_STATUS.md`
+14. `.github/workflows/build-apk-final.yml`
+15. `.github/workflows/release-apk.yml`
+16. `android/app/build.gradle.kts`
 
-Important note: `docs/product/backlog.json` was returned truncated by the GitHub connector during this session. It was not overwritten. Status interpretation used `docs/product/backlog-prioritized-status-2026-04-30.json` as the safe status layer.
+Important note: `docs/product/backlog.json` may be truncated by the GitHub connector. It was not overwritten. Status interpretation used `docs/product/backlog-prioritized-status-2026-04-30.json` as the safe status layer.
 
 ## Work Completed
 
-- Switched active role from Engineer to UX/UI after user correction.
-- Performed required project-memory read for the UX/UI role.
-- Confirmed formal backlog source of truth remains `docs/product/backlog.json`.
-- Confirmed safe status guidance is `docs/product/backlog-prioritized-status-2026-04-30.json` because `backlog.json` may be truncated by the GitHub connector.
-- Read current visual reference and UX/CX spec.
-- Inspected current menu source: `android/app/src/main/assets/web/menu.txt`.
-- Inspected runtime UI menu implementation: `android/app/src/main/assets/web/ui.js`.
-- Inspected remote input/focus foundation: `android/app/src/main/assets/web/input.js`.
-- Added UX/UI review document: `docs/ux/UX_REVIEW_2026-04-30.md`.
-- No application code was changed in this UX review step.
-- No backlog status was changed in this UX review step.
+- Continued from project protocol after user asked to work further.
+- Checked latest visible commit history through GitHub connector.
+- Confirmed recent visible Android version from `android/app/build.gradle.kts` is `2.9.4 (34)`.
+- Inspected `Build APK` workflow and confirmed it is configured for `push` to `main` and `workflow_dispatch`.
+- Inspected `Release APK` workflow and confirmed it is configured for `push` to `main`, `v*` tags and `workflow_dispatch`.
+- Confirmed release workflow reads `versionName/versionCode` from `android/app/build.gradle.kts`, builds debug APK and uploads it as `asgard-tv-release.apk`.
+- Attempted to fetch workflow runs for recent commits through the connector, but no workflow runs were returned.
+- Updated QA status to reflect that full smoke QA is BLOCKED / NOT COMPLETED until actual Actions result and Android TV device/emulator testing are available.
+- Updated release status to version `2.9.4` and clarified release verification is still blocked.
+- Did not mark any backlog item DONE.
+- Did not overwrite `docs/product/backlog.json`.
 
 ## Files Changed
 
-- `docs/ux/UX_REVIEW_2026-04-30.md`
+- `docs/qa/QA_STATUS.md`
+- `docs/release/RELEASE_STATUS.md`
 - `docs/project/HANDOFF.md`
 
-## Current UX/UI Status
+## Current Product Status
 
-Current UX status: **NEEDS WORK**.
+Early alpha / working prototype.
 
-The project has a premium dark TV visual direction, remote input foundation and focus system, but there is a critical mismatch between the documented menu source of truth and the runtime UI menu definition.
+Current verification status:
 
-## Critical UX Finding
+- Repository workflow definitions exist.
+- Latest Android build configuration says `2.9.4 (34)`.
+- Latest GitHub Actions run result was not available through the connector.
+- No Android TV / Mi Box S runtime QA has been completed in this session.
+- Release APK availability for `2.9.4` must be checked directly in GitHub Actions / Releases before communicating it as available.
 
-`docs/product/VISUAL_REFERENCE.md` says the left menu must preserve the content from:
+## Current Highest Priority
 
-`android/app/src/main/assets/web/menu.txt`
-
-Current `menu.txt` contains:
-
-```text
-Главная
-Каталог
-Поиск
-AI подбор
-Детали
-Player Pro
-Библиотека
-Серии
-Источники
-Torrent
-QR импорт
-Диагностика
-Обновления
-Настройки
-```
-
-But `android/app/src/main/assets/web/ui.js` currently hardcodes only:
-
-```js
-['Главная','Поиск','Каталог','Библиотека','Источники','Настройки']
-```
-
-This means the runtime UI does not currently match the visual/product reference.
-
-## Current Highest UX Priority
-
-1. Align runtime menu with `menu.txt` without changing menu content.
-2. Add consistent icons for every existing menu item.
-3. Keep all current left menu item names and order exactly as `menu.txt` defines them.
-4. Run Android TV D-pad focus audit after menu alignment.
-5. Then polish Home hero, shelves and Continue Watching according to `docs/product/VISUAL_REFERENCE.md`.
+1. `ASG-QA-001 — Run Android TV build/install smoke test`.
+2. Verify GitHub Actions build/release result for `2.9.4`.
+3. Download APK artifact or release asset.
+4. Install on Android TV emulator or Mi Box S.
+5. Validate D-pad, Enter, Back, Home/Search/Sources/Details and Watch → native ExoPlayer.
+6. Update `docs/qa/QA_STATUS.md` with PASS / FAIL / BLOCKED per row.
 
 ## Next Recommended Task
 
-UX/UI + Engineer:
+QA / Release:
 
-Fix menu source mismatch.
+Check GitHub Actions and Releases directly in the repository UI.
 
-Preferred implementation:
+Expected locations:
 
-- Make `ui.js` load or mirror `android/app/src/main/assets/web/menu.txt` as the runtime menu source.
-- If dynamic loading is risky, update `AsUI.menu` to exactly match `menu.txt` and add a code comment that `menu.txt` is the source of truth.
-- Add line icons for every current menu item.
-- Do not add, remove, reorder or rename menu items.
+- GitHub → Actions → `Build APK` → latest run → artifact `asgard-tv-debug-apk`.
+- GitHub → Actions → `Release APK` → latest run.
+- GitHub → Releases → latest release → `asgard-tv-release.apk`.
 
-Suggested commit message:
+If no workflow ran after latest commits, manually run `Build APK` and `Release APK` via `workflow_dispatch`.
 
-```text
-fix: align runtime menu with visual reference source
-```
+Then run smoke test:
+
+- APK builds.
+- APK installs.
+- App launches.
+- App opens without internet.
+- D-pad focus works.
+- Enter activates focused item.
+- Back behavior works.
+- Home opens.
+- Search opens and shows results/summary.
+- Sources preview/save works.
+- Details opens.
+- Watch opens native ExoPlayer.
+- Play/pause/seek work.
+- Update screen opens.
+- App survives 15 minutes.
 
 ## Blockers / Risks
 
 - `docs/product/backlog.json` may be truncated by the GitHub connector; do not overwrite it unless full file content is safely available.
-- Runtime menu and documented menu currently disagree.
-- No repository evidence yet of completed Android TV / Mi Box S physical UX QA.
+- GitHub connector did not return latest workflow run results for inspected commits.
+- No evidence yet of completed Android TV / Mi Box S physical QA.
 - Do not mark any backlog item DONE until acceptance criteria and Definition of Done are verified.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
@@ -126,16 +116,13 @@ Before doing implementation or QA work, read:
 
 1. `docs/product/backlog.json`
 2. `docs/product/backlog-prioritized-status-2026-04-30.json`
-3. `docs/product/UX_UI_CX_INTERFACE_SPEC.md`
-4. `docs/product/VISUAL_REFERENCE.md`
-5. `android/app/src/main/assets/web/menu.txt`
-6. `docs/project/PROJECT_STATE.md`
-7. `docs/project/CHAT_PROTOCOL.md`
-8. `docs/project/DECISIONS.md`
-9. `docs/project/NEXT_ACTIONS.md`
-10. `docs/project/HANDOFF.md`
-11. The relevant role prompt under `docs/prompts/`
+3. `docs/project/PROJECT_STATE.md`
+4. `docs/project/CHAT_PROTOCOL.md`
+5. `docs/project/DECISIONS.md`
+6. `docs/project/NEXT_ACTIONS.md`
+7. `docs/project/HANDOFF.md`
+8. The relevant role prompt under `docs/prompts/`
 
 Do not use `docs/BACKLOG.md`.
 
-When reviewing UI/runtime behavior, do not judge only `main.js` or `input.js` in isolation. `index.html` may load later patch scripts that override or extend base behavior.
+When reviewing runtime behavior, inspect `index.html` load order and the late patch scripts, not only base `main.js`/`ui.js`.
