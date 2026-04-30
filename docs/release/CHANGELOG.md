@@ -10,6 +10,44 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.1 — Unified Diagnostics Health Dashboard
+
+Expected release:
+
+```text
+Tag: v2.10.1
+Release: Asgard TV v2.10.1
+Asset: asgard-tv-release.apk
+versionCode: 41
+```
+
+### Added
+
+- Unified Diagnostics Health Dashboard.
+- Android bridge presence and method check.
+- App version report.
+- Device storage report where bridge support exists.
+- Source configuration summary.
+- Parser/service settings summary with masked API key status.
+- QR import module/session state.
+- Local storage counters for sources, progress, favorites, history and media tasks.
+- Static warnings for missing bridge, invalid source rows, no enabled sources and missing player bridge.
+- Raw health report JSON.
+- Copy JSON action.
+- Source diagnostics shortcut preserved.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Open Diagnostics screen.
+- Confirm dashboard replaces old source-only diagnostics screen.
+- Confirm bridge/version/storage/source warnings are readable.
+- Confirm Copy JSON works or falls back safely.
+- Confirm D-pad focus works across panels and buttons.
+
 ## 2.10.0 — Secure QR import prototype
 
 Expected release:
@@ -46,19 +84,6 @@ versionCode: 40
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Open QR import screen.
-- Create QR session.
-- Confirm PIN and expiry are visible.
-- Paste valid sources.txt row.
-- Preview payload.
-- Confirm import on TV.
-- Verify source appears in Source Manager.
-- Verify expired session blocks import.
-- Verify invalid payload is rejected.
-- Verify D-pad focus works.
 
 ## 2.9.9 — Full Source Manager
 
@@ -234,7 +259,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.0`.
+3. GitHub Releases contains matching tag, for example `v2.10.1`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
