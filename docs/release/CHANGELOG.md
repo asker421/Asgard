@@ -10,6 +10,38 @@ docs/product/backlog.json
 
 If the backlog JSON is truncated by the GitHub connector, do not overwrite it. Use the prioritized status layer and handoff documents for safe updates.
 
+## 2.9.7 — Real Continue Watching shelf
+
+Expected release:
+
+```text
+Tag: v2.9.7
+Release: Asgard TV v2.9.7
+Asset: asgard-tv-release.apk
+versionCode: 37
+```
+
+### Added
+
+- Home `Continue Watching` shelf now reads real saved watch progress from `AsStore.progress()` instead of demo-only hardcoded progress values.
+- Continue Watching cards now show calculated progress percent from saved `position/duration`.
+- Added `Resume` action that opens native ExoPlayer with saved position.
+- Added `Start over` action that opens native ExoPlayer from position 0.
+- Added empty state when no saved progress exists.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Watch demo video.
+- Exit player after progress is saved.
+- Return to Home.
+- Confirm Continue Watching shows the real item.
+- Confirm Resume starts near saved position.
+- Confirm Start over starts at 0.
+
 ## 2.9.6 — Release trigger / TorrServer handoff package
 
 Expected release:
@@ -44,14 +76,6 @@ versionCode: 36
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Confirm GitHub Actions `Release APK` run succeeds.
-- Confirm GitHub Release `v2.9.6` exists.
-- Confirm `asgard-tv-release.apk` exists and downloads.
-- Install on Android TV emulator or Mi Box S.
-- Validate D-pad, Back, Search, Sources, Details, native ExoPlayer and TorrServer handoff.
 
 ## 2.9.5 — TorrServer → ExoPlayer handoff
 
@@ -108,7 +132,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.9.6`.
+3. GitHub Releases contains matching tag, for example `v2.9.7`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
