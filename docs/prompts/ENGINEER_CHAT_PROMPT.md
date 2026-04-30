@@ -6,46 +6,63 @@ Repo:
 
 `asker421/Asgard`
 
-## Required Reading Before Coding
+## Mandatory Pre-flight Before Every Engineering Task
 
-Read these files first:
+Before every new coding task, bug fix, refactor, review, or build action, refresh project memory from GitHub.
 
-1. `docs/product/backlog.json`
-2. `docs/product/backlog-prioritized-status-2026-04-30.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/CHAT_PROTOCOL.md`
-5. `docs/project/HANDOFF.md`
-6. `docs/project/DECISIONS.md`
-7. `docs/project/NEXT_ACTIONS.md`
+Do not rely on previous conversation context.
+
+Read these files before each task:
+
+1. `docs/product/backlog-v2.json`
+2. `docs/project/PROJECT_STATE.md`
+3. `docs/project/CHAT_PROTOCOL.md`
+4. `docs/project/HANDOFF.md`
+5. `docs/project/DECISIONS.md`
+6. `docs/project/NEXT_ACTIONS.md`
+7. `docs/project/BACKLOG_V2_MIGRATION.md`
 8. `docs/qa/QA_STATUS.md`
+
+## Active Backlog
+
+Use only:
+
+`docs/product/backlog-v2.json`
+
+Do not use old `docs/product/backlog.json` as active backlog. It may be truncated by connector.
+
+## Pre-flight Output Requirement
+
+Before coding, briefly state:
+
+- files refreshed;
+- active backlog path;
+- selected task ID;
+- why this task is next.
 
 ## Hard Rules
 
-- Use `docs/product/backlog.json` as the formal backlog source of truth.
-- Use `docs/product/backlog-prioritized-status-2026-04-30.json` as safe status guidance if backlog.json cannot be edited safely.
 - Do not use `docs/BACKLOG.md`.
 - Do not create another backlog.
 - Do not delete backlog items.
 - Do not silently change acceptance criteria.
-- If implementation differs from requirement, write it in `implementation_notes`.
-- If GitHub connector returns `backlog.json` truncated, do not overwrite it.
-- Do not add bundled prohibited catalogs or unauthorized sources.
+- If implementation differs from requirement, write it in notes.
 - Do not implement silent APK installation.
+- Preserve Android TV build stability.
+- Preserve package/applicationId.
 
 ## Workflow
 
-1. Read the required files.
-2. Identify the highest-priority task from `NEXT_ACTIONS.md` and the prioritized backlog layer.
-3. Inspect the current code before changing anything.
-4. If safe, set the task status to `IN_PROGRESS`.
-5. Implement the task in small, safe patches.
-6. Preserve Android TV build stability.
-7. Preserve package/applicationId.
-8. Update `docs/project/HANDOFF.md` after work.
-9. Update `docs/project/PROJECT_STATE.md` if project state changed.
-10. If safe, update backlog task status and implementation notes.
-11. Commit changes.
-12. Report changed files and commit SHA.
+1. Run pre-flight refresh.
+2. Identify the highest-priority task from `backlog-v2.json` and `NEXT_ACTIONS.md`.
+3. Inspect current code before changing anything.
+4. If safe, set task status to `IN_PROGRESS` in `backlog-v2.json`.
+5. Implement in small, safe patches.
+6. Update `docs/project/HANDOFF.md` after work.
+7. Update `docs/project/PROJECT_STATE.md` if project state changed.
+8. If safe, update backlog task status and notes.
+9. Commit changes.
+10. Report changed files and commit SHA.
 
 ## Current Engineering Priority
 
@@ -65,18 +82,6 @@ Complete user-provided media metadata and playback handoff flow:
 - open stream URL in `PlayerActivity`;
 - show understandable errors;
 - avoid app crashes.
-
-## Expected Error Handling
-
-Handle:
-
-- service not configured;
-- invalid input;
-- metadata unavailable;
-- no playable video file;
-- unsupported codec/container;
-- player handoff failure;
-- low storage where relevant.
 
 ## Output Required
 
