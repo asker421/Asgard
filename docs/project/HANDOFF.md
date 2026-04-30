@@ -8,7 +8,7 @@ Engineer / QA / Release coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest manual QA findings task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
 1. `docs/project/CHAT_PROTOCOL.md`
 2. `docs/product/backlog-v2.json`
@@ -17,7 +17,7 @@ For the latest manual QA findings task, refreshed according to `docs/project/CHA
 5. `docs/project/DECISIONS.md`
 6. `docs/project/NEXT_ACTIONS.md`
 7. `docs/project/BACKLOG_V2_MIGRATION.md`
-8. Relevant role prompt / QA status context from repository
+8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
 
 Active backlog:
 
@@ -27,92 +27,128 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### Manual QA findings processed
+### User interruption / priority change
 
-User reported manual QA results:
-
-```text
-1) +
-2.1 +
-2.2 +
-3.1: на главной странице все еще мок дата, нет новых фильмов сериалов и постеров
-3.2 +
-4.1 +
-4.2 +
-4.3 +
-5.1 +
-5.2: работает не правильно, при нажатии Backspace должно стираться, а тут кидает на главный экран
-5.3 +
-6.1 +
-6.2: не работает, или неразборчиво, может где-то и есть результат, но интерфейс не понятен
-6.3: вывод пишется внизу, надпись появляется но не в правильном месте
-6.4 +
-7
-```
-
-Interpretation:
-
-- CI emulator smoke passed, but manual QA found product/runtime issues.
-- Home still looks like mock/demo content instead of real/fresh movies/series/posters.
-- Backspace in input fields was treated as global Back and returned to Home.
-- Search/source result flow is unclear or not working from user perspective.
-- Output/result placement is wrong: messages/results appear too low or outside expected area.
-
-### Fix applied
-
-Fixed confirmed critical input bug in:
+User reported:
 
 ```text
-android/app/src/main/assets/web/input.js
+включи все ресурсы в каталоге, невозможно тестировать приложение, так же приложение не показывает вообще никаких фильмов сериалов итд
 ```
 
-Change:
+Priority was changed from continued `ASG-TOR-004` polish to immediate testability fix:
 
-- Added editable element detection:
-  - text-like input;
-  - textarea;
-  - contenteditable.
-- Backspace/Delete/normal character input now pass through when focus is inside editable fields.
-- Escape blurs the text input instead of immediately navigating back.
-- Global Back handling remains outside text editing controls.
+- Home must show visible content immediately.
+- Catalog must show visible content immediately.
+- Sources must contain enabled legal demo video resources.
+- App must be testable without manual source setup.
 
-Commit:
+### Visible demo catalog and enabled legal resources
+
+Changed:
 
 ```text
-cba83c117b1fa221f8cf208c83aae77ca9fbae2d
+android/app/src/main/assets/web/sources.txt
 ```
 
-### QA documentation updated
+Added enabled legal/public direct video demo sources:
+
+- Big Buck Bunny Demo
+- Sintel Demo
+- Tears of Steel Demo
+- Elephants Dream Demo
+- For Bigger Blazes Demo
+- For Bigger Escapes Demo
+
+All are direct public/open sample streams. No pirated catalogs or unauthorized sources were added.
+
+Added:
+
+```text
+android/app/src/main/assets/web/demo-catalog-runtime.js
+```
+
+Purpose:
+
+- final runtime layer to guarantee visible demo movies on Home and Catalog after all existing runtime overrides;
+- provides demo Home shelves;
+- provides demo Catalog list;
+- provides demo Details page;
+- opens native player through `openPlayerWithItem` when available;
+- falls back to legacy `openPlayer` or browser open;
+- clearly labels content as Legal Demo / Open Demo.
 
 Updated:
 
 ```text
-docs/qa/QA_STATUS.md
+android/app/src/main/assets/web/index.html
 ```
 
-Recorded:
+Added as final scripts:
 
-- CI emulator smoke remains PASS.
-- Manual QA found bugs.
-- Backspace bug fixed in code and needs retest.
-- Home mock data and Search/Sources UX remain bugs.
+```html
+<script src="streaming-first-v2.js"></script>
+<script src="demo-catalog-runtime.js"></script>
+```
 
-Commit:
+### Partial ASG-TOR-004 work also added
+
+Added:
 
 ```text
-a72fb3374bee9c9044a713501e9e295423664244
+android/app/src/main/assets/web/streaming-first-v2.js
+```
+
+Purpose:
+
+- improve selected stream readiness lifecycle;
+- use selected file / stream URL / service configured / bridge ready status;
+- route open through `AsPlayerHandoffV2` when available;
+- readable prepare/open/cancel/diagnostics actions.
+
+Runtime QA still pending.
+
+### Version / release
+
+Bumped:
+
+```text
+versionName = "2.10.20"
+versionCode = 60
+```
+
+Fixed accidental Gradle typo immediately after bump:
+
+```text
+sourceCompatibility = JavaVersion.VERSION_17
+```
+
+Updated:
+
+```text
+docs/release/CHANGELOG.md
+docs/release/RELEASE_STATUS.md
 ```
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/input.js`
-- `docs/qa/QA_STATUS.md`
+- `android/app/src/main/assets/web/sources.txt`
+- `android/app/src/main/assets/web/demo-catalog-runtime.js`
+- `android/app/src/main/assets/web/streaming-first-v2.js`
+- `android/app/src/main/assets/web/index.html`
+- `android/app/build.gradle.kts`
+- `docs/release/CHANGELOG.md`
+- `docs/release/RELEASE_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
 
-- `cba83c117b1fa221f8cf208c83aae77ca9fbae2d` — `Fix Backspace behavior in text inputs`
-- `a72fb3374bee9c9044a713501e9e295423664244` — `Record manual QA findings and Backspace fix`
+- `5237eac3ba8b327e4a9f4db7dfb447691bd7dc6b` — `Enable bundled legal demo video sources`
+- `dead374a9b932288c731fe3410e7fd02ede68928` — `Add final demo catalog runtime`
+- `2ca419e296eb8124516e79504a2afaf2ac9e1107` — `Load final demo catalog runtime`
+- `ff7d4c65a05c4ae8c96dcb093b00de9e175fb3a3` — `Bump version for visible demo catalog release`
+- `1c90a65c617a6a7f49030c9d38088276333b2799` — `Fix Gradle JavaVersion syntax for 2.10.20`
+- `984e7b3919a79e4165d7d12904ab75e17f480a54` — `Update changelog for 2.10.20 visible demo catalog`
+- `e9a0098802834725fd59585ea717595da4bfdfa1` — `Update release status for 2.10.20 visible demo catalog`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -123,73 +159,59 @@ Early alpha / working prototype.
 
 `NOT_READY_YET`
 
-Current QA status:
+Current release expectation:
+
+- versionName: `2.10.20`
+- versionCode: `60`
+- expected tag: `v2.10.20`
+- expected release: `Asgard TV v2.10.20`
+- expected APK asset: `asgard-tv-release.apk`
+
+## Current QA Status
 
 ```text
 ASG-QA-001: QA_IN_PROGRESS / CI_SMOKE_PASS / BUGS_FOUND / MANUAL_TV_QA_REQUIRED
 ```
 
-What is verified:
+What should be retested immediately:
 
-- CI emulator smoke workflow passed by user confirmation.
-- APK build/install/launch/no-instant-crash gate is passed in CI emulator.
-- Several basic manual checks passed according to user shorthand.
-
-What is fixed and needs retest:
-
-- Backspace/Delete/text input editing inside input/textarea/contenteditable.
-
-What is still not fixed:
-
-- Home mock/demo data still appears as main content; no real fresh/new movies/series/posters.
-- Search/source results are unclear or not working from user perspective.
-- Output/result placement is wrong; messages/results appear too low or outside expected area.
-- Full remote D-pad focus traversal still needs structured QA.
-- Back behavior across all screens still needs structured QA after input fix.
-- Native ExoPlayer real playback quality on Android TV device remains unverified.
-- Configured source/parser/TorrServer flows remain unverified.
-- 15-minute manual stability remains unverified.
+- Home shows demo movies immediately.
+- Catalog shows demo movies immediately.
+- Demo Details opens.
+- Watch opens native PlayerActivity.
+- Search sees enabled demo direct video sources.
+- Gradle build passes after syntax fix.
 
 ## Current Highest Priority
 
-1. Re-run manual QA for Backspace behavior in Search/Sources fields after commit `cba83c117...`.
-2. Fix Home mock-data presentation:
-   - either label as Demo/Fallback clearly;
-   - or populate from configured source/search results where possible;
-   - avoid implying mock data is fresh real content.
-3. Redesign Search/source result layout:
-   - results directly under input/action;
-   - visible loading/empty/error states;
-   - clear playable/source/task actions;
-   - no hidden output at the bottom.
-4. Continue manual Android TV / Mi Box S QA for Search → media task → metadata → player flow.
+1. Verify release `v2.10.20` and `asgard-tv-release.apk` after Actions completes.
+2. Install `v2.10.20` on Android TV / emulator.
+3. Confirm Home/Catalog are no longer empty.
+4. Confirm demo Watch opens player.
+5. Then continue `ASG-TOR-004` runtime QA / hardening.
 
 ## Next Recommended Task
 
-Engineer:
-
-Address manual QA BUG_FOUND items in this order:
-
-1. Home mock data / content labeling or real source-backed home.
-2. Search/source result clarity and placement.
-3. Sources output placement.
-4. Retest Backspace/input behavior.
-
 QA:
 
-Retest the affected cases after new APK build:
+Retest visible catalog/content issue on `v2.10.20`.
 
-- text input Backspace;
-- Search results visibility;
-- Sources preview/save output placement;
-- Home content expectation.
+Engineer:
+
+If Home/Catalog still do not show content, inspect load order and `AsApp.home` / `AsApp.catalog` overrides.
+
+If Home/Catalog are fixed, continue:
+
+```text
+ASG-TOR-004 — Streaming-first playback
+```
 
 ## Blockers / Risks
 
 - No confirmed physical Android TV / Mi Box S QA.
-- Search/source UX is not understandable enough for user.
-- Home screen can mislead user because mock data looks like real fresh content.
-- Release APK availability must still be verified in GitHub Releases if distributing.
+- Demo catalog is intentionally legal demo content, not real fresh movie catalog.
+- Release APK availability must still be verified in GitHub Releases.
+- `streaming-first-v2.js` is code-wired but not runtime-verified.
 - Do not mark tasks DONE without QA evidence.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
