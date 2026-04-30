@@ -40,7 +40,12 @@ window.AsUI={
   if(this.state.screen!=='Главная'){this.nav('Главная',{replace:true});return true;}
   const now=Date.now();
   const msg='Press Back again to exit';
-  if(now-this.lastBackAt<1800){const b=window.AsgardBridge;if(b&&b.showToast)b.showToast(msg);else this.toast(msg);return true;}
+  if(now-this.lastBackAt<1800){
+    const b=window.AsgardBridge;
+    if(b&&b.exitApp)return b.exitApp();
+    if(b&&b.showToast)b.showToast(msg);else this.toast(msg);
+    return true;
+  }
   this.lastBackAt=now;
   const b=window.AsgardBridge;if(b&&b.showToast)b.showToast(msg);else this.toast(msg);
   return true;
