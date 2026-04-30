@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.25 according to Android build configuration.
+2.10.26 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,64 +16,62 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.25`
-- versionCode: `65`
-- tag: `v2.10.25`
-- release title: `Asgard TV v2.10.25`
+- versionName: `2.10.26`
+- versionCode: `66`
+- tag: `v2.10.26`
+- release title: `Asgard TV v2.10.26`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.25 Scope
+## New in 2.10.26 Scope
 
-- Search results are now grouped into film/series cards instead of being shown as raw links/text rows.
-- Added `search-card-groups-v6.js`:
-  - groups multiple source results by cleaned title;
-  - each card shows poster placeholder, title, source count, best source type, quality and seed/peer chips when available;
-  - each card has primary action `▶ Включить лучший`;
-  - each card has `Выбрать источник` to open a detailed list of available variants;
-  - source selection screen lists each variant with quality/source/size/seed/peer metadata;
-  - variant action is `▶ Включить этот вариант`.
-- Search flow now matches target UX:
-  - first choose movie/series card;
-  - then choose source/variant;
-  - then one-click playback flow prepares direct stream or service-based metadata/files.
+- Fixed Home screen not changing from demo/mock content.
+- `home-metadata-v7.js` is now actually loaded by `index.html` after `demo-catalog-runtime.js`.
+- Added `home-metadata-force-v8.js` to force metadata Home over demo fallback when the current screen is Home.
+- Added `home-metadata-enrich-v9.js` to enrich Details with cast/actors from TVMaze where available.
+- Home now uses metadata cards for new/current series and upcoming episodes instead of showing only demo videos as the primary screen.
+- Home cards show poster, title, episode/date, genres, rating where available.
+- Details screen shows:
+  - description/summary;
+  - genre chips;
+  - rating chip where available;
+  - date chip;
+  - actors/cast cards where available;
+  - clear `▶ Включить фильм` action.
+- `▶ Включить фильм` on a metadata card routes to Search using the title. Playback links are still resolved only from user-configured/search sources.
 - Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
 - No unauthorized catalogs, no protected-provider circumvention, no paid-access circumvention, and no embedded P2P engine were added.
 
-## Carried from 2.10.24
+## Carried from 2.10.25
 
-- Magnet/torrent metadata loading starts automatically after media task creation.
-- Default parser candidate exists in `parsers.json`:
-
-```text
-Default JacRed/Torznab Parser → http://pape85e.tsarea.tv:8880
-```
-
-- Parser discovery ignores placeholder URLs like `USER_CONFIGURED_*`.
-- Default/active parser is tested automatically during search.
+- Search results are grouped into movie/series cards instead of raw links/text rows.
+- Each card has `▶ Включить лучший` and `Выбрать источник`.
+- Source variant selection screen lists quality/source/size/seed metadata where available.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.25` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.26` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.25.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.25.
+- Confirm APK build for 2.10.26.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.26.
 - Confirm install on Android TV / Mi Box S.
-- Open Search.
-- Search a title.
-- Confirm results appear as film/series cards, not raw links.
-- Open a card with `Выбрать источник`.
-- Confirm source variants are listed with quality/source/size/seed metadata where available.
-- Press `▶ Включить этот вариант`.
-- Confirm direct playable opens PlayerActivity or service metadata/files starts automatically.
-- Confirm HTML/web pages are not opened directly in PlayerActivity as video.
+- Open Home.
+- Confirm Home is not Big Buck Bunny/Sintel/Tears of Steel demo-only screen.
+- Confirm Home shows metadata cards with poster/title/episode/date/rating/genres where available.
+- Open a metadata card.
+- Confirm Details shows summary, rating, genre/date chips and cast/actors where available.
+- Press `▶ Включить фильм`.
+- Confirm it routes to Search and searches by title.
+- Confirm Search results are still grouped into film/series cards.
 
 ## Known Risk
 
 Native POST bridge for service API is still not confirmed. If service metadata still fails, the next fix should add a small safe native POST bridge in `MainActivity.kt` or a separate bridge class, then route service POST calls through it.
+
+Movie metadata is still limited: the current metadata Home uses TVMaze series/episode data. A proper movie metadata provider such as TMDB requires a configured API key and should be added as a separate settings-driven feature.
 
 ## Stable Release Gates
 
@@ -82,7 +80,7 @@ Stable release is blocked unless:
 - APK builds.
 - APK installs on Android TV / Mi Box S.
 - App opens without internet.
-- Home/Catalog show testable demo content or metadata fallback.
+- Home/Catalog show metadata or safe fallback.
 - Remote navigation works.
 - Player works.
 - Movie title search works with user-configured or bundled legal demo sources.
