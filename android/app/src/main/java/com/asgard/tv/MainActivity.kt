@@ -41,6 +41,7 @@ class MainActivity : Activity() {
         webView.settings.javaScriptEnabled = true
         webView.settings.domStorageEnabled = true
         webView.addJavascriptInterface(AsgardBridge(), "AsgardBridge")
+        webView.addJavascriptInterface(com.asgard.tv.search.NativeSourceBridge { prefs.getString("sources_txt", null) ?: assets.open("web/sources.txt").bufferedReader().use { it.readText() } }, "AsgardNativeSearch")
         setContentView(webView)
         webView.loadUrl("file:///android_asset/web/index.html")
         handleIncomingTorrentIntent(intent)
