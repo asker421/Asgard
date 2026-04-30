@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.12 according to Android build configuration.
+2.10.13 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,40 +16,41 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.12`
-- versionCode: `52`
-- tag: `v2.10.12`
-- release title: `Asgard TV v2.10.12`
+- versionName: `2.10.13`
+- versionCode: `53`
+- tag: `v2.10.13`
+- release title: `Asgard TV v2.10.13`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.12 Scope
+## New in 2.10.13 Scope
 
-- Added `continue-watching.js` runtime layer for `ASG-042`.
-- Home Continue Watching shelf now uses saved progress items from `AsStore.progress()`.
-- Added TV-friendly empty state when no saved progress exists.
-- Added Resume action from saved position.
-- Added Start over action from position 0.
-- Added Remove action for individual progress items.
-- Added Info diagnostics action for saved progress item.
-- Continue Watching cards show progress bar, percent and timecode.
+- Hardened `qr-import.js` for `ASG-050`.
+- TV confirmation now requires entering the active 6-digit PIN.
+- HTTP(S) links can be imported only as disabled user source rows.
+- Imported link rows are disabled by default until the user reviews and enables them in Source Manager.
+- JSON wrapper supports `sources_txt` and `link` preview/handling.
+- Unsupported or sensitive payload types remain preview-only.
+- Session remains one-time with expiry and local TV confirmation.
+- No silent import, no silent APK install, no bundled catalogs, no embedded source lists, no bypass features.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.12` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.13` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.12.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.12.
+- Confirm APK build for 2.10.13.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.13.
 - Confirm install on Android TV / Mi Box S.
-- Start a video and exit player after progress is saved.
-- Confirm Continue Watching shows saved item.
-- Confirm Resume opens player from saved position.
-- Confirm Start over opens player from zero.
-- Confirm Remove deletes only selected progress item.
-- Confirm empty state is readable and D-pad focus works.
+- Create QR import session.
+- Preview sources.txt payload.
+- Confirm wrong PIN blocks import.
+- Confirm correct PIN imports valid sources.
+- Confirm HTTP(S) link imports as disabled source only.
+- Confirm unsupported payloads remain preview-only.
+- Confirm D-pad focus works on QR import actions.
 - Confirm no first-launch crash.
 
 ## Stable Release Gates
@@ -61,7 +62,7 @@ Stable release is blocked unless:
 - App opens without internet.
 - Remote navigation works.
 - Player works.
-- Continue Watching works with saved progress.
+- QR import requires TV confirmation and PIN.
 - Search and source setup work with user-configured sources.
 - Media task flow has clear states and diagnostics.
 - No critical crash.
