@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.10 according to Android build configuration.
+2.10.11 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,38 +16,36 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.10`
-- versionCode: `50`
-- tag: `v2.10.10`
-- release title: `Asgard TV v2.10.10`
+- versionName: `2.10.11`
+- versionCode: `51`
+- tag: `v2.10.11`
+- release title: `Asgard TV v2.10.11`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.10 Scope
+## New in 2.10.11 Scope
 
-- Added `search-normalization-v2.js` runtime layer for `ASG-012`.
-- Unified result schema for Search screen.
-- Better detection for direct playable, torrent file, magnet and link results.
-- Better quality/size/seed normalization.
-- Better scoring and grouping for TV search results.
-- Result diagnostics now include normalized fields and raw result snapshot.
+- Added `setup-wizard.js` runtime layer for `ASG-080`.
+- Settings screen now gets a `Search setup wizard` card.
+- Wizard gives a TV-friendly path through Sources, Parser/service, Test setup and Search.
+- Shows enabled sources count, parser status, service status and legal-safe notice.
+- Links directly to Source Manager, Parser & service settings and Search.
 - No bundled catalogs, embedded source lists, engines, or bypass features were added.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.10` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.11` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.10.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.10.
+- Confirm APK build for 2.10.11.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.11.
 - Confirm install on Android TV / Mi Box S.
-- Search with user-configured sources.
-- Confirm unified search summary counters are accurate.
-- Confirm result grouping is correct.
-- Confirm Create media task still works after normalization.
-- Confirm diagnostics include normalized and raw fields.
+- Open Settings and confirm `Search setup wizard` card appears.
+- Confirm wizard steps render with D-pad focus.
+- Confirm Source Manager, Parser/service and Search links work.
+- Confirm Test setup shows readable setup status.
 - Confirm no first-launch crash.
 
 ## Stable Release Gates
