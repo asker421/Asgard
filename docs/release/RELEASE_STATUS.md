@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.7 according to Android build configuration.
+2.10.8 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,35 +22,36 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.10.7 (47)` after metadata and file selection hardening.
+2026-04-30: Release trigger requested for `2.10.8 (48)` after streaming readiness implementation.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.10.7`
-- release title: `Asgard TV v2.10.7`
+- tag: `v2.10.8`
+- release title: `Asgard TV v2.10.8`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
 Release verification is PENDING after release-trigger commits.
 
-Do not claim that `2.10.7` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.8` release APK is available until GitHub Actions / Releases confirm it.
 
-## New in 2.10.7 Scope
+## New in 2.10.8 Scope
 
-- Hardened metadata and file selection flow for `ASG-TOR-003`.
-- Configured service adapter now normalizes more metadata response shapes.
-- Hash/task id extraction now checks add response and original result fields.
-- File normalization now includes index, name, path, size, extension and video detection.
-- Clear distinction between `no_files_returned` and `no_playable_video_file`.
-- Media Task now persists selected file object, not only selected index.
-- Media Task now shows total/playable/other file summary.
-- Non-playable file selection is blocked with clear task state.
-- Metadata diagnostics now include file count, playable count and selected file.
-- Player handoff remains routed through `AsMediaTask.openStream()`.
+- Added separate streaming readiness runtime layer for `ASG-TOR-004`.
+- Media Task screen now gets a Streaming readiness panel.
+- Added Prepare stream action.
+- Added Open stream action through readiness preflight.
+- Added Cancel preparation action.
+- Added clear states for ready / not ready / service missing / preparing / cancelled / failed.
+- Added native bridge vs browser fallback indicator.
+- Added configured service readiness indicator for tasks that need external preparation.
+- Existing `AsMediaTask.openStream()` remains intact; readiness layer wraps around it without replacing source architecture.
+- No bundled catalogs, embedded source lists, or bypass features added.
 
 ## Included Scope Since 2.9.5
 
+- Metadata and file selection hardening.
 - Player handoff hardening.
 - Persistent media task runtime layer.
 - Main media search runtime layer.
@@ -81,17 +82,15 @@ docs/release/CHANGELOG.md
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.7.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.7.
+- Confirm APK build for 2.10.8.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.8.
 - Confirm install on Android TV / Mi Box S.
-- Configure a compatible user service.
-- Search and create media task.
-- Load metadata where service returns files.
-- Confirm total/playable/other summary is accurate.
-- Select playable file and confirm selected file persists.
-- Try selecting non-playable file and confirm readable error state.
-- Confirm no-files and no-playable states are readable.
-- Confirm Open stream still uses selected playable stream path.
+- Create direct playable media task and confirm Streaming readiness shows ready.
+- Create configured-service media task without service URL and confirm service missing state.
+- Configure service and prepare stream.
+- Confirm preparing / ready / failed states are readable.
+- Confirm Cancel changes state to cancelled.
+- Confirm Open stream still opens native PlayerActivity when stream URL exists.
 - Confirm remote navigation.
 - Confirm no first-launch crash.
 
@@ -99,6 +98,7 @@ docs/release/CHANGELOG.md
 
 - Full smoke test passed.
 - Mi Box S validation passed.
+- Streaming readiness runtime-verified.
 - Metadata/file selection runtime-verified.
 - Media task-to-player runtime-verified.
 - Media search-to-task runtime-verified.
@@ -116,10 +116,11 @@ Stable release is blocked unless:
 - App opens without internet.
 - Media search from title works with user-configured sources.
 - Selected result becomes a persistent media task.
+- Streaming readiness states are understandable.
 - Metadata/file loading has clear success/error state.
 - Selected file persists.
 - Media task reliably opens native player when stream URL exists.
-- Missing stream, no-files and no-playable states are understandable.
+- Missing service, missing stream, no-files and no-playable states are understandable.
 - User-configured service flow requires confirmation where needed.
 - Remote navigation works.
 - Player works.
