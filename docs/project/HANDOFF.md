@@ -16,44 +16,55 @@ docs/product/backlog-v2.json
 
 Do not use old `docs/product/backlog.json` as active backlog.
 
+Refreshed for latest task:
+
+- `docs/project/CHAT_PROTOCOL.md`
+- `docs/product/backlog-v2.json`
+- `docs/project/PROJECT_STATE.md`
+- `docs/project/HANDOFF.md`
+- `docs/project/DECISIONS.md`
+- `docs/project/NEXT_ACTIONS.md`
+- `docs/project/BACKLOG_V2_MIGRATION.md`
+- `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+
 ## Work Completed In Latest Task
 
-### Metadata Home actually enabled and enriched — 2.10.26
+### Metadata API compatibility and search timeout — 2.10.27
 
 User reported:
 
 ```text
-главный экран не изменился, там по прежнему мок
-на карточках нет никакой информации что за фильм и о чем
-актеры рейтинги и все остальное не работает
+метадата апи из миссинг
+начало зависать на поиске
 ```
 
 Root cause found:
 
-- `home-metadata-v7.js` existed in the repo but was not loaded by `index.html`.
-- Therefore the app could not run the metadata Home runtime and kept showing demo/mock content.
+- `one-click-playback-v5.js` fails with `Metadata API missing` if `AsMediaTask.loadMetadata` is not available at click time.
+- `torrserver-adapter.js` already prefers `AsgardBridge.nativePostJson`, but `MainActivity.kt` still exposes only `nativeFetch(GET)` and not native JSON POST.
+- Full `MainActivity.kt` update to add native POST was blocked by tool safety checks again.
 
 Implemented:
 
+- Added `metadata-api-compat-v10.js`:
+  - ensures `window.AsMediaTask` exists;
+  - ensures `AsMediaTask.loadMetadata()` exists;
+  - delegates to `AsMetadataFilesV2.load(taskId)` when available;
+  - returns a readable `metadata_loader_missing` diagnostic instead of letting one-click playback crash with `Metadata API missing`.
+
+- Added `search-timeout-v11.js`:
+  - wraps `AsSources.searchContent(query)` with a 14-second timeout guard;
+  - if a parser/source hangs, Search gets a timeout diagnostic instead of infinite loading.
+
 - Updated `index.html`:
-  - now loads `home-metadata-v7.js` after `demo-catalog-runtime.js`;
-  - now loads `home-metadata-force-v8.js`;
-  - now loads `home-metadata-enrich-v9.js`.
-
-- Added `home-metadata-force-v8.js`:
-  - forces metadata Home over demo fallback when current screen is Home;
-  - retries after short delays to override late demo/mock runtime rendering.
-
-- Added `home-metadata-enrich-v9.js`:
-  - overrides metadata Details to add actor/cast cards from TVMaze where available;
-  - Details now shows summary, genre/date/rating chips and cast section;
-  - `▶ Включить фильм` stays routed to existing search flow by title.
+  - loads `search-timeout-v11.js` after `search-parser-runtime-v4.js`;
+  - loads `metadata-api-compat-v10.js` after `metadata-files-v2.js` and before one-click playback.
 
 - Updated version:
 
 ```text
-versionName = "2.10.26"
-versionCode = 66
+versionName = "2.10.27"
+versionCode = 67
 ```
 
 - Updated release docs:
@@ -66,17 +77,17 @@ docs/release/RELEASE_STATUS.md
 Expected release:
 
 ```text
-Tag: v2.10.26
-Release: Asgard TV v2.10.26
+Tag: v2.10.27
+Release: Asgard TV v2.10.27
 Asset: asgard-tv-release.apk
-versionCode: 66
+versionCode: 67
 ```
 
 ## Files Changed In Latest Task
 
+- `android/app/src/main/assets/web/metadata-api-compat-v10.js`
+- `android/app/src/main/assets/web/search-timeout-v11.js`
 - `android/app/src/main/assets/web/index.html`
-- `android/app/src/main/assets/web/home-metadata-force-v8.js`
-- `android/app/src/main/assets/web/home-metadata-enrich-v9.js`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
@@ -84,13 +95,13 @@ versionCode: 66
 
 ## Recent Commits From Latest Task
 
-- `6354bf84194708545e456bce0b469c1961129294` — `Load metadata home after demo runtime`
-- `7f83e6356249379e502bdc909719c2d68b3a8da8` — `Force metadata home over demo fallback`
-- `93f68bc8e8473c3c9a5e816212b329d20209f5bc` — `Enrich home metadata details with cast`
-- `76ab35bf335497aff01bbfe783f3c9e13ca0982c` — `Load enriched home metadata details`
-- `323ec5a3e1b311ccf14ec9a2073c15bb8a6eb0b4` — `Bump version for metadata home fix`
-- `d155238de05a1f7050fa348d090b0bcd57f7ca61` — `Update release status for metadata home fix`
-- `e9ab393a6c83da73d10ae6b0af0c1c3ba002116f` — `Update changelog for metadata home fix`
+- `564e93a65929afb0e0e1a40b18a34e3577ec8db8` — `Add metadata loader compatibility shim`
+- `4c372e054cbd449448f5ff4d6dc98f8996f15daa` — `Load metadata API compatibility shim`
+- `de0b8b308631418761046b379821490152388ab8` — `Add search timeout guard`
+- `dde5bbae3f73387343945b7dd098d9d636f14ba0` — `Load search timeout guard`
+- `198a1ce129519b99fa0e0402d8590c98d5910eda` — `Bump version for metadata API and search timeout fix`
+- `ffc70f14172a0c31ce1c2a264d03a7de1732b6dc` — `Update release status for metadata API fix`
+- `f96884f6d05b684bb086cef6e1c6ba8f5eccd356` — `Update changelog for metadata API fix`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Verified
@@ -101,35 +112,35 @@ versionCode: 66
 - Android build config was bumped to:
 
 ```text
-versionName = "2.10.26"
-versionCode = 66
+versionName = "2.10.27"
+versionCode = 67
 ```
 
 - `index.html` now loads:
 
 ```text
-home-metadata-v7.js
-home-metadata-force-v8.js
-home-metadata-enrich-v9.js
+search-timeout-v11.js
+metadata-api-compat-v10.js
 ```
-
-- Metadata Home is intended to override demo/mock Home.
 
 ## Not Verified
 
 - Local Gradle build was not run in this chat environment.
-- GitHub Actions result for `2.10.26` is not yet confirmed.
+- GitHub Actions result for `2.10.27` is not yet confirmed.
 - Android TV / Mi Box S runtime QA not completed.
-- Runtime access to TVMaze API from device is not verified.
-- Home metadata UX was not manually tested on device.
+- Runtime metadata/files flow is not confirmed on device.
 
-## Known Limitation
+## Known Limitation / Next Blocker
 
-Current metadata Home uses TVMaze series/episode data. Movie metadata is still limited. Proper movie metadata, actors, ratings and posters for films require a configured movie metadata provider such as TMDB and should be added as a settings-driven feature.
+This patch should remove the visible `Metadata API missing` blocker.
 
-## Known Blocker / Risk
+However, native POST bridge for service API is still not committed. If the next device test fails with a service/network/POST/CORS style error, the next fix must add a small safe native POST bridge to Android and expose:
 
-Native POST bridge for service API is still not confirmed. If service metadata still fails, the next fix should add a small safe native POST bridge in `MainActivity.kt` or a separate bridge class, then route service POST calls through it.
+```text
+AsgardBridge.nativePostJson(url, jsonBody)
+```
+
+`torrserver-adapter.js` is already prepared to use that method when present.
 
 ## Current Product Status
 
@@ -151,18 +162,15 @@ Do not mark tasks DONE without QA evidence.
 
 ## Current Highest Priority
 
-1. Check GitHub Actions for the `2.10.26` build/release run.
+1. Check GitHub Actions for the `2.10.27` build/release run.
 2. If build fails, fix the first compile/build error only.
-3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.26`.
+3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.27`.
 4. Test:
-   - Home no longer shows only Big Buck Bunny/Sintel/Tears of Steel demo content;
-   - Home shows metadata cards with poster/title/episode/date/rating/genres where available;
-   - opening a card shows summary and actor/cast cards where available;
-   - `▶ Включить фильм` routes to Search by title;
-   - Search still shows grouped cards and source variant selection.
-5. Next work:
-   - add TMDB/settings-driven movie metadata provider;
-   - add native POST bridge if service metadata still fails.
+   - Search no longer hangs indefinitely;
+   - timeout diagnostic appears around 14 seconds if parser/source hangs;
+   - `▶ Включить этот вариант` no longer shows `Metadata API missing`;
+   - capture the new exact error if metadata still fails.
+5. Next work if metadata still fails: native POST bridge for service API.
 
 ## Notes for Next Chat
 
