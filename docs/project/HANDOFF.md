@@ -8,7 +8,7 @@ Engineer / QA / Release coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest CI smoke artifact hardening task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest engineering task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
 1. `docs/project/CHAT_PROTOCOL.md`
 2. `docs/product/backlog-v2.json`
@@ -18,7 +18,6 @@ For the latest CI smoke artifact hardening task, refreshed according to `docs/pr
 6. `docs/project/NEXT_ACTIONS.md`
 7. `docs/project/BACKLOG_V2_MIGRATION.md`
 8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
-9. `docs/qa/QA_STATUS.md`
 
 Active backlog:
 
@@ -28,58 +27,54 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-QA-001 — Android TV build/install smoke test
+### ASG-012 — Unified search results and normalization hardening
 
-- Selected task: `ASG-QA-001 — Run Android TV build/install smoke test`.
-- Reason: current reported issue was inside the Android emulator smoke workflow artifact collection.
-- User reported GitHub Actions warning:
-
-```text
-Run actions/upload-artifact@v4
-Warning: No files were found with the provided path: smoke-artifacts. No artifacts will be uploaded.
-```
-
-- Interpreted as artifact directory not guaranteed to exist if the emulator step failed before creating it, or path resolution mismatch.
-- Updated `.github/workflows/android-emulator-smoke.yml`:
-  - added `SMOKE_ARTIFACTS_DIR: ${{ github.workspace }}/smoke-artifacts`;
-  - added `Prepare smoke artifact directory` before build/emulator steps;
-  - writes `README.txt` before any later step can fail;
-  - changed artifact upload path to absolute `${{ github.workspace }}/smoke-artifacts`;
-  - added additional diagnostic files from emulator script:
-    - `emulator-step.txt`
-    - `adb-devices.txt`
-    - `adb-install.txt`
-    - `monkey-launch.txt`
-    - `activity.txt`
-    - `logcat.txt`
-    - `launch.png`
-    - `success.txt` or `failure.txt`
-- Updated `docs/qa/QA_STATUS.md` to record the artifact warning and fix.
+- Selected task: `ASG-012 — Unified search results and normalization`.
+- Reason: `ASG-QA-001` was triggered/patched but live workflow status was not available through connector, and previous handoff allowed continuing engineering work while QA gate remains pending.
+- Inspected:
+  - `source-search-hardening.js`
+  - `media-search.js`
+- Found search normalization duplicated across layers:
+  - `source-search-hardening.js` ranked/classified source results;
+  - `media-search.js` normalized again and could lose fields.
+- Added `search-normalization-v2.js` as a late runtime layer:
+  - unified result schema: title, description, sourceName, sourceType, sourcePriority, kind, classification, url, magnetUrl, torrentUrl, quality, sizeBytes, sizeLabel, seeders, peers, rightsStatus, requiresUserConfirmation, raw snapshot, score;
+  - kind detection for direct playable, torrent file, magnet and link results;
+  - quality detection from title/description/metadata;
+  - size normalization and TV-readable size labels;
+  - scoring by result type, title match, quality, size, seeders, peers and source priority;
+  - dedupe by URL / magnet / torrent / title key;
+  - grouped result sections for Search screen;
+  - unified search summary counters;
+  - diagnostics now include normalized fields plus raw result snapshot.
+- Loaded `search-normalization-v2.js` after `media-search.js` and before media task/readiness/diagnostics layers.
+- Bumped Android version to `2.10.10 (50)` for release trigger.
+- Updated changelog and release status for `2.10.10`.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
-### Previous CI smoke fixes preserved
+### QA gate status preserved
 
-- Previous failure: `gradle/actions/setup-gradle@v4` rejected unknown `android/gradle/wrapper/gradle-wrapper.jar` checksum.
-- Previous fix: removed `setup-gradle@v4` from emulator smoke workflow and kept build via repository wrapper.
-
-### Previous stream diagnostics work preserved
-
-- `2.10.9` stream diagnostics runtime exists.
-- `stream-diagnostics.js` is loaded after media task/readiness layers.
-- Release expectation remains `2.10.9 (49)`.
+- `ASG-QA-001` remains pending.
+- Android emulator smoke workflow has been patched and force-triggered in previous work, but connector did not expose a live pass/fail run.
+- Manual GitHub Actions verification is still required before claiming runtime QA PASS.
 
 ## Files Changed
 
-- `.github/workflows/android-emulator-smoke.yml`
-- `docs/qa/QA_STATUS.md`
+- `android/app/src/main/assets/web/search-normalization-v2.js`
+- `android/app/src/main/assets/web/index.html`
+- `android/app/build.gradle.kts`
+- `docs/release/CHANGELOG.md`
+- `docs/release/RELEASE_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
 
-- `789da66bc825dbde521bbb9b0809b531a823b422` — `Fix emulator smoke Gradle wrapper validation failure`
-- `b8eb579c67b39c98fef89a3502f8375f1239030b` — `Ensure emulator smoke artifacts are always available`
-- `4b509b6369ae171d94101b23557235138eaa8b06` — `Record artifact directory hardening for emulator smoke`
+- search normalization runtime commit was created after `search-normalization-v2.js` creation; verify exact SHA through commit history if needed.
+- `b1189e1dd95b5aaa8f17a11f621af1df3801bd77` — `Load search normalization v2`
+- `6e9addfdf17a988d09370d8148f9b44f8c6c9068` — `Bump version for search normalization release`
+- `8d88db76db15a5ff1690442c9b486e20b72b7244` — `Update changelog for 2.10.10 search normalization`
+- `82e69c0387ce9d81da3ee918bcf7b5a454f24562` — `Update release status for 2.10.10 search normalization`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -88,73 +83,54 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.10.9`
-- versionCode: `49`
-- expected tag: `v2.10.9`
-- expected release: `Asgard TV v2.10.9`
+- versionName: `2.10.10`
+- versionCode: `50`
+- expected tag: `v2.10.10`
+- expected release: `Asgard TV v2.10.10`
 - expected APK asset: `asgard-tv-release.apk`
 
 Current QA status:
 
 ```text
-ASG-QA-001: QA_IN_PROGRESS / WORKFLOW_PATCHED / RUN_REQUIRED
+ASG-QA-001: QA_IN_PROGRESS / WORKFLOW_PATCHED / RUN_REQUIRED_OR_VERIFY_MANUALLY
 ```
 
 Current verification status:
 
-- Android emulator smoke workflow exists.
-- Gradle wrapper validation failure was patched.
-- Artifact upload missing-directory warning was patched.
-- New run after commit `b8eb579c67b39c98fef89a3502f8375f1239030b` must be checked in GitHub Actions.
-- GitHub connector did not expose live Actions run/status.
-- No Android TV / Mi Box S runtime QA has been completed in this session.
+- Search normalization v2 is code-wired.
+- Runtime QA is not verified.
+- Android emulator smoke workflow should still be verified in GitHub Actions.
+- Physical Android TV / Mi Box S QA still not completed.
 
 ## Current Highest Priority
 
-1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after commit `b8eb579c67b39c98fef89a3502f8375f1239030b`.
-2. If workflow is green, inspect `android-emulator-smoke-artifacts`:
-   - `README.txt`
-   - `emulator-step.txt`
-   - `adb-devices.txt`
-   - `adb-install.txt`
-   - `monkey-launch.txt`
-   - `activity.txt`
-   - `logcat.txt`
-   - `launch.png`
-   - `success.txt` or `failure.txt`
-3. If workflow fails, inspect uploaded artifacts and the first failing step logs.
-4. After CI smoke result is known, update `docs/qa/QA_STATUS.md`.
-5. Then continue with physical Android TV / Mi Box S QA.
+1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after the latest workflow patches.
+2. Verify release `v2.10.10` and asset `asgard-tv-release.apk` after Actions completes.
+3. Runtime QA Search screen with user-configured sources:
+   - unified summary counters;
+   - grouping;
+   - diagnostics;
+   - Create media task still works;
+   - direct playable still opens player;
+   - no-result and error states remain readable.
+4. Continue physical Android TV / Mi Box S QA.
 
 ## Next Recommended Task
 
 QA:
 
-Verify Android Emulator Smoke Test run result.
+Verify Android Emulator Smoke Test and then test `2.10.10` Search normalization flow.
 
-PASS criteria:
+Engineer if device QA remains unavailable:
 
-- workflow green;
-- APK build step passed;
-- APK install step passed;
-- launch command passed;
-- `activity.txt` contains `com.asgard.tv`;
-- `logcat.txt` has no crash / ANR for `com.asgard.tv`;
-- screenshot confirms app rendered.
-
-Engineer if smoke fails:
-
-Fix the first failing workflow/app step only, then trigger smoke again.
-
-Engineer if device QA remains unavailable and CI run cannot be read through connector:
-
-Continue with `ASG-012 — Unified search results and normalization hardening`, but keep QA gate as pending.
+Improve source setup UX under `ASG-080`, because main flow still depends on user-configured sources/services and may be too technical for non-programmer use.
 
 ## Blockers / Risks
 
 - GitHub connector did not expose latest workflow run.
 - Physical Android TV / Mi Box S QA still not completed.
-- Emulator workflow may still fail at later build/emulator/install/launch steps; artifacts should now be available for diagnosis.
+- Search normalization v2 depends on runtime load order.
+- Need runtime QA before marking `ASG-012` DONE.
 - Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks DONE until CI/manual QA evidence exists.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
