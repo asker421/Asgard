@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.15 according to Android build configuration.
+2.10.16 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,39 +16,39 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.15`
-- versionCode: `55`
-- tag: `v2.10.15`
-- release title: `Asgard TV v2.10.15`
+- versionName: `2.10.16`
+- versionCode: `56`
+- tag: `v2.10.16`
+- release title: `Asgard TV v2.10.16`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.15 Scope
+## New in 2.10.16 Scope
 
-- Updated `docs/release/INSTALLATION_GUIDE.md` for `ASG-101`.
-- Guide now targets non-programmer installation and update flow.
-- Added APK download and release verification steps.
-- Added Android TV / Mi Box S / TV Box installation methods.
-- Added update-failure recovery when signatures differ.
-- Added first-launch checklist.
-- Added setup path through Settings → Search setup wizard → Sources → Parser/service → Search.
-- Added Continue Watching test.
-- Added QR import test.
-- Added Diagnostics test and bug report template.
-- This is a documentation/release-guide update; no app runtime code was changed.
+- Added `title-media-search.js` runtime layer for `ASG-TOR-SEARCH-001`.
+- Search screen now presents explicit movie/series title search path.
+- Search now checks whether user-configured sources/parser exist before querying.
+- No configured source shows setup actions instead of silent empty results.
+- Results are rendered as user-configured media results with source, type, quality, size, seeds/peers where available.
+- Search summary shows query, total, playable, torrent, magnet, link, errors and source count.
+- Result actions continue to support Watch, Create media task, Prepare stream, Open link and Diagnostics.
+- No bundled catalogs, embedded source lists, engines, or bypass features were added.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.15` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.16` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.15.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.15.
+- Confirm APK build for 2.10.16.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.16.
 - Confirm install on Android TV / Mi Box S.
-- Confirm guide steps match actual latest GitHub Release.
-- Confirm Search setup wizard, Diagnostics, QR import and Continue Watching flows behave as documented.
+- Open Search screen.
+- Confirm no configured source shows setup state.
+- Configure safe demo source and search movie title.
+- Confirm results show source/type/quality/size/seeds where available.
+- Confirm result actions still work.
 - Confirm no first-launch crash.
 
 ## Stable Release Gates
@@ -60,9 +60,8 @@ Stable release is blocked unless:
 - App opens without internet.
 - Remote navigation works.
 - Player works.
-- Installation/update guide is accurate.
-- Diagnostics provide actionable troubleshooting info.
-- Search and source setup work with user-configured sources.
+- Movie title search works with user-configured sources.
+- Search result can become media task.
 - Media task flow has clear states and diagnostics.
 - No critical crash.
 - QA smoke test passed.
