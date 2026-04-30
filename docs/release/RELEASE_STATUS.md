@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.14 according to Android build configuration.
+2.10.15 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,39 +16,39 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.14`
-- versionCode: `54`
-- tag: `v2.10.14`
-- release title: `Asgard TV v2.10.14`
+- versionName: `2.10.15`
+- versionCode: `55`
+- tag: `v2.10.15`
+- release title: `Asgard TV v2.10.15`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.14 Scope
+## New in 2.10.15 Scope
 
-- Added `diagnostics-v2.js` runtime layer for `ASG-090`.
-- Diagnostics screen now uses a unified troubleshooting view.
-- Added sections for Network, Player, Cache/Storage, Permissions, Version/Release, Source setup and Warnings.
-- Diagnostics includes native bridge method availability, source counts, parser/service status, saved progress/tasks, release asset expectation and local storage counters.
-- Added Copy JSON action.
-- Added links to Source diagnostics and Setup wizard.
-- No bundled catalogs, embedded source lists, engines, or bypass features were added.
+- Updated `docs/release/INSTALLATION_GUIDE.md` for `ASG-101`.
+- Guide now targets non-programmer installation and update flow.
+- Added APK download and release verification steps.
+- Added Android TV / Mi Box S / TV Box installation methods.
+- Added update-failure recovery when signatures differ.
+- Added first-launch checklist.
+- Added setup path through Settings → Search setup wizard → Sources → Parser/service → Search.
+- Added Continue Watching test.
+- Added QR import test.
+- Added Diagnostics test and bug report template.
+- This is a documentation/release-guide update; no app runtime code was changed.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.14` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.15` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.14.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.14.
+- Confirm APK build for 2.10.15.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.15.
 - Confirm install on Android TV / Mi Box S.
-- Open Diagnostics screen.
-- Confirm Network / Player / Cache / Permissions / Version / Source setup sections render.
-- Confirm Copy JSON works or falls back to alert.
-- Confirm Source diagnostics link works.
-- Confirm Setup wizard link works.
-- Confirm D-pad focus works on diagnostics actions.
+- Confirm guide steps match actual latest GitHub Release.
+- Confirm Search setup wizard, Diagnostics, QR import and Continue Watching flows behave as documented.
 - Confirm no first-launch crash.
 
 ## Stable Release Gates
@@ -60,6 +60,7 @@ Stable release is blocked unless:
 - App opens without internet.
 - Remote navigation works.
 - Player works.
+- Installation/update guide is accurate.
 - Diagnostics provide actionable troubleshooting info.
 - Search and source setup work with user-configured sources.
 - Media task flow has clear states and diagnostics.
