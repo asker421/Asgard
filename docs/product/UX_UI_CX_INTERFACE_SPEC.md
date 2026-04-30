@@ -35,6 +35,25 @@ The current menu content is defined in:
 
 `android/app/src/main/assets/web/menu.txt`
 
+Current fixed menu order:
+
+```text
+Главная
+Каталог
+Поиск
+AI подбор
+Детали
+Player Pro
+Библиотека
+Серии
+Источники
+Torrent
+QR импорт
+Диагностика
+Обновления
+Настройки
+```
+
 ## Design principles
 
 1. **TV-first** — every main control must be readable from distance and reachable with D-pad navigation.
@@ -62,8 +81,21 @@ Premium landing screen with hero content, Watch CTA, Details CTA, Continue Watch
 
 Required visual direction is defined in `docs/product/VISUAL_REFERENCE.md`.
 
+Current implementation note:
+
+- Home uses a large cinematic hero with gradient overlay and a legal open/demo featured title.
+- Home includes Continue Watching with progress bars.
+- Home includes Recommended / Top Picks and Trending / New shelves.
+- Primary CTA opens native player through the existing Android bridge when running inside APK.
+- Secondary CTA opens the detail screen and keeps the current back-stack behavior.
+
 ### 2. Каталог
 Full browsing screen with filters, grouped rows, large poster cards, year, genre, rating, episode and duration.
+
+Current implementation note:
+
+- Catalog visual style is aligned with the same premium card/shelf system as Home.
+- Demo content remains open/public sample media only.
 
 ### 3. Поиск
 Remote-friendly search with large input, AI shortcut, popular queries, loading, empty and error states.
@@ -73,6 +105,11 @@ AI discovery screen with spoiler-free summary, recommendation explanation, actor
 
 ### 5. Детали
 Content decision screen with poster, rating, metadata, synopsis, why-you-may-like-this, Watch, Trailer, Add to list, seasons and actors.
+
+Current implementation note:
+
+- Detail page uses larger poster, readable metadata, Watch CTA and source/rights information.
+- Demo detail page does not introduce copyrighted posters or questionable catalogs.
 
 ### 6. Player Pro
 Unified player surface with large video area, timeline, play/pause, +/-10 seconds, subtitles, audio, quality, speed, buffer and next episode panel.
@@ -101,6 +138,15 @@ GitHub release update check with current version, manual check button and releas
 ### 14. Настройки
 Playback, parental control, profile, AI assistant, cache/storage and source security settings.
 
+## Global TV UI implementation notes
+
+- Left menu content must stay exactly synchronized with `android/app/src/main/assets/web/menu.txt`.
+- Icons are rendered as a uniform inline SVG line-icon system.
+- Active item uses the blue/cyan accent treatment.
+- Focused items use a strong blue ring, glow and predictable scroll-into-view behavior.
+- Minimum target height is kept at TV-safe size, with menu items around 58px and main CTAs around 58px.
+- The premium color system follows `VISUAL_REFERENCE.md`: dark blue background, dark panels/cards, blue/cyan accent, muted secondary text and high-contrast focus.
+
 ## CX acceptance checklist
 
 - User can understand the app in less than 30 seconds from Home.
@@ -119,6 +165,23 @@ The first implementation is intentionally WebView-safe:
 
 - no new Android dependencies;
 - no copyrighted posters;
-- fictional demo content only;
+- fictional/demo content only;
 - static UI states for modules that need backend/native implementation later;
 - existing bridge calls are kept for player and update functions where available.
+
+## 2026-04-30 implementation update
+
+Related backlog stories: ASG-002, ASG-003, ASG-004, ASG-010, ASG-020, ASG-042.
+
+Implemented in `main`:
+
+- fixed left menu content and order to match `menu.txt` exactly;
+- added consistent SVG line icons for all menu items;
+- redesigned Home toward the premium streaming visual reference;
+- added cinematic hero, metadata line, short description, Watch and Details CTA row;
+- added Continue Watching shelf with progress bars;
+- added Recommended / Top Picks and Trending / New shelves;
+- upgraded global CSS palette, spacing, typography, cards, shelves and focus states;
+- preserved user-controlled/legal-source architecture and open/public demo content only.
+
+QA status: not marked DONE. Requires APK build verification and physical/emulator remote test before acceptance criteria can be closed.
