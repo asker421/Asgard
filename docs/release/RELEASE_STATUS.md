@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.20 according to Android build configuration.
+2.10.21 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,40 +16,53 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.20`
-- versionCode: `60`
-- tag: `v2.10.20`
-- release title: `Asgard TV v2.10.20`
+- versionName: `2.10.21`
+- versionCode: `61`
+- tag: `v2.10.21`
+- release title: `Asgard TV v2.10.21`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.20 Scope
+## New in 2.10.21 Scope
 
-- Enabled bundled legal/public direct demo video sources in `sources.txt`.
-- Added `demo-catalog-runtime.js` as final runtime layer.
-- Home screen now has guaranteed visible demo movies after all runtime overrides.
-- Catalog screen now has guaranteed visible legal demo movies after all runtime overrides.
-- Demo cards open Details and native player through current bridge where available.
-- Demo content uses open/public sample streams only.
-- Added `streaming-first-v2.js` runtime layer while working on `ASG-TOR-004`; it improves selected stream readiness lifecycle, but runtime QA is still pending.
-- Fixed Gradle `JavaVersion.VERSION_17` syntax after accidental typo during version bump.
-- No pirated catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or embedded P2P engine were added.
+- Native Kotlin search engine for `sources.txt` integrated under `android/app/src/main/java/com/asgard/tv/search/`.
+- Native parser supports 8-column source rows:
+
+```text
+name | type | url_template | language | enabled | priority | auth_required | notes
+```
+
+- Native parser implementations added for:
+  - `search_template` through OkHttp + Jsoup;
+  - `json` / `api` through JSONObject path parsing;
+  - `torznab` / `jacred` / `rss` / `xml` through XML item parsing;
+  - direct media sources through `direct_video`, `hls`, `direct_stream` and direct media extensions.
+- Parallel source querying via Kotlin Coroutines.
+- Per-source failure isolation so one failed source does not crash the whole search.
+- Native bridge exposed to WebView as `AsgardNativeSearch`.
+- Web runtime wrapper `native-search-runtime.js` tries native search first and falls back to current JS search.
+- Added OkHttp / Jsoup / Coroutines dependencies.
+- No package/applicationId or branding changes.
+- No pirated catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, paid auth bypass, or embedded P2P engine were added.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.20` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.21` release APK is available until GitHub Actions / Releases confirm it.
+
+Connector check after commit `b9607a6b0e27a0b1ad4161cab3d77de61e880a8d` returned no commit statuses and no workflow runs yet.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.20.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.20.
+- Confirm APK build for 2.10.21.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.21.
 - Confirm install on Android TV / Mi Box S.
 - Open Home and confirm demo movies are visible immediately.
 - Open Catalog and confirm demo movies are visible immediately.
 - Open a demo Details page.
 - Press Watch and confirm native PlayerActivity opens.
-- Confirm Search sees enabled demo direct video sources.
+- Confirm Search sees enabled demo direct video sources through native-first search.
+- Confirm native search fallback does not break old JS search.
 - Confirm no first-launch crash.
 
 ## Stable Release Gates
