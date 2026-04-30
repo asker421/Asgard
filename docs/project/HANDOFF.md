@@ -18,62 +18,57 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed In Latest Task
 
-### Search UI, media task fix, default service URL — 2.10.23
+### Auto metadata and default parser discovery — 2.10.24
 
 User reported:
 
 ```text
-поиск дал какие то результаты но совершенно не понятно что это
-когда нажимаешь create media link выдает ошибку torrent task api unavailable
-```
-
-User also requested:
-
-```text
-добавь еще дефолтный тор сервер pape85e.tsarea.tv:8880
-обнови еще юзер интерфейса что бы результаты поиска были более организованными и сразу под строкой поиска
+магнет линки находит, но метаданные не собираются
+там отдельная кнопка для сбора метаданных, и не работает
+метаданные должны автоматически подтягиватся
+так же не работает парсеры, дефолтного парсера нет, а остальные не видит
 ```
 
 Implemented:
 
-- Added default TorrServer/service URL:
+- Updated `media-task-api-fix-v3.js`:
+  - after creating a magnet/torrent media task, metadata loading now starts automatically;
+  - task gets `autoMetadata=true`;
+  - UI text says metadata/files loading starts automatically;
+  - manual `Load metadata` is now a retry/refresh action, not the main expected flow.
+
+- Updated `parsers.json`:
+  - added enabled default parser candidate:
 
 ```text
-http://pape85e.tsarea.tv:8880
+Default JacRed/Torznab Parser → http://pape85e.tsarea.tv:8880
 ```
 
-- Updated `store.js`:
-  - added `window.ASGARD_DEFAULT_TORR_SERVER`;
-  - `AsStore.parserSettings()` now returns default parser settings with the default TorrServer URL;
-  - `AsStore.saveParserSettings()` preserves that default unless user overrides it.
+- Updated `parser_manager.js`:
+  - ignores placeholder URLs like `USER_CONFIGURED_*`;
+  - includes bundled enabled default parser candidates;
+  - auto-fills default TorrServer URL from bundled config when missing;
+  - auto-selects and saves active parser candidate.
 
-- Added `media-task-api-fix-v3.js`:
-  - late runtime patch for `AsMediaSearch.createTask()`;
-  - prevents old `torrent_task_api_unavailable` stub from being called;
-  - creates persistent media tasks through `AsStore.updateTorrentTask()` / local fallback;
-  - handles direct playable, magnet, torrent URL, and normal web-link cases with clearer messages.
+- Updated `torrserver-adapter.js`:
+  - service URL falls back to `window.ASGARD_DEFAULT_TORR_SERVER`;
+  - adapter prefers native POST bridge when available;
+  - still falls back to browser fetch for POST when native POST is unavailable.
+
+- Added `search-parser-runtime-v4.js`:
+  - patches `AsSources.searchContent()` so it calls default/active parser automatically;
+  - parser results and source results are merged and deduplicated;
+  - patches title search so it does not block search just because manual parser URL is empty;
+  - results still render directly under the search bar.
 
 - Updated `index.html`:
-  - loads `media-task-api-fix-v3.js` after `media-task-creation-v2.js`.
-
-- Updated `title-media-search.js`:
-  - results now appear immediately under the search bar;
-  - setup and diagnostics moved below result list into compact expandable sections;
-  - result cards explain what each result means:
-    - direct playable = can watch immediately;
-    - magnet/torrent = requires TorrServer/service;
-    - link = normal web link, not a media task;
-  - result groups are shown in this order:
-    1. direct playable;
-    2. torrent files;
-    3. magnet links;
-    4. other links.
+  - loads `search-parser-runtime-v4.js` after `title-media-search.js` and before media-task runtime layers.
 
 - Updated version:
 
 ```text
-versionName = "2.10.23"
-versionCode = 63
+versionName = "2.10.24"
+versionCode = 64
 ```
 
 - Updated release docs:
@@ -86,18 +81,20 @@ docs/release/RELEASE_STATUS.md
 Expected release:
 
 ```text
-Tag: v2.10.23
-Release: Asgard TV v2.10.23
+Tag: v2.10.24
+Release: Asgard TV v2.10.24
 Asset: asgard-tv-release.apk
-versionCode: 63
+versionCode: 64
 ```
 
 ## Files Changed In Latest Task
 
 - `android/app/build.gradle.kts`
-- `android/app/src/main/assets/web/store.js`
-- `android/app/src/main/assets/web/title-media-search.js`
 - `android/app/src/main/assets/web/media-task-api-fix-v3.js`
+- `android/app/src/main/assets/web/parsers.json`
+- `android/app/src/main/assets/web/parser_manager.js`
+- `android/app/src/main/assets/web/torrserver-adapter.js`
+- `android/app/src/main/assets/web/search-parser-runtime-v4.js`
 - `android/app/src/main/assets/web/index.html`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
@@ -105,13 +102,16 @@ versionCode: 63
 
 ## Recent Commits From Latest Task
 
-- `5df2b367dac690b0edbef4d79c2991174810b24d` — `Fix media task creation fallback`
-- `60b1dcc3a9bc1029cbc2e4a6801deb3096300230` — `Add default TorrServer setting`
-- `5350e32e4f5aaed0ae220e8bc346bad13e1999a3` — `Improve search results layout`
-- `f186c82473bccf3531253360b43ac86e8f1714fb` — `Load media task API fix runtime`
-- `a034e3322faa41f81951a6d0b0619104d5d91be0` — `Bump version for search UI and default service fix`
-- `fdeb0a3f6cfceb3a8f164e2196ade4419682d5ae` — `Update release status for search UI fix`
-- `eb804e756546fa13eefbdc1f451ca3011bc34a5c` — `Update changelog for search UI and service fix`
+- `d2a90ec2041fad44b6fab8dc5cd47670080b6f53` — `Auto-load metadata after media task creation`
+- `ee938bc2b2187571bc5c106c4c09812b37c4464a` — `Add default parser candidate`
+- `f9e0e53c29b393d467e988fd57222f01f8afa522` — `Improve parser discovery defaults`
+- `02162c73db56bab32b04b9c039511edf4eeabe69` — `Use native POST for TorrServer API`
+- `f2e692d4eb5bea59ec49c16702de2e6f3933dbec` — `Add auto parser runtime for search`
+- `e4e8ee05b25ecdf59804b5ecc486a7905e3c58f5` — `Bypass manual parser guard in search runtime`
+- `c2bb0748cdc486dd4fd9e3fc79e318ba89fdafd0` — `Load auto parser search runtime`
+- `bfbd369bcc355c1cda08ffd6a21b52d6eec73890` — `Bump version for auto metadata and parser discovery fix`
+- `bd1e3a60244869be1413cb858b8f8e1d6195e3f0` — `Update release status for auto metadata parser fix`
+- `01b3b4c1e6c476f0297fa117e85d872cb3a7a7ea` — `Update changelog for auto metadata parser fix`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Verified
@@ -122,25 +122,39 @@ versionCode: 63
 - Android build config was bumped to:
 
 ```text
-versionName = "2.10.23"
-versionCode = 63
+versionName = "2.10.24"
+versionCode = 64
 ```
 
-- Default service URL is now in code:
+- Default TorrServer URL exists in settings code:
 
 ```text
 http://pape85e.tsarea.tv:8880
 ```
 
-- Search UI file was updated so results render directly under search bar.
-- `media-task-api-fix-v3.js` exists and is loaded by `index.html`.
+- Default parser candidate exists in `parsers.json`.
+- Auto parser runtime is loaded by `index.html`.
+- Auto metadata trigger is added after media task creation.
 
 ## Not Verified
 
 - Local Gradle build was not run in this chat environment.
-- GitHub Actions result for `2.10.23` is not yet confirmed.
+- GitHub Actions result for `2.10.24` is not yet confirmed.
 - Android TV / Mi Box S runtime QA not completed.
-- User must confirm whether `Create media task` no longer shows `torrent_task_api_unavailable`.
+- Runtime connection to `http://pape85e.tsarea.tv:8880` is not verified from device.
+- Metadata/files may still fail if WebView/browser fetch POST is blocked by CORS or the service API requires native POST.
+
+## Known Blocker / Risk
+
+A native Android JSON POST bridge for service API was attempted in `MainActivity.kt`, but the full-file update was blocked by the tool. Current `torrserver-adapter.js` is ready to use `AsgardBridge.nativePostJson(url, body)` if added later, but the bridge is not currently available in Android.
+
+If metadata still fails in `2.10.24`, next fix should add a small safe native POST bridge to `MainActivity.kt` or a separate bridge class and expose:
+
+```text
+AsgardBridge.nativePostJson(url, jsonBody)
+```
+
+Then TorrServer POST calls should bypass WebView CORS/file-origin problems.
 
 ## Current Product Status
 
@@ -162,16 +176,16 @@ Do not mark tasks DONE without QA evidence.
 
 ## Current Highest Priority
 
-1. Check GitHub Actions for the `2.10.23` build/release run.
+1. Check GitHub Actions for the `2.10.24` build/release run.
 2. If build fails, fix the first compile/build error only.
-3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.23`.
+3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.24`.
 4. Test:
-   - Search results appear immediately under search bar;
-   - result cards are understandable;
-   - default TorrServer URL is prefilled;
-   - `Create media task` no longer shows `torrent_task_api_unavailable`;
-   - direct playable still opens PlayerActivity;
-   - torrent/magnet task goes to metadata/load stream flow.
+   - Search runs without manual parser setup;
+   - default parser appears in diagnostics or active parser state;
+   - magnet/torrent result creates task;
+   - metadata starts automatically;
+   - task shows files or a clear service error;
+   - if service error is CORS/native POST-related, implement `nativePostJson` bridge next.
 
 ## Notes for Next Chat
 
