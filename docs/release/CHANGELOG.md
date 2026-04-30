@@ -10,6 +10,39 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
+## 2.10.23 — Search UI, media task fix, default service URL
+
+Expected release:
+
+```text
+Tag: v2.10.23
+Release: Asgard TV v2.10.23
+Asset: asgard-tv-release.apk
+versionCode: 63
+```
+
+### Added / Changed
+
+- Added default TorrServer/service URL:
+
+```text
+http://pape85e.tsarea.tv:8880
+```
+
+- Added `media-task-api-fix-v3.js` as a late runtime patch.
+- Fixed search result → media task conversion so `Create media task` no longer calls the old `torrent_task_api_unavailable` stub.
+- Reorganized Search UI:
+  - search results now appear immediately under the search bar;
+  - setup and diagnostics are below the result list in compact expandable blocks;
+  - result cards now explain the result type: direct playable, TorrServer-required torrent/magnet, or normal web link;
+  - results are grouped as direct playable, torrent files, magnet links, then other links.
+- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
+- No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
+
+### QA status
+
+Code-wired only. Build and Android TV runtime QA are still pending.
+
 ## 2.10.22 — Native source search hardening
 
 Expected release:
@@ -127,7 +160,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.22`.
+3. GitHub Releases contains matching tag, for example `v2.10.23`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
