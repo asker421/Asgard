@@ -5,32 +5,49 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withTimeout
 
 class SearchManager(
     private val sources: List<SourceConfig>,
     private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val errorLogger: SearchErrorLogger = NoOpSearchErrorLogger
+    private val errorLogger: SearchErrorLogger = NoOpSearchErrorLogger,
+    private val perSourceTimeoutMs: Long = 25_000L
 ) {
     suspend fun search(query: String): SearchReport = supervisorScope {
         val enabledSources = sources
             .filter { it.enabled }
-            .filter { !it.authRequired }
-            .filter { it.urlTemplate.startsWith("http://") || it.urlTemplate.startsWith("https://") }
+            .filter { it.urlTemplate.startsWith("http://") || it.urlTemplate.startsWith("https://") || it.urlTemplate.startsWith("magnet:?") }
             .sortedBy { it.priority }
 
         val jobs = enabledSources.map { source ->
             async(dispatcher) {
                 runCatching {
-                    val results = when {
-                        isDirectMediaSource(source) -> searchDirectMediaSource(source, query)
-                        source.type in setOf("search_template", "json", "api", "torznab", "jacred", "rss", "xml") && source.urlTemplate.contains("{query}") -> ParserFactory.create(source.type).search(source, query)
-                        else -> emptyList()
+                    if (source.authRequired) {
+                        return@async SourceSearchReport(
+                            sourceName = source.name,
+                            sourceType = source.type,
+                            priority = source.priority,
+                            ok = false,
+                            status = ProviderStatus.AUTH_REQUIRED,
+                            error = "Source requires authentication and is skipped by native engine",
+                            resultCount = 0,
+                            results = emptyList()
+                        )
+                    }
+
+                    val results = withTimeout(perSourceTimeoutMs) {
+                        when {
+                            isDirectMediaSource(source) -> searchDirectMediaSource(source, query)
+                            source.type in setOf("search_template", "json", "api", "torznab", "jacred", "rss", "xml") && source.urlTemplate.contains("{query}") -> ParserFactory.create(source.type).search(source, query)
+                            else -> emptyList()
+                        }
                     }
                     SourceSearchReport(
                         sourceName = source.name,
                         sourceType = source.type,
                         priority = source.priority,
                         ok = true,
+                        status = if (results.isEmpty()) ProviderStatus.EMPTY else ProviderStatus.OK,
                         error = null,
                         resultCount = results.size,
                         results = results
@@ -42,6 +59,7 @@ class SearchManager(
                         sourceType = source.type,
                         priority = source.priority,
                         ok = false,
+                        status = error.toProviderStatus(),
                         error = error.message ?: error.javaClass.simpleName,
                         resultCount = 0,
                         results = emptyList()
@@ -65,9 +83,22 @@ class SearchManager(
         )
     }
 
+    private fun Throwable.toProviderStatus(): ProviderStatus {
+        return when (this) {
+            is ProviderProtectedException -> ProviderStatus.PROVIDER_PROTECTED
+            is HumanVerificationRequiredException -> ProviderStatus.HUMAN_VERIFICATION_REQUIRED
+            is ProviderTimeoutException -> ProviderStatus.TIMEOUT
+            is kotlinx.coroutines.TimeoutCancellationException -> ProviderStatus.TIMEOUT
+            is org.json.JSONException -> ProviderStatus.PARSE_ERROR
+            is org.xml.sax.SAXException -> ProviderStatus.PARSE_ERROR
+            else -> ProviderStatus.NETWORK_ERROR
+        }
+    }
+
     private fun isDirectMediaSource(source: SourceConfig): Boolean {
         val url = source.urlTemplate.lowercase()
-        return source.type in setOf("direct_video", "hls", "direct_stream") ||
+        return source.type in setOf("direct_video", "hls", "direct_stream", "magnet", "torrent_url") ||
+            url.startsWith("magnet:?") || url.endsWith(".torrent") ||
             url.endsWith(".mp4") || url.endsWith(".m3u8") || url.endsWith(".webm") || url.endsWith(".mkv")
     }
 
@@ -83,7 +114,8 @@ class SearchManager(
                 posterUrl = null,
                 sourceName = source.name,
                 sourceType = source.type,
-                priority = source.priority
+                priority = source.priority,
+                quality = inferQuality(source.urlTemplate + " " + source.notes)
             )
         )
     }
@@ -102,6 +134,7 @@ data class SourceSearchReport(
     val sourceType: String,
     val priority: Int,
     val ok: Boolean,
+    val status: ProviderStatus = if (ok) ProviderStatus.OK else ProviderStatus.NETWORK_ERROR,
     val error: String?,
     val resultCount: Int,
     val results: List<MediaItem>
@@ -113,4 +146,16 @@ interface SearchErrorLogger {
 
 object NoOpSearchErrorLogger : SearchErrorLogger {
     override fun log(source: SourceConfig, throwable: Throwable) = Unit
+}
+
+internal fun inferQuality(raw: String?): String? {
+    val text = raw.orEmpty().lowercase()
+    return when {
+        "2160" in text || "4k" in text -> "4K"
+        "1080" in text -> "1080p"
+        "720" in text -> "720p"
+        "480" in text -> "480p"
+        "hdr" in text -> "HDR"
+        else -> null
+    }
 }
