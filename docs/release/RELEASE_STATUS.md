@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.27 according to Android build configuration.
+2.10.28 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,68 +16,68 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.27`
-- versionCode: `67`
-- tag: `v2.10.27`
-- release title: `Asgard TV v2.10.27`
+- versionName: `2.10.28`
+- versionCode: `68`
+- tag: `v2.10.28`
+- release title: `Asgard TV v2.10.28`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.27 Scope
+## New in 2.10.28 Scope
 
-- Fixed the visible playback blocker `Metadata API missing` at runtime level.
-- Added `metadata-api-compat-v10.js`:
-  - guarantees `AsMediaTask.loadMetadata()` exists before one-click playback calls it;
-  - delegates to `AsMetadataFilesV2.load()` when available;
-  - returns a clear `metadata_loader_missing` diagnostic instead of crashing the flow.
-- Added `search-timeout-v11.js`:
-  - wraps source/parser search in a 14-second guard;
-  - prevents infinite loading when a parser/source hangs;
-  - returns a clear timeout diagnostic instead of leaving Search stuck forever.
+- Added `metadata-loader-v12.js` for more resilient service metadata/files loading:
+  - retries metadata/files several times instead of failing after one attempt;
+  - extracts torrent hash from magnet btih where possible;
+  - uses service list/get fallback when add response does not immediately return hash;
+  - selects the largest supported video file;
+  - builds stream URL only after file selection is available;
+  - returns clearer states such as `metadata_pending`, `hash_pending`, `no_playable_video_file`, and `stream_ready`.
+- Added `metadata-provider-v13.js`:
+  - TMDB metadata provider foundation;
+  - supports `ru-RU` language and region settings;
+  - supports trending movies, now playing movies, trending series, details, cast and seasons;
+  - requires user-configured TMDB API key.
+- Added `home-tmdb-v14.js`:
+  - Home no longer pretends that random English TVMaze data is a real movie/top chart;
+  - if TMDB key is missing, Home shows a clear metadata setup state instead of fake top charts;
+  - if TMDB key is configured, Home shows real TMDB `ru-RU` metadata cards;
+  - Details can show cast and season grouping for series;
+  - `▶ Включить фильм` routes title into Search/source selection flow.
 - Updated `index.html` to load:
 
 ```text
-search-timeout-v11.js
-metadata-api-compat-v10.js
+metadata-loader-v12.js
+metadata-provider-v13.js
+home-tmdb-v14.js
 ```
 
 - Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
 - No unauthorized catalogs, no protected-provider circumvention, no paid-access circumvention, and no embedded P2P engine were added.
 
-## Carried from 2.10.26
+## Carried from 2.10.27
 
-- Home metadata runtime is loaded after demo fallback.
-- Home metadata force layer attempts to override demo/mock Home.
-- Details enrichment can show cast/actors from TVMaze where available.
-
-## Carried from 2.10.25
-
-- Search results are grouped into movie/series cards instead of raw links/text rows.
-- Each card has `▶ Включить лучший` and `Выбрать источник`.
-- Source variant selection screen lists quality/source/size/seed metadata where available.
+- `Metadata API missing` compatibility shim.
+- Search timeout guard around long source/parser calls.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.27` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.28` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.27.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.27.
+- Confirm APK build for 2.10.28.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.28.
 - Confirm install on Android TV / Mi Box S.
-- Search a title.
-- Confirm Search no longer hangs indefinitely; timeout should show diagnostic by ~14 seconds.
-- Select a magnet/torrent source variant.
-- Press `▶ Включить этот вариант`.
-- Confirm the previous `Metadata API missing` error no longer appears.
-- If metadata still fails, capture the new exact error text; likely next blocker is service POST/network.
+- Open Home without TMDB key and confirm it shows metadata setup state, not fake charts.
+- Enter TMDB API key and confirm Home shows Russian metadata cards where available.
+- Open a series details page and confirm seasons/cast appear where available.
+- Select a magnet/torrent source variant and confirm metadata loader retries before showing failure.
+- Confirm stream opens only when stream URL is ready.
 
 ## Known Risk
 
-Native POST bridge for service API is still not committed. The full `MainActivity.kt` update with `nativePostJson` was blocked by the tool safety check. If service metadata still fails after 2.10.27, the next fix should add a small safe native POST bridge in Android and route service POST calls through it.
-
-Movie metadata is still limited: the current metadata Home uses TVMaze series/episode data. A proper movie metadata provider such as TMDB requires a configured API key and should be added as a settings-driven feature.
+Native POST bridge for service API is still not committed. If service metadata still fails with service/network/POST/CORS errors, the next fix should add a small safe native POST bridge in Android and route service POST calls through it.
 
 ## Stable Release Gates
 
