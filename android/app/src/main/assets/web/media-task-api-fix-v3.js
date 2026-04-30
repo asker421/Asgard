@@ -22,20 +22,38 @@
   }
   function explain(n){
     if(n.inputType==='direct_video')return {ok:true,title:'Direct playable result',message:'Это прямой video/stream URL. Можно сразу открыть плеер.'};
-    if(n.inputType==='magnet')return {ok:true,title:'Magnet result',message:'Это magnet result. Для просмотра нужен TorrServer/service: metadata → files → stream URL.'};
-    if(n.inputType==='torrent_url')return {ok:true,title:'Torrent result',message:'Это torrent URL. Для просмотра нужен TorrServer/service: metadata → files → stream URL.'};
+    if(n.inputType==='magnet')return {ok:true,title:'Magnet result',message:'Это magnet result. Asgard автоматически отправит его в TorrServer, подтянет metadata/files и попробует подготовить stream URL.'};
+    if(n.inputType==='torrent_url')return {ok:true,title:'Torrent result',message:'Это torrent URL. Asgard автоматически отправит его в TorrServer, подтянет metadata/files и попробует подготовить stream URL.'};
     if(n.inputType==='link')return {ok:false,title:'This is only a web link',message:'Это обычная веб-ссылка, не media task. Выберите direct video / magnet / torrent result или откройте ссылку.'};
     return {ok:false,title:'Unsupported result',message:'У результата нет stream URL, magnet или torrent URL.'};
   }
   function createTask(n){
     const now=Date.now();
-    const task={id:taskId(),type:'media_search_result',inputType:n.inputType,title:n.title,name:n.title,target:n.target,sourceName:n.sourceName,quality:n.quality,sizeBytes:n.sizeBytes,size:n.sizeBytes,sizeLabel:n.sizeLabel,seeders:n.seeders,peers:n.peers,rightsStatus:n.rightsStatus,rightsConfirmed:!n.requiresUserConfirmation,requiresUserConfirmation:n.requiresUserConfirmation,status:n.isDirect?'stream_ready':'metadata_pending',streamStatus:n.isDirect?'stream_ready':'not_ready',lastError:n.isDirect?'Direct playable URL is ready.':'Metadata not loaded yet. Use Load metadata to ask configured service.',createdAt:now,updatedAt:now,createdFrom:'search_task_fix_v3',rawResult:n.raw,files:[],selectedFileIndex:-1,selectedFile:null,streamUrl:n.isDirect?n.target:'',creation:{ok:true,path:n.isDirect?'direct_stream_ready':'metadata_pending_service'}};
+    const task={id:taskId(),type:'media_search_result',inputType:n.inputType,title:n.title,name:n.title,target:n.target,sourceName:n.sourceName,quality:n.quality,sizeBytes:n.sizeBytes,size:n.sizeBytes,sizeLabel:n.sizeLabel,seeders:n.seeders,peers:n.peers,rightsStatus:n.rightsStatus,rightsConfirmed:!n.requiresUserConfirmation,requiresUserConfirmation:n.requiresUserConfirmation,status:n.isDirect?'stream_ready':'metadata_pending',streamStatus:n.isDirect?'stream_ready':'metadata_pending',lastError:n.isDirect?'Direct playable URL is ready.':'Auto metadata loading will start now.',createdAt:now,updatedAt:now,createdFrom:'search_task_fix_v3_auto_metadata',rawResult:n.raw,files:[],selectedFileIndex:-1,selectedFile:null,streamUrl:n.isDirect?n.target:'',autoMetadata:true,creation:{ok:true,path:n.isDirect?'direct_stream_ready':'auto_metadata_pending'}};
     saveTask(task);return task;
   }
+  function startAutoMetadata(task,n){
+    if(!task||n.isDirect)return;
+    setTimeout(async function(){
+      try{
+        if(window.AsMediaTask&&AsMediaTask.loadMetadata){
+          await AsMediaTask.loadMetadata(task.id);
+          const latest=(window.AsStore&&AsStore.torrentTasks?AsStore.torrentTasks():[]).find(function(x){return x.id===task.id})||task;
+          if(latest.streamUrl&&window.AsMediaTask&&AsMediaTask.openStream){
+            // Keep user in task screen; do not auto-start playback without explicit action.
+          }
+          return;
+        }
+      }catch(e){
+        try{task.status='metadata_error';task.lastError=e.message||String(e);task.updatedAt=Date.now();saveTask(task);if(window.AsMediaTask&&AsMediaTask.render)AsMediaTask.render(task.id)}catch(_e){}
+      }
+    },600);
+  }
   function renderCreated(task,n){
-    const body='<div class="panel"><h2>Media task created</h2><p>'+chip(task.status)+chip(task.inputType)+chip(task.sourceName)+(task.quality?chip(task.quality):'')+(task.seeders!==undefined?chip('S '+task.seeders):'')+'</p><p class="muted">'+esc(task.streamUrl||task.target)+'</p><p>'+esc(explain(n).message)+'</p><div class="source-actions">'+btn('Open task','AsMediaTask.render(\''+task.id+'\')')+(task.streamUrl?btn('Open stream','AsMediaTask.openStream(\''+task.id+'\')','secondary'):btn('Load metadata','AsMediaTask.loadMetadata(\''+task.id+'\')','secondary'))+btn('Back to Search','AsUI.nav(\'Поиск\')','secondary')+'</div></div>';
+    const auto=n.isDirect?'':'<p>'+esc('Metadata/files loading starts automatically. If the service is slow, wait a few seconds or open Diagnostics. Вручную нажимать Load metadata больше не нужно.')+'</p>';
+    const body='<div class="panel"><h2>Media task created</h2><p>'+chip(task.status)+chip(task.inputType)+chip(task.sourceName)+(task.quality?chip(task.quality):'')+(task.seeders!==undefined?chip('S '+task.seeders):'')+'</p><p class="muted">'+esc(task.streamUrl||task.target)+'</p><p>'+esc(explain(n).message)+'</p>'+auto+'<div class="source-actions">'+btn('Open task','AsMediaTask.render(\''+task.id+'\')')+(task.streamUrl?btn('Open stream','AsMediaTask.openStream(\''+task.id+'\')','secondary'):btn('Refresh metadata','AsMediaTask.loadMetadata(\''+task.id+'\')','secondary'))+btn('Back to Search','AsUI.nav(\'Поиск\')','secondary')+'</div></div>';
     if(window.AsApp&&AsApp.shell)AsApp.shell('Media task','Search result converted into persistent media task.',body);else alert(JSON.stringify({ok:true,task},null,2));
-    setTimeout(function(){if(window.AsMediaTask&&AsMediaTask.render)AsMediaTask.render(task.id);if(window.AsInput&&AsInput.refresh)AsInput.refresh()},250);
+    setTimeout(function(){if(window.AsMediaTask&&AsMediaTask.render)AsMediaTask.render(task.id);if(window.AsInput&&AsInput.refresh)AsInput.refresh();startAutoMetadata(task,n)},250);
   }
   function renderError(info,n){
     const body=(window.AsState&&AsState.error?AsState.error(info.title,info.message,[{label:'Back to Search',action:"AsUI.nav('Поиск')"},{label:'Open link',action:'AsSearchTaskFixV3.openCurrentLink()'},{label:'Diagnostics',action:'AsSearchTaskFixV3.inspectCurrent()'}]):'<div class="panel"><h2>'+esc(info.title)+'</h2><p>'+esc(info.message)+'</p></div>')+'<pre>'+esc(JSON.stringify({normalized:n,raw:n.raw},null,2))+'</pre>';
