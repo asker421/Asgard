@@ -1,0 +1,527 @@
+{
+  "project": "Asgard TV",
+  "created_at": "2026-04-30T11:00:00+04:00",
+  "purpose": "Prioritized backlog status update based on actual code inspection. Apply these statuses to docs/product/backlog.json when full-file editing is available safely.",
+  "source_of_truth_note": "docs/product/backlog.json remains the formal source of truth. This file is a safe update layer because the GitHub connector truncates backlog.json and direct overwrite could lose data.",
+  "product_state": "early_alpha_working_prototype",
+  "priority_strategy": [
+    "First stabilize demo APK and Android TV QA.",
+    "Then finish user-provided torrent/.torrent/TorrServer flow because the foundation already exists.",
+    "Then complete source search/manager and Continue Watching.",
+    "Then QR import and AI provider.",
+    "Then polish personal library, settings, backup, privacy and stable release packaging."
+  ],
+  "next_highest_priority_work": [
+    {
+      "rank": 1,
+      "id": "ASG-QA-001",
+      "title": "Run Android TV build/install smoke test",
+      "reason": "Foundation exists but not verified on device/CI; without this, READY_FOR_QA items cannot become DONE."
+    },
+    {
+      "rank": 2,
+      "id": "ASG-TOR-002",
+      "title": "Torrent file input real metadata path",
+      "reason": ".torrent file picker and import object exist, but real bencode/TorrServer metadata flow is not complete."
+    },
+    {
+      "rank": 3,
+      "id": "ASG-TOR-003",
+      "title": "Torrent metadata and file selection from real engine/TorrServer",
+      "reason": "Mock metadata exists; real multi-file metadata is needed for actual use."
+    },
+    {
+      "rank": 4,
+      "id": "ASG-TOR-005",
+      "title": "Torrent player integration via TorrServer stream URL",
+      "reason": "TorrServer adapter can build stream URL, but UI flow does not yet hand off real playable torrent stream to ExoPlayer."
+    },
+    {
+      "rank": 5,
+      "id": "ASG-042",
+      "title": "Real Continue Watching UX",
+      "reason": "Native progress persistence exists, but real home/list/resume prompt UX is unfinished."
+    },
+    {
+      "rank": 6,
+      "id": "ASG-012",
+      "title": "Harden source-backed search and normalization",
+      "reason": "Parser/source foundation exists but needs production hardening and dedupe/ranking."
+    },
+    {
+      "rank": 7,
+      "id": "ASG-050",
+      "title": "Real QR phone import session",
+      "reason": "Only placeholder UI exists; QR import is a key non-technical user feature."
+    },
+    {
+      "rank": 8,
+      "id": "ASG-060",
+      "title": "Real AI provider integration",
+      "reason": "AI UI/mock exists, but no real provider or generation flow."
+    }
+  ],
+  "status_updates": [
+    {
+      "id": "ASG-001",
+      "recommended_status": "READY_FOR_QA",
+      "priority": "Critical",
+      "product_area": "Android TV shell",
+      "implementation_notes": [
+        "Android TV project exists with package com.asgard.tv.",
+        "Manifest includes Leanback launcher category, app label/icon/banner, INTERNET permission and WebView MainActivity.",
+        "build.gradle.kts uses compileSdk/targetSdk 35, minSdk 23, versionName 2.9.3.",
+        "Remaining: verify APK build/install on Android TV or Mi Box S."
+      ],
+      "remaining_work": ["CI/device build validation", "first launch smoke test", "offline launch validation"]
+    },
+    {
+      "id": "ASG-002",
+      "recommended_status": "READY_FOR_QA",
+      "priority": "Critical",
+      "product_area": "Remote navigation",
+      "implementation_notes": [
+        "Web UI loads input.js/nav.js and focusable controls.",
+        "MainActivity routes Android Back to window.asgardBack.",
+        "Remaining: physical remote QA for focus traps and Back behavior."
+      ],
+      "remaining_work": ["test D-pad on real remote", "check focus traps", "check Back behavior on all screens"]
+    },
+    {
+      "id": "ASG-003",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Critical",
+      "product_area": "Home screen",
+      "implementation_notes": [
+        "Home, hero, shelves, Continue Watching mock and navigation links exist in main.js.",
+        "Still uses mock data in key areas."
+      ],
+      "remaining_work": ["connect Home to real history/favorites/watchlist/new episodes", "TV visual QA"]
+    },
+    {
+      "id": "ASG-004",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "High",
+      "product_area": "Premium TV UI",
+      "implementation_notes": [
+        "Premium dark TV visual style, cards, shelves, focus styling and cinematic UI language exist.",
+        "Needs final consistency/readability QA."
+      ],
+      "remaining_work": ["readability from 2-3 meters", "style consistency pass", "loading/empty/error polish"]
+    },
+    {
+      "id": "ASG-005",
+      "recommended_status": "TODO",
+      "priority": "Medium",
+      "product_area": "Onboarding",
+      "implementation_notes": ["No complete first-launch onboarding flow confirmed in code."],
+      "remaining_work": ["first launch onboarding", "skip/reopen from settings", "setup instructions inside app"]
+    },
+    {
+      "id": "ASG-006",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "High",
+      "product_area": "Global states",
+      "implementation_notes": [
+        "Some empty/error/loading panels and retry placeholders exist across Web UI and torrent/source flows.",
+        "Coverage is not consistent across all major screens."
+      ],
+      "remaining_work": ["consistent states across all screens", "unified retry UX", "remove technical user-facing messages"]
+    },
+    {
+      "id": "ASG-010",
+      "recommended_status": "READY_FOR_QA",
+      "priority": "Critical",
+      "product_area": "Mock catalog",
+      "implementation_notes": ["main.js contains mock movies/series, mock metadata, detail page and player navigation."],
+      "remaining_work": ["offline QA", "confirm mock/production separation"]
+    },
+    {
+      "id": "ASG-011",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Critical",
+      "product_area": "Search screen",
+      "implementation_notes": [
+        "Search UI exists.",
+        "Mock search exists.",
+        "source-search.js patches Search to use active parser and enabled sources."
+      ],
+      "remaining_work": ["device QA", "slow/broken source QA"]
+    },
+    {
+      "id": "ASG-012",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Critical",
+      "product_area": "Unified real source search",
+      "implementation_notes": [
+        "sources.js provides parsing, classification, normalization, querySource/searchContent and diagnostics.",
+        "source-search.js integrates active parser, source reports, playable/torrent/magnet results and TorrServer action.",
+        "Still needs production hardening, dedupe/ranking and real configured parser QA."
+      ],
+      "remaining_work": ["dedupe/ranking", "real parser QA", "result quality normalization", "source error hardening"]
+    },
+    {
+      "id": "ASG-013",
+      "recommended_status": "TODO",
+      "priority": "Medium",
+      "product_area": "Filters and voice search",
+      "implementation_notes": ["Search filter chips exist visually, but full filters and Android TV voice input are not confirmed."],
+      "remaining_work": ["real filters", "voice search integration"]
+    },
+    {
+      "id": "ASG-020",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Critical",
+      "product_area": "Movie detail page",
+      "implementation_notes": ["Detail page UI exists with title/year/genre/rating/description, actions and actor mock list."],
+      "remaining_work": ["real metadata", "source availability", "favorites/watchlist full integration", "real trailer playback"]
+    },
+    {
+      "id": "ASG-021",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "High",
+      "product_area": "Series detail and episodes",
+      "implementation_notes": ["Series mock cards, episodes screen and season chips exist."],
+      "remaining_work": ["full season/episode model", "watched state", "release dates", "series resume logic"]
+    },
+    {
+      "id": "ASG-022",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Medium",
+      "product_area": "Actors and trailers",
+      "implementation_notes": ["Actor mock list and trailer placeholder exist."],
+      "remaining_work": ["actor page", "filmography", "real trailer data", "trailer playback"]
+    },
+    {
+      "id": "ASG-030",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Critical",
+      "product_area": "Source management",
+      "implementation_notes": ["Sources screen foundation, sources.js parser and persistence helpers exist."],
+      "remaining_work": ["full CRUD", "enable/disable UI", "source status", "last checked timestamp", "source manager polish"]
+    },
+    {
+      "id": "ASG-031",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Critical",
+      "product_area": "TXT source import",
+      "implementation_notes": ["sources.js parses TXT-style rows, handles comments/empty rows, validates types and can serialize sources."],
+      "remaining_work": ["file picker/import UX", "import summary QA", "bad file QA"]
+    },
+    {
+      "id": "ASG-032",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Critical",
+      "product_area": "Source adapter architecture",
+      "implementation_notes": [
+        "sources.js implements source classification/search/diagnostics.",
+        "JacRed/Torznab adapters and parser manager exist.",
+        "Adapter concept is implemented in JS, though not as a formal TypeScript/Kotlin interface."
+      ],
+      "remaining_work": ["formalize adapter contract if needed", "dedupe/ranking", "more source QA"]
+    },
+    {
+      "id": "ASG-033",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "High",
+      "product_area": "Source diagnostics and test mode",
+      "implementation_notes": ["source-diagnostics.js and parser-settings.js provide source/parser diagnostics and status reporting."],
+      "remaining_work": ["separate formal test mode", "developer-mode-only raw output gating"]
+    },
+    {
+      "id": "ASG-034",
+      "recommended_status": "READY_FOR_QA",
+      "priority": "Critical",
+      "product_area": "Legal-safe source architecture",
+      "implementation_notes": [
+        "sources.txt contains public/demo sources and disabled user-configured placeholders only.",
+        "parsers.json contains disabled placeholders only.",
+        "TorrServer actions require user confirmation."
+      ],
+      "remaining_work": ["pre-release asset audit", "disclaimer QA"]
+    },
+    {
+      "id": "ASG-040",
+      "recommended_status": "READY_FOR_QA",
+      "priority": "Critical",
+      "product_area": "Embedded player",
+      "implementation_notes": [
+        "PlayerActivity uses Media3 ExoPlayer.",
+        "Supports URL handoff, play/pause, D-pad seek, media rewind/fast-forward and progress save."
+      ],
+      "remaining_work": ["device QA", "bad stream QA", "codec/container QA", "Back behavior QA"]
+    },
+    {
+      "id": "ASG-041",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "High",
+      "product_area": "Timeline seek",
+      "implementation_notes": ["Native D-pad seek and web mock timeline exist."],
+      "remaining_work": ["full native timeline UI", "exact timecode navigation", "unknown duration UX"]
+    },
+    {
+      "id": "ASG-042",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Critical",
+      "product_area": "Continue Watching",
+      "implementation_notes": ["Native watch_progress persistence and JS store helpers exist; Home has mock Continue Watching row."],
+      "remaining_work": ["real Continue Watching list", "Continue/Start Over prompt", "series resume logic"]
+    },
+    {
+      "id": "ASG-043",
+      "recommended_status": "TODO",
+      "priority": "Medium",
+      "product_area": "Quality, subtitles and audio",
+      "implementation_notes": ["No full implementation confirmed beyond UI references."],
+      "remaining_work": ["quality selector", "subtitle selector", "audio track selector"]
+    },
+    {
+      "id": "ASG-044",
+      "recommended_status": "TODO",
+      "priority": "Low",
+      "product_area": "External player fallback",
+      "implementation_notes": ["openExternalUrl exists, but full external player selection/fallback flow is not confirmed."],
+      "remaining_work": ["external player preference", "intent flow", "missing player UX"]
+    },
+    {
+      "id": "ASG-050",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "High",
+      "product_area": "QR import",
+      "implementation_notes": ["QR import UI placeholder exists."],
+      "remaining_work": ["real QR session", "phone import page", "TV confirmation", "session expiry", "TXT/magnet transfer"]
+    },
+    {
+      "id": "ASG-051",
+      "recommended_status": "TODO",
+      "priority": "High",
+      "product_area": "QR security",
+      "implementation_notes": ["Security requirements exist in backlog but no real session/token implementation confirmed."],
+      "remaining_work": ["one-time token", "timeout", "confirmation enforcement"]
+    },
+    {
+      "id": "ASG-060",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Medium",
+      "product_area": "AI summary",
+      "implementation_notes": ["AI UI/mock summary exists in main.js."],
+      "remaining_work": ["real provider", "no-spoiler generation", "fallback UX"]
+    },
+    {
+      "id": "ASG-061",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Medium",
+      "product_area": "Why you may like this",
+      "implementation_notes": ["Static recommendation-style copy exists."],
+      "remaining_work": ["real recommendation reasoning", "history/profile usage"]
+    },
+    {
+      "id": "ASG-062",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Medium",
+      "product_area": "AI movie picker",
+      "implementation_notes": ["AI picker screen exists with mock output."],
+      "remaining_work": ["real AI suggestions", "open result cards", "provider settings"]
+    },
+    {
+      "id": "ASG-063",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Medium",
+      "product_area": "New episodes and upcoming releases",
+      "implementation_notes": ["Mock episodes/calendar UI exists."],
+      "remaining_work": ["real metadata provider", "watched-series tracking", "release dates"]
+    },
+    {
+      "id": "ASG-064",
+      "recommended_status": "TODO",
+      "priority": "Medium",
+      "product_area": "AI settings",
+      "implementation_notes": ["Parser settings exist, but real AI provider/API key settings are not confirmed."],
+      "remaining_work": ["AI provider settings", "API key storage", "test connection"]
+    },
+    {
+      "id": "ASG-070",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Medium",
+      "product_area": "Favorites",
+      "implementation_notes": ["Favorites bridge/store helpers exist."],
+      "remaining_work": ["full Favorites screen", "detail integration", "QA persistence"]
+    },
+    {
+      "id": "ASG-071",
+      "recommended_status": "TODO",
+      "priority": "Low",
+      "product_area": "Watchlist",
+      "implementation_notes": ["Watchlist is referenced in UI/backlog but full implementation is not confirmed."],
+      "remaining_work": ["watchlist persistence", "watchlist screen", "future releases support"]
+    },
+    {
+      "id": "ASG-072",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Medium",
+      "product_area": "History",
+      "implementation_notes": ["History bridge/store helpers exist."],
+      "remaining_work": ["full History screen", "remove item", "disable history"]
+    },
+    {
+      "id": "ASG-073",
+      "recommended_status": "TODO",
+      "priority": "Low",
+      "product_area": "Profiles",
+      "implementation_notes": ["Profile/parental references exist, but data separation is not confirmed."],
+      "remaining_work": ["profiles model", "profile picker", "child profile foundation"]
+    },
+    {
+      "id": "ASG-TOR-001",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Critical",
+      "product_area": "Magnet input",
+      "implementation_notes": [
+        "torrent.js implements magnet validation, infoHash extraction, dn/tr/ws parsing and task creation.",
+        "UI supports adding magnet tasks."
+      ],
+      "remaining_work": ["QA invalid/dead magnet", "TorrServer handoff QA"]
+    },
+    {
+      "id": "ASG-TOR-002",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Critical",
+      "product_area": ".torrent file input",
+      "implementation_notes": [
+        "MainActivity has ACTION_OPEN_DOCUMENT file picker for torrent files.",
+        "Manifest accepts file/content application/x-bittorrent and octet-stream.",
+        "pending_torrent_file_import stores uri, name and size.",
+        "torrent.js validates .torrent import and creates torrent_file task.",
+        "Real bencode parsing is not implemented; metadata remains pending/mock after input."
+      ],
+      "remaining_work": ["real metadata parse or TorrServer add", "invalid file QA", "content URI permission lifecycle"]
+    },
+    {
+      "id": "ASG-TOR-003",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Critical",
+      "product_area": "Torrent metadata and file selection",
+      "implementation_notes": [
+        "torrent.js provides mock metadata, video extension detection, default largest video selection and manual selection.",
+        "TorrServer adapter can fetch metadata/files, but UI is not fully wired to real TorrServer metadata."
+      ],
+      "remaining_work": ["real metadata from TorrServer or parser", "multi-file torrent QA", "selected file persistence"]
+    },
+    {
+      "id": "ASG-TOR-004",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Critical",
+      "product_area": "Streaming-first torrent playback",
+      "implementation_notes": ["stream.js and torrent.js implement streaming/buffer/no-peers/cancel state layer, but no real P2P engine or local stream server."],
+      "remaining_work": ["real TorrServer/P2P stream", "buffer readiness", "cancel/pause lifecycle"]
+    },
+    {
+      "id": "ASG-TOR-005",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "Critical",
+      "product_area": "Torrent player integration",
+      "implementation_notes": ["TorrServer adapter can build stream URL; embedded player can open URLs; real UI handoff is not complete."],
+      "remaining_work": ["send selected torrent file stream URL to ExoPlayer", "seek limitation UX", "player error handling"]
+    },
+    {
+      "id": "ASG-TOR-006",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "High",
+      "product_area": "Torrent buffer/cache/diagnostics",
+      "implementation_notes": ["Torrent diagnostics and buffer state UI exist; cache/storage management is not complete."],
+      "remaining_work": ["cache size limit", "clear torrent cache", "low storage handling", "real speed/peers/seeds metrics"]
+    },
+    {
+      "id": "ASG-080",
+      "recommended_status": "IN_PROGRESS",
+      "priority": "High",
+      "product_area": "Settings",
+      "implementation_notes": ["Settings screen exists; Parser & TorrServer settings are functional."],
+      "remaining_work": ["player settings", "AI settings", "storage settings", "privacy settings"]
+    },
+    {
+      "id": "ASG-081",
+      "recommended_status": "TODO",
+      "priority": "Low",
+      "product_area": "Backup/export/import",
+      "implementation_notes": ["No full backup/export/import flow confirmed."],
+      "remaining_work": ["export settings", "import settings", "schema validation"]
+    },
+    {
+      "id": "ASG-082",
+      "recommended_status": "TODO",
+      "priority": "Medium",
+      "product_area": "Privacy/security",
+      "implementation_notes": ["Parser API key masking exists in UI; full secure native storage and privacy controls are not complete."],
+      "remaining_work": ["secure API key storage", "disable history", "export redaction"]
+    },
+    {
+      "id": "ASG-090",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "High",
+      "product_area": "Diagnostics",
+      "implementation_notes": ["Source diagnostics and parser/TorrServer diagnostics exist. Device-wide diagnostics are not complete."],
+      "remaining_work": ["internet/player/cache/permissions/version unified diagnostics"]
+    },
+    {
+      "id": "ASG-091",
+      "recommended_status": "TODO",
+      "priority": "Low",
+      "product_area": "Logs/developer mode",
+      "implementation_notes": ["Developer-like diagnostics exist in UI, but full logs export/redaction is not implemented."],
+      "remaining_work": ["logs export", "redaction", "developer mode toggle"]
+    },
+    {
+      "id": "ASG-092",
+      "recommended_status": "TODO",
+      "priority": "Critical",
+      "product_area": "Smoke test and Mi Box S QA",
+      "implementation_notes": ["No evidence of completed physical device QA in repository."],
+      "remaining_work": ["APK install test", "remote QA", "player QA", "15-minute stability", "Mi Box S validation"]
+    },
+    {
+      "id": "ASG-UPD-001",
+      "recommended_status": "CODE_REVIEW",
+      "priority": "Medium",
+      "product_area": "GitHub update check",
+      "new_task": true,
+      "target_epic": "EPIC-011 or EPIC-012",
+      "title": "GitHub update check screen",
+      "description": "Implement GitHub Releases update check screen.",
+      "acceptance_criteria": [
+        "App can show current version.",
+        "App can query GitHub Releases.",
+        "App opens latest release page.",
+        "App does not silently install APK.",
+        "Failure state is visible."
+      ],
+      "definition_of_done": [
+        "Update check works without crashing.",
+        "User confirmation is required before installing any APK.",
+        "Failure state is understandable."
+      ],
+      "implementation_notes": [
+        "updates.js and updates-ui.js implement GitHub Releases check and external release page opening.",
+        "Android openExternalUrl() is available.",
+        "Full APK download/install flow is not implemented."
+      ],
+      "remaining_work": ["QA update failure states", "optional FileProvider install flow later"]
+    },
+    {
+      "id": "ASG-100",
+      "recommended_status": "TODO",
+      "priority": "Critical",
+      "product_area": "Release APK",
+      "implementation_notes": ["Build foundation exists, but stable APK artifact and release QA are not confirmed."],
+      "remaining_work": ["GitHub Actions artifact validation", "release APK", "version/changelog"]
+    },
+    {
+      "id": "ASG-101",
+      "recommended_status": "TODO",
+      "priority": "Critical",
+      "product_area": "Installation guide",
+      "implementation_notes": ["README has build instructions; full non-programmer install/update guide is not complete."],
+      "remaining_work": ["APK install guide", "unknown sources instructions", "source/QR/AI setup guide"]
+    }
+  ]
+}
