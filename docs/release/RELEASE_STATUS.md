@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.9.5 according to Android build configuration.
+2.9.6 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,27 +22,27 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.9.5 (35)` after adding TorrServer → ExoPlayer handoff.
+2026-04-30: Release trigger requested for `2.9.6 (36)`.
 
 This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by a push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.9.5`
-- release title: `Asgard TV v2.9.5`
+- tag: `v2.9.6`
+- release title: `Asgard TV v2.9.6`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
-Release verification is PENDING after release-trigger commits.
+Release verification is PENDING after release-trigger commit.
 
-Do not claim that `2.9.5` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.9.6` release APK is available until GitHub Actions / Releases confirm it.
 
-## New in 2.9.5 Scope
+## Included Scope Since 2.9.5
 
-- Added TorrServer playable stream preparation helper.
-- Added search-result action: `TorrServer → ExoPlayer` for torrent/magnet results.
-- Added Torrent screen action: `TorrServer → ExoPlayer` for user media tasks.
+- TorrServer playable stream preparation helper.
+- Search-result action: `TorrServer → ExoPlayer` for torrent/magnet results.
+- Torrent screen action: `TorrServer → ExoPlayer` for user media tasks.
 - Preserved legal-safe architecture: no bundled catalogs, no P2P engine inside APK, no DRM/Cloudflare/captcha bypass.
 - Playback requires user-configured TorrServer and explicit rights confirmation.
 
@@ -67,8 +67,8 @@ The guide covers:
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.9.5.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.9.5.
+- Confirm APK build for 2.9.6.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.9.6.
 - Confirm install on Android TV / Mi Box S.
 - Confirm remote navigation.
 - Confirm ExoPlayer playback.
