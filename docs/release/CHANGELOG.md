@@ -10,40 +10,41 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
-## 2.10.16 — Title media search MVP layer
+## 2.10.17 — Search result to persistent media task
 
 Expected release:
 
 ```text
-Tag: v2.10.16
-Release: Asgard TV v2.10.16
+Tag: v2.10.17
+Release: Asgard TV v2.10.17
 Asset: asgard-tv-release.apk
-versionCode: 56
+versionCode: 57
 ```
 
 ### Added / Changed
 
-- Added `title-media-search.js` runtime layer for `ASG-TOR-SEARCH-001`.
-- Search screen now presents explicit movie/series title search path.
-- Search now checks whether user-configured sources/parser exist before querying.
-- No configured source shows setup actions instead of silent empty results.
-- Results are rendered as user-configured media results with source, type, quality, size, seeds/peers where available.
-- Search summary shows query, total, playable, torrent, magnet, link, errors and source count.
-- Result actions continue to support Watch, Create media task, Prepare stream, Open link and Diagnostics.
+- Added `media-task-creation-v2.js` runtime layer for `ASG-TOR-SEARCH-002`.
+- Selected normalized search result now converts through a stricter persistent media task creation path.
+- Direct playable result becomes `stream_ready` task with stream URL.
+- Torrent/magnet/torrent-file result becomes `metadata_pending` task.
+- Link-only/non-playable result is blocked with readable error state instead of creating broken task.
+- Torrent/magnet-like result requires explicit rights confirmation.
+- Task opens immediately after creation.
+- Creation diagnostics now show normalized input type, target presence and validation result.
 - No bundled catalogs, embedded source lists, engines, or bypass features were added.
 
 ### QA status
 
 Code-wired only. Android TV runtime QA is still pending.
 
-## 2.10.15 — Simple installation and update guide
+## 2.10.16 — Title media search MVP layer
 
-- Updated `docs/release/INSTALLATION_GUIDE.md` for `ASG-101`.
-- Guide now targets non-programmer installation and update flow.
+- Added `title-media-search.js` runtime layer for `ASG-TOR-SEARCH-001`.
+- Search screen now presents explicit movie/series title search path.
 
 ## Previous releases
 
-See Git history for older release details from `2.10.14` and below.
+See Git history for older release details from `2.10.15` and below.
 
 ## Release verification checklist
 
@@ -51,7 +52,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.16`.
+3. GitHub Releases contains matching tag, for example `v2.10.17`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
