@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.18 according to Android build configuration.
+2.10.19 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,42 +16,43 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.18`
-- versionCode: `58`
-- tag: `v2.10.18`
-- release title: `Asgard TV v2.10.18`
+- versionName: `2.10.19`
+- versionCode: `59`
+- tag: `v2.10.19`
+- release title: `Asgard TV v2.10.19`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.18 Scope
+## New in 2.10.19 Scope
 
-- Added `player-handoff-v2.js` runtime layer for `ASG-TOR-005`.
-- Added Android bridge method `openPlayerWithItem(url, title, startPosition, itemId)`.
-- Media task player handoff now prefers stable task id for progress/resume tracking.
-- Missing stream URL now shows readable error with Prepare stream / Load metadata / Diagnostics actions.
-- Unsupported URL scheme is blocked before player handoff.
-- Resume and Start over now use the same task id path.
-- Player handoff diagnostics now show bridge availability, item id support, URL readiness and saved progress.
-- Legacy `openPlayer(url,title,startPosition)` remains as fallback.
+- Added `metadata-files-v2.js` runtime layer for `ASG-TOR-003`.
+- Metadata/file selection now has stricter file normalization.
+- Configured service file responses are normalized from multiple common response shapes.
+- Largest playable video file is auto-selected when available.
+- File list persists on media task.
+- Selected file persists with index/path/size/extension metadata.
+- Stream URL is generated/kept when configured service supports it.
+- No files / no playable video / service missing states now produce readable task states.
+- File diagnostics now show file count, playable count, selected file and stream readiness.
 - No bundled catalogs, embedded source lists, engines, or bypass features were added.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.18` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.19` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.18.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.18.
+- Confirm APK build for 2.10.19.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.19.
 - Confirm install on Android TV / Mi Box S.
-- Create stream-ready task.
-- Open stream and confirm `PlayerActivity` starts.
-- Confirm progress saves under stable media task id.
-- Confirm Resume starts from saved position.
-- Confirm Start over starts from zero.
-- Confirm missing stream URL shows readable error.
-- Confirm bad/unsupported stream does not crash app.
+- Configure service URL.
+- Create metadata-pending media task.
+- Load metadata and confirm file list appears.
+- Confirm largest playable file is auto-selected.
+- Confirm manual file selection persists.
+- Confirm no files / no playable file / service missing states are readable.
+- Confirm selected stream opens player when stream URL is ready.
 
 ## Stable Release Gates
 
@@ -64,8 +65,9 @@ Stable release is blocked unless:
 - Player works.
 - Movie title search works with user-configured sources.
 - Search result can become media task.
+- Metadata/files load from configured service.
+- Playable video file can be selected.
 - Stream-ready media task opens native player.
-- Player saves progress with stable task id.
 - Media task flow has clear states and diagnostics.
 - No critical crash.
 - QA smoke test passed.
