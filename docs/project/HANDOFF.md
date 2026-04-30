@@ -4,11 +4,11 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-Engineer / Release / QA coordination
+QA / Release / Engineer coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest engineering task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest QA task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
 1. `docs/project/CHAT_PROTOCOL.md`
 2. `docs/product/backlog-v2.json`
@@ -17,7 +17,7 @@ For the latest engineering task, refreshed according to `docs/project/CHAT_PROTO
 5. `docs/project/DECISIONS.md`
 6. `docs/project/NEXT_ACTIONS.md`
 7. `docs/project/BACKLOG_V2_MIGRATION.md`
-8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+8. `docs/prompts/QA_CHAT_PROMPT.md`
 
 Active backlog:
 
@@ -27,49 +27,51 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### Stream diagnostics work
+### ASG-QA-001 — Android TV build/install smoke test
 
-- Continued engineering work after user said "Дальше".
-- Selected task: `ASG-TOR-006 — Buffer, cache and diagnostics`.
-- Reason: `ASG-TOR-004` was code-wired in `2.10.8`, and handoff listed buffer/cache/diagnostics as the next engineering item.
-- Added `stream-diagnostics.js`:
-  - installs after `streaming-readiness.js` / `media-task.js`;
-  - adds local Stream diagnostics panel to Media Task screen;
-  - reports task state, stream state, URL readiness, URL scheme, selected file, file count, native bridge availability, configured service status, saved progress, storage information and last player open result;
-  - adds Copy JSON action;
-  - adds Refresh diagnostics action;
-  - adds Clear snapshot action;
-  - diagnostics are local/task-based;
-  - does not add embedded source lists, catalogs, engines, or bypass features.
-- Loaded `stream-diagnostics.js` last in `index.html`.
-- Bumped Android version to `2.10.9 (49)` for the release trigger.
-- Updated changelog and release status for 2.10.9.
+- Selected task: `ASG-QA-001 — Run Android TV build/install smoke test`.
+- Reason: after `2.10.9`, Android TV build/install smoke test is the critical gate before claiming runtime readiness.
+- Inspected `.github/workflows/android-emulator-smoke.yml`.
+- Confirmed workflow statically performs:
+  - debug APK build through repository Gradle wrapper;
+  - Android emulator startup;
+  - APK install;
+  - app launch via `monkey`;
+  - activity dump capture;
+  - logcat capture;
+  - screenshot capture;
+  - crash / ANR grep;
+  - artifact upload.
+- Connector did not expose live workflow runs/statuses for the latest commit.
+- Forced a fresh smoke workflow run by changing the workflow trigger note.
+- Force-trigger commit:
+
+```text
+be671178d74cb117423fb925b0a72053e96f897b — Trigger Android emulator smoke test for 2.10.9
+```
+
+- `get_commit_combined_status` returned no statuses for that commit.
+- `fetch_commit_workflow_runs` returned no workflow runs for that commit.
+- Therefore CI result is still not verified through connector.
+- Updated `docs/qa/QA_STATUS.md` as `RUN_TRIGGERED / VERIFICATION PENDING`.
 - Did not mark any backlog item DONE.
-- Did not overwrite old `docs/product/backlog.json`.
 
-### Existing CI smoke note preserved
+### Previous stream diagnostics work preserved
 
-- Android emulator smoke workflow exists.
-- Prior smoke failure was Gradle wrapper validation in `setup-gradle@v4`, before app build/install.
-- Workflow was patched to remove the failing `setup-gradle@v4` step from emulator smoke.
-- Latest CI run result is still not confirmed in this chat.
+- `2.10.9` stream diagnostics runtime exists.
+- `stream-diagnostics.js` is loaded after media task/readiness layers.
+- Release expectation remains `2.10.9 (49)`.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/stream-diagnostics.js`
-- `android/app/src/main/assets/web/index.html`
-- `android/app/build.gradle.kts`
-- `docs/release/CHANGELOG.md`
-- `docs/release/RELEASE_STATUS.md`
+- `.github/workflows/android-emulator-smoke.yml`
+- `docs/qa/QA_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
 
-- `6bce947e95a6fdf74b450ef712626a8e654db0a9` — `Add stream diagnostics runtime layer`
-- stream diagnostics load commit was created after `index.html` update; verify exact SHA through commit history if needed.
-- `f4dee1d7eab36f7f969ef02bf76e847fcb2f7322` — `Bump version for stream diagnostics release`
-- `7e9c748fbe6b9a85af7997801ed7bad3918ad9c9` — `Update changelog for 2.10.9 stream diagnostics`
-- `d0b1ac88c50c841620d162a02d1295a93f97c695` — `Update release status for 2.10.9 stream diagnostics`
+- `be671178d74cb117423fb925b0a72053e96f897b` — `Trigger Android emulator smoke test for 2.10.9`
+- `3d4afa4ce31894c6b505a56dd96a74a5fd54b09b` — `Update QA status for triggered emulator smoke`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -84,49 +86,59 @@ Current release expectation:
 - expected release: `Asgard TV v2.10.9`
 - expected APK asset: `asgard-tv-release.apk`
 
+Current QA status:
+
+```text
+ASG-QA-001: RUN_TRIGGERED / VERIFICATION PENDING
+```
+
 Current verification status:
 
-- Release should be triggered by push to `main`.
-- GitHub connector did not confirm live workflow completion.
-- Release APK availability must still be verified in GitHub Actions / Releases before claiming success.
+- GitHub Actions run was triggered by workflow-file commit.
+- GitHub connector did not expose live Actions run/status.
+- Manual GitHub Actions check is required.
 - No Android TV / Mi Box S runtime QA has been completed in this session.
-- Stream diagnostics are code-wired but not runtime-verified.
-- Android emulator smoke workflow should be rechecked after latest commits.
 
 ## Current Highest Priority
 
-1. `ASG-QA-001` — Android TV build/install smoke test.
-2. Verify `Android Emulator Smoke Test` run result after latest commits.
-3. Runtime QA for the full title-search -> media task -> file selection -> readiness -> player path.
-4. `ASG-042` — Continue Watching runtime QA.
-5. `ASG-012` — Unified search results and normalization hardening if QA exposes result issues.
+1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after commit `be671178d74cb117423fb925b0a72053e96f897b`.
+2. If workflow is green, inspect `android-emulator-smoke-artifacts`:
+   - `activity.txt`
+   - `logcat.txt`
+   - `launch.png`
+3. If workflow fails, inspect the first failing step logs.
+4. After CI smoke result is known, update `docs/qa/QA_STATUS.md`.
+5. Then continue with physical Android TV / Mi Box S QA.
 
 ## Next Recommended Task
 
 QA:
 
-Run Android TV smoke test for `2.10.9`.
+Verify Android Emulator Smoke Test run result.
 
-Minimum stream diagnostics QA scope:
+PASS criteria:
 
-- Create direct playable media task.
-- Confirm Stream diagnostics panel renders.
-- Confirm Copy JSON works or falls back to alert.
-- Confirm Refresh updates after Prepare stream / Open stream.
-- Confirm Clear snapshot works.
-- Confirm storage info appears when Android bridge supports it.
-- Confirm D-pad focus works on diagnostics buttons.
+- workflow green;
+- APK build step passed;
+- APK install step passed;
+- launch command passed;
+- `activity.txt` contains `com.asgard.tv`;
+- `logcat.txt` has no crash / ANR for `com.asgard.tv`;
+- screenshot confirms app rendered.
 
-Engineer if device QA is unavailable:
+Engineer if smoke fails:
 
-Implement `ASG-012 — Unified search results and normalization hardening` next, or improve source setup UX under `ASG-080` if search setup is still too technical.
+Fix the first failing workflow/app step only, then trigger smoke again.
+
+Engineer if device QA remains unavailable and CI run cannot be read through connector:
+
+Continue with `ASG-012 — Unified search results and normalization hardening`, but keep QA gate as pending.
 
 ## Blockers / Risks
 
-- GitHub connector did not confirm latest workflow result.
-- No evidence yet of completed Android TV / Mi Box S physical QA.
-- Diagnostics depend on runtime task state and Android bridge support for storage info.
-- Need runtime QA before marking `ASG-TOR-006` DONE.
+- GitHub connector did not expose latest workflow run.
+- Physical Android TV / Mi Box S QA still not completed.
+- Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks DONE until CI/manual QA evidence exists.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
 ## Notes for Next Chat
