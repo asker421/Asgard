@@ -16,14 +16,16 @@ class SearchManager(
             .filter { it.enabled }
             .filter { !it.authRequired }
             .filter { it.urlTemplate.startsWith("http://") || it.urlTemplate.startsWith("https://") }
-            .filter { it.urlTemplate.contains("{query}") || it.type !in listOf("search_template", "json", "api", "torznab", "jacred", "rss", "xml") }
             .sortedBy { it.priority }
 
         val jobs = enabledSources.map { source ->
             async(dispatcher) {
                 runCatching {
-                    val parser = ParserFactory.create(source.type)
-                    val results = parser.search(source, query)
+                    val results = when {
+                        isDirectMediaSource(source) -> searchDirectMediaSource(source, query)
+                        source.type in setOf("search_template", "json", "api", "torznab", "jacred", "rss", "xml") && source.urlTemplate.contains("{query}") -> ParserFactory.create(source.type).search(source, query)
+                        else -> emptyList()
+                    }
                     SourceSearchReport(
                         sourceName = source.name,
                         sourceType = source.type,
@@ -60,6 +62,29 @@ class SearchManager(
             reportsOk = reports.count { it.ok },
             reports = reports,
             results = results
+        )
+    }
+
+    private fun isDirectMediaSource(source: SourceConfig): Boolean {
+        val url = source.urlTemplate.lowercase()
+        return source.type in setOf("direct_video", "hls", "direct_stream") ||
+            url.endsWith(".mp4") || url.endsWith(".m3u8") || url.endsWith(".webm") || url.endsWith(".mkv")
+    }
+
+    private fun searchDirectMediaSource(source: SourceConfig, query: String): List<MediaItem> {
+        val normalizedQuery = query.trim().lowercase()
+        val haystack = listOf(source.name, source.urlTemplate, source.notes).joinToString(" ").lowercase()
+        if (normalizedQuery.isNotBlank() && !haystack.contains(normalizedQuery)) return emptyList()
+        return listOf(
+            MediaItem(
+                title = source.name,
+                link = source.urlTemplate,
+                description = source.notes,
+                posterUrl = null,
+                sourceName = source.name,
+                sourceType = source.type,
+                priority = source.priority
+            )
         )
     }
 }
