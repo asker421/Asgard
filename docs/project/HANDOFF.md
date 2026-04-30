@@ -4,7 +4,7 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-Engineer / QA / Product Owner / UX/UI coordination
+UX/UI coordination
 
 ## Required Files Read
 
@@ -17,96 +17,126 @@ Read and used for this session:
 5. `docs/project/HANDOFF.md`
 6. `docs/project/DECISIONS.md`
 7. `docs/project/NEXT_ACTIONS.md`
-8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
-9. `docs/prompts/QA_CHAT_PROMPT.md`
-10. `docs/prompts/PO_CHAT_PROMPT.md`
-11. `docs/prompts/UX_UI_CHAT_PROMPT.md`
-12. `docs/qa/QA_STATUS.md`
-13. `docs/release/RELEASE_STATUS.md`
-14. `.github/workflows/build-apk-final.yml`
-15. `.github/workflows/release-apk.yml`
-16. `android/app/build.gradle.kts`
+8. `docs/prompts/UX_UI_CHAT_PROMPT.md`
+9. `docs/qa/QA_STATUS.md`
+10. `docs/product/UX_UI_CX_INTERFACE_SPEC.md`
+11. `docs/product/VISUAL_REFERENCE.md`
+12. `android/app/src/main/assets/web/menu.txt`
+13. `android/app/src/main/assets/web/ui.js`
+14. `android/app/src/main/assets/web/input.js`
 
 Important note: `docs/product/backlog.json` may be truncated by the GitHub connector. It was not overwritten. Status interpretation used `docs/product/backlog-prioritized-status-2026-04-30.json` as the safe status layer.
 
 ## Work Completed
 
-- Continued from project protocol after user asked to work further.
-- Checked latest visible commit history through GitHub connector.
-- Confirmed recent visible Android version from `android/app/build.gradle.kts` is `2.9.4 (34)`.
-- Inspected `Build APK` workflow and confirmed it is configured for `push` to `main` and `workflow_dispatch`.
-- Inspected `Release APK` workflow and confirmed it is configured for `push` to `main`, `v*` tags and `workflow_dispatch`.
-- Confirmed release workflow reads `versionName/versionCode` from `android/app/build.gradle.kts`, builds debug APK and uploads it as `asgard-tv-release.apk`.
-- Attempted to fetch workflow runs for recent commits through the connector, but no workflow runs were returned.
-- Updated QA status to reflect that full smoke QA is BLOCKED / NOT COMPLETED until actual Actions result and Android TV device/emulator testing are available.
-- Updated release status to version `2.9.4` and clarified release verification is still blocked.
-- Did not mark any backlog item DONE.
-- Did not overwrite `docs/product/backlog.json`.
+- Continued as UX/UI after user asked to work further.
+- Confirmed formal backlog source of truth remains `docs/product/backlog.json`.
+- Confirmed safe status guidance is `docs/product/backlog-prioritized-status-2026-04-30.json` because `backlog.json` may be truncated by the GitHub connector.
+- Read current visual reference and UX/CX spec.
+- Inspected current menu source: `android/app/src/main/assets/web/menu.txt`.
+- Inspected runtime UI menu implementation: `android/app/src/main/assets/web/ui.js`.
+- Inspected remote input/focus foundation: `android/app/src/main/assets/web/input.js`.
+- Added UX/UI review document: `docs/ux/UX_REVIEW_2026-04-30.md`.
+- Patched `ui.js` so runtime left menu mirrors the 14-item menu from `menu.txt` without changing names/order/content.
+- Added consistent line icons for every existing menu item.
+- Updated UX review after the menu alignment patch.
+- No backlog status was changed because `backlog.json` was truncated and should not be overwritten.
 
 ## Files Changed
 
-- `docs/qa/QA_STATUS.md`
-- `docs/release/RELEASE_STATUS.md`
+- `android/app/src/main/assets/web/ui.js`
+- `docs/ux/UX_REVIEW_2026-04-30.md`
 - `docs/project/HANDOFF.md`
 
-## Current Product Status
+## UX/UI Commits From This Session
 
-Early alpha / working prototype.
+- `7501889bfb57b82806aeec989adcecf0d7f71c5e` — `Add UX UI review for current TV interface`
+- `37cdf71cb3ecaee09bac2f32bf2f065cf316b9e4` — `fix: align runtime menu with visual reference source`
+- `a3b475d953a32304de0716efa907bbe480c0014d` — `Update UX review after menu alignment patch`
+- Current handoff update commit is the latest commit after this file is saved.
 
-Current verification status:
+## Current UX/UI Status
 
-- Repository workflow definitions exist.
-- Latest Android build configuration says `2.9.4 (34)`.
-- Latest GitHub Actions run result was not available through the connector.
-- No Android TV / Mi Box S runtime QA has been completed in this session.
-- Release APK availability for `2.9.4` must be checked directly in GitHub Actions / Releases before communicating it as available.
+Current UX status: **NEEDS QA**.
 
-## Current Highest Priority
+The critical menu source mismatch was patched. Runtime `ui.js` now mirrors the same 14 menu items and order as `android/app/src/main/assets/web/menu.txt`.
 
-1. `ASG-QA-001 — Run Android TV build/install smoke test`.
-2. Verify GitHub Actions build/release result for `2.9.4`.
-3. Download APK artifact or release asset.
-4. Install on Android TV emulator or Mi Box S.
-5. Validate D-pad, Enter, Back, Home/Search/Sources/Details and Watch → native ExoPlayer.
-6. Update `docs/qa/QA_STATUS.md` with PASS / FAIL / BLOCKED per row.
+## Critical UX Finding Status
+
+Previously:
+
+`docs/product/VISUAL_REFERENCE.md` required preserving menu content from `menu.txt`, while `ui.js` hardcoded only six menu items.
+
+Now:
+
+`ui.js` includes the same 14 menu items as `menu.txt`:
+
+```text
+Главная
+Каталог
+Поиск
+AI подбор
+Детали
+Player Pro
+Библиотека
+Серии
+Источники
+Torrent
+QR импорт
+Диагностика
+Обновления
+Настройки
+```
+
+The menu content was not changed. It was restored/aligned to the documented source.
+
+## Current Highest UX Priority
+
+1. Run Android TV visual/focus QA for the full 14-item menu.
+2. Confirm icons render correctly in WebView.
+3. Confirm 14-item rail is not too crowded at TV distance.
+4. If crowded, improve spacing/scroll affordance/compact rail without removing or renaming items.
+5. Run D-pad audit after menu alignment.
+6. Then polish Home hero, shelves and Continue Watching according to `docs/product/VISUAL_REFERENCE.md`.
 
 ## Next Recommended Task
 
-QA / Release:
+UX/UI + QA:
 
-Check GitHub Actions and Releases directly in the repository UI.
+Run Android TV visual/focus audit for the full menu.
 
-Expected locations:
+Minimum UX QA scope:
 
-- GitHub → Actions → `Build APK` → latest run → artifact `asgard-tv-debug-apk`.
-- GitHub → Actions → `Release APK` → latest run.
-- GitHub → Releases → latest release → `asgard-tv-release.apk`.
+- all 14 menu items visible or reachable;
+- every item has a visible icon;
+- active item is clear;
+- focused item is clear;
+- D-pad up/down moves through all menu items;
+- D-pad right moves from menu into content area predictably;
+- Back behavior returns to previous screen or Home predictably;
+- long menu does not hide important items without a visual scroll affordance;
+- text remains readable from 2–3 meters.
 
-If no workflow ran after latest commits, manually run `Build APK` and `Release APK` via `workflow_dispatch`.
+Suggested next commit if QA issues are found:
 
-Then run smoke test:
+```text
+fix: polish full TV menu focus and spacing
+```
 
-- APK builds.
-- APK installs.
-- App launches.
-- App opens without internet.
-- D-pad focus works.
-- Enter activates focused item.
-- Back behavior works.
-- Home opens.
-- Search opens and shows results/summary.
-- Sources preview/save works.
-- Details opens.
-- Watch opens native ExoPlayer.
-- Play/pause/seek work.
-- Update screen opens.
-- App survives 15 minutes.
+## Release / QA Context Preserved
+
+The broader project handoff still stands:
+
+- latest Android build configuration recently inspected by other role was `2.9.4 (34)`;
+- QA smoke test is still not completed in repository evidence;
+- GitHub Actions / release status must be checked directly before claiming APK availability;
+- Android TV / Mi Box S runtime QA is still required.
 
 ## Blockers / Risks
 
 - `docs/product/backlog.json` may be truncated by the GitHub connector; do not overwrite it unless full file content is safely available.
-- GitHub connector did not return latest workflow run results for inspected commits.
-- No evidence yet of completed Android TV / Mi Box S physical QA.
+- No repository evidence yet of completed Android TV / Mi Box S physical UX QA.
+- The full 14-item menu may be visually crowded on smaller TV resolutions and needs device/emulator validation.
 - Do not mark any backlog item DONE until acceptance criteria and Definition of Done are verified.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
@@ -116,13 +146,16 @@ Before doing implementation or QA work, read:
 
 1. `docs/product/backlog.json`
 2. `docs/product/backlog-prioritized-status-2026-04-30.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/CHAT_PROTOCOL.md`
-5. `docs/project/DECISIONS.md`
-6. `docs/project/NEXT_ACTIONS.md`
-7. `docs/project/HANDOFF.md`
-8. The relevant role prompt under `docs/prompts/`
+3. `docs/product/UX_UI_CX_INTERFACE_SPEC.md`
+4. `docs/product/VISUAL_REFERENCE.md`
+5. `android/app/src/main/assets/web/menu.txt`
+6. `docs/project/PROJECT_STATE.md`
+7. `docs/project/CHAT_PROTOCOL.md`
+8. `docs/project/DECISIONS.md`
+9. `docs/project/NEXT_ACTIONS.md`
+10. `docs/project/HANDOFF.md`
+11. The relevant role prompt under `docs/prompts/`
 
 Do not use `docs/BACKLOG.md`.
 
-When reviewing runtime behavior, inspect `index.html` load order and the late patch scripts, not only base `main.js`/`ui.js`.
+When reviewing UI/runtime behavior, do not judge only `main.js` or `input.js` in isolation. `index.html` may load later patch scripts that override or extend base behavior.
