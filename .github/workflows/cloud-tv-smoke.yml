@@ -1,0 +1,141 @@
+name: Cloud Android TV Smoke Test
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'android/**'
+      - '.github/workflows/cloud-tv-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      AVD_NAME: asgard_tv_smoke
+      APK_PATH: android/app/build/outputs/apk/debug/app-debug.apk
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        run: |
+          sdkmanager --install \
+            "platform-tools" \
+            "emulator" \
+            "platforms;android-35" \
+            "build-tools;35.0.0" \
+            "system-images;android-35;android-tv;x86_64"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.10.2
+
+      - name: Build debug APK
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:assembleDebug
+
+      - name: Create Android TV AVD
+        run: |
+          echo "no" | avdmanager create avd \
+            --force \
+            --name "$AVD_NAME" \
+            --package "system-images;android-35;android-tv;x86_64" \
+            --device "tv_1080p"
+
+      - name: Start Android TV emulator
+        run: |
+          nohup emulator \
+            -avd "$AVD_NAME" \
+            -no-window \
+            -no-audio \
+            -no-boot-anim \
+            -gpu swiftshader_indirect \
+            -accel off \
+            -memory 2048 \
+            > emulator.log 2>&1 &
+          adb wait-for-device
+          boot_completed=""
+          for i in {1..90}; do
+            boot_completed=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
+            if [ "$boot_completed" = "1" ]; then
+              break
+            fi
+            sleep 5
+          done
+          if [ "$boot_completed" != "1" ]; then
+            echo "Emulator did not boot in time"
+            adb devices -l || true
+            cat emulator.log || true
+            exit 1
+          fi
+          adb shell input keyevent 82 || true
+          adb shell settings put global window_animation_scale 0 || true
+          adb shell settings put global transition_animation_scale 0 || true
+          adb shell settings put global animator_duration_scale 0 || true
+
+      - name: Install APK and launch MainActivity
+        run: |
+          adb install -r "$APK_PATH"
+          adb shell am force-stop com.asgard.tv || true
+          adb shell am start -W -n com.asgard.tv/.MainActivity
+          sleep 8
+
+      - name: Run D-pad navigation smoke actions
+        run: |
+          mkdir -p smoke-artifacts
+          adb shell input keyevent KEYCODE_DPAD_DOWN
+          sleep 1
+          adb shell input keyevent KEYCODE_DPAD_DOWN
+          sleep 1
+          adb shell input keyevent KEYCODE_DPAD_RIGHT
+          sleep 1
+          adb shell input keyevent KEYCODE_DPAD_CENTER
+          sleep 2
+          adb shell input keyevent KEYCODE_BACK
+          sleep 1
+          adb shell input keyevent KEYCODE_DPAD_UP
+          sleep 1
+          adb shell input keyevent KEYCODE_DPAD_CENTER
+          sleep 2
+          adb exec-out screencap -p > smoke-artifacts/asgard-tv-smoke.png
+          adb logcat -d > smoke-artifacts/logcat.txt
+          adb shell dumpsys activity activities > smoke-artifacts/activities.txt || true
+          cp emulator.log smoke-artifacts/emulator.log || true
+
+      - name: Verify app process/activity signals
+        run: |
+          adb shell pidof com.asgard.tv > smoke-artifacts/pid.txt || true
+          if ! grep -q "com.asgard.tv" smoke-artifacts/activities.txt; then
+            echo "Warning: com.asgard.tv not found in activity dump"
+          fi
+          if grep -i -E "FATAL EXCEPTION|AndroidRuntime|Process: com.asgard.tv" smoke-artifacts/logcat.txt; then
+            echo "Potential crash signature found in logcat"
+            exit 1
+          fi
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: asgard-tv-smoke-artifacts
+          path: smoke-artifacts/
+          if-no-files-found: warn
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: asgard-tv-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: warn
