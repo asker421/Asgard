@@ -24,3 +24,13 @@ My MP4 Stream | direct_video | USER_CONFIGURED_MP4_URL | multi | false | 50 | fa
 My HLS Stream | hls | USER_CONFIGURED_HLS_URL | multi | false | 51 | false | user-provided HLS stream
 My Magnet | magnet | USER_CONFIGURED_MAGNET_URI | multi | false | 52 | false | user-provided magnet; requires confirmation
 My Torrent URL | torrent_url | USER_CONFIGURED_TORRENT_URL | multi | false | 53 | false | user-provided torrent URL; requires confirmation
+RuTracker | html | https://rutracker.org/forum/tracker.php?nm={query} | ru | true | 1 | true | search,torrent | Public / Account Required | Крупнейший русскоязычный трекер
+Rutor | html | http://rutor.info/search/0/0/100/0/{query} | ru | true | 2 | false | search,torrent | Public | Открытый торрент-трекер
+HDRezka | html | https://rezka.ag/search/?q={query} | ru | true | 5 | false | metadata,playable | Proprietary | Популярный онлайн-кинотеатр
+Filmix | html | https://filmix.ac/search/{query} | ru | true | 6 | false | metadata,playable | Proprietary | Онлайн-кинотеатр с 4K контентом
+KinoPoisk | api | https://api.kinopoisk.dev/v1.4/movie/search?query={query} | ru | true | 10 | true | metadata | Proprietary | Официальные метаданные (требуется API Token)
+Ivi | html | https://www.ivi.ru/search/?q={query} | ru | true | 15 | false | playable | Proprietary | Легальный онлайн-кинотеатр
+Okko | html | https://okko.tv/search/{query} | ru | true | 16 | false | playable | Proprietary | Легальный онлайн-кинотеатр
+KinoPub | api | https://api.kino.pub/items/search?q={query} | ru | false | 20 | true | search,metadata,playable | Proprietary / Subscription | Частный онлайн-кинотеатр
+Zetflix | html | https://zetfix.online/?s={query} | ru | true | 25 | false | playable | Proprietary | Стриминг сериалов и кино
+Anilibria | api | https://api.anilibria.tv/v3/title/search?search={query} | ru | true | 30 | false | metadata,playable,torrent | Public | Ресурс с аниме контентом
