@@ -1,4 +1,4 @@
-# Trigger note: 2026-04-30 fix sh-compatible emulator smoke script for ASG-QA-001 / v2.10.13.
+# Trigger note: 2026-04-30 run smoke test via dedicated bash script for ASG-QA-001.
 name: Android Emulator Smoke Test
 
 on:
@@ -8,6 +8,7 @@ on:
     paths:
       - 'android/**'
       - '.github/workflows/android-emulator-smoke.yml'
+      - '.github/scripts/android-emulator-smoke.sh'
 
 jobs:
   emulator-smoke:
@@ -23,6 +24,7 @@ jobs:
 
       - name: Prepare smoke artifact directory
         if: always()
+        shell: bash
         run: |
           mkdir -p "$SMOKE_ARTIFACTS_DIR"
           {
@@ -42,16 +44,19 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install Android SDK packages
+        shell: bash
         run: |
           sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
       - name: Build debug APK with repository Gradle Wrapper
+        shell: bash
         working-directory: android
         run: |
           chmod +x ./gradlew
           ./gradlew --no-daemon :app:assembleDebug
 
       - name: Enable KVM for emulator acceleration
+        shell: bash
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
@@ -66,28 +71,7 @@ jobs:
           profile: tv_1080p
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
-          script: |
-            set -eu
-            mkdir -p "$GITHUB_WORKSPACE/smoke-artifacts"
-            echo "Emulator smoke script started at $(date -u +'%Y-%m-%dT%H:%M:%SZ')" > "$GITHUB_WORKSPACE/smoke-artifacts/emulator-step.txt"
-            adb devices | tee "$GITHUB_WORKSPACE/smoke-artifacts/adb-devices.txt"
-            adb shell input keyevent 82 || true
-            adb install -r "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk" | tee "$GITHUB_WORKSPACE/smoke-artifacts/adb-install.txt"
-            adb logcat -c
-            adb shell monkey -p com.asgard.tv -c android.intent.category.LAUNCHER 1 | tee "$GITHUB_WORKSPACE/smoke-artifacts/monkey-launch.txt"
-            sleep 15
-            adb shell dumpsys activity activities | tee "$GITHUB_WORKSPACE/smoke-artifacts/activity.txt"
-            adb logcat -d | tee "$GITHUB_WORKSPACE/smoke-artifacts/logcat.txt"
-            adb exec-out screencap -p > "$GITHUB_WORKSPACE/smoke-artifacts/launch.png" || true
-            if ! grep -q "com.asgard.tv" "$GITHUB_WORKSPACE/smoke-artifacts/activity.txt"; then
-              echo "Asgard TV package was not found in active activities" | tee "$GITHUB_WORKSPACE/smoke-artifacts/failure.txt" >&2
-              exit 1
-            fi
-            if grep -E "FATAL EXCEPTION|Application Not Responding|ANR in com\.asgard\.tv|Process: com\.asgard\.tv" "$GITHUB_WORKSPACE/smoke-artifacts/logcat.txt"; then
-              echo "Crash or ANR found in logcat" | tee "$GITHUB_WORKSPACE/smoke-artifacts/failure.txt" >&2
-              exit 1
-            fi
-            echo "Smoke test passed: APK installed, app launched, no crash/ANR detected." | tee "$GITHUB_WORKSPACE/smoke-artifacts/success.txt"
+          script: bash "$GITHUB_WORKSPACE/.github/scripts/android-emulator-smoke.sh"
 
       - name: Upload smoke artifacts
         if: always()
