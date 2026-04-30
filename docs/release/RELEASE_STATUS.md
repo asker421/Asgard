@@ -20,11 +20,23 @@ Not ready for stable release.
 - `Release APK` workflow exists and builds debug APK, renames it to `asgard-tv-release.apk`, and creates/updates GitHub Release tag from `versionName`.
 - Expected latest release asset name: `asgard-tv-release.apk`.
 
+## Release Trigger
+
+2026-04-30: Release trigger requested for `2.9.4 (34)`.
+
+This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by this push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
+
+Expected result if GitHub Actions succeeds:
+
+- tag: `v2.9.4`
+- release title: `Asgard TV v2.9.4`
+- APK asset: `asgard-tv-release.apk`
+
 ## Current Verification Status
 
-Release verification is BLOCKED in this chat environment because the GitHub connector did not return latest workflow run results for the inspected commits.
+Release verification is PENDING after the release-trigger commit.
 
-Do not claim that `2.9.4` release APK is available until GitHub Actions / Releases are checked directly.
+Do not claim that `2.9.4` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
