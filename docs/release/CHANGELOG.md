@@ -10,6 +10,45 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
+## 2.10.24 — Auto metadata and default parser discovery
+
+Expected release:
+
+```text
+Tag: v2.10.24
+Release: Asgard TV v2.10.24
+Asset: asgard-tv-release.apk
+versionCode: 64
+```
+
+### Added / Changed
+
+- Fixed media task flow so magnet/torrent metadata loading starts automatically after media task creation.
+- Added `autoMetadata=true` task flag and automatic metadata loading trigger after search result conversion.
+- Added default parser candidate to `parsers.json`:
+
+```text
+Default JacRed/Torznab Parser → http://pape85e.tsarea.tv:8880
+```
+
+- Improved parser discovery:
+  - ignores placeholder parser URLs like `USER_CONFIGURED_*`;
+  - includes bundled enabled default parser candidates;
+  - saves active parser automatically when detected;
+  - fills default TorrServer URL from bundled parser config if missing.
+- Added `search-parser-runtime-v4.js`:
+  - default/active parser is tested automatically during search;
+  - search no longer depends only on manually entered parser URL;
+  - parser results and source results are merged and deduplicated;
+  - search UI is patched to use parser results even if manual source/parser setup is incomplete.
+- Updated TorrServer adapter to prefer native POST bridge if available; Android Kotlin native POST bridge was attempted but not committed because the tool blocked the full `MainActivity.kt` update. The adapter still falls back to browser fetch for POST when native POST is unavailable.
+- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
+- No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
+
+### QA status
+
+Code-wired only. Build and Android TV runtime QA are still pending.
+
 ## 2.10.23 — Search UI, media task fix, default service URL
 
 Expected release:
@@ -160,7 +199,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.23`.
+3. GitHub Releases contains matching tag, for example `v2.10.24`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
