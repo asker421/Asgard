@@ -10,22 +10,24 @@ GitHub is the project memory. No chat should work only from conversation memory.
 
 Before doing work, every role must read:
 
-1. `docs/product/backlog.json`
-2. `docs/product/backlog-prioritized-status-2026-04-30.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/HANDOFF.md`
-5. `docs/project/DECISIONS.md`
-6. `docs/project/NEXT_ACTIONS.md`
+1. `docs/product/backlog-v2.json`
+2. `docs/project/PROJECT_STATE.md`
+3. `docs/project/HANDOFF.md`
+4. `docs/project/DECISIONS.md`
+5. `docs/project/NEXT_ACTIONS.md`
+
+Optional historical/reference files:
+
+- `docs/product/backlog.json` — old large backlog, may be truncated by GitHub connector.
+- `docs/product/backlog-prioritized-status-2026-04-30.json` — historical status layer.
 
 ## Source of truth
 
-Formal backlog source of truth:
+Formal compact backlog source of truth for chats:
 
-`docs/product/backlog.json`
+`docs/product/backlog-v2.json`
 
-If GitHub connector returns this file truncated, do not overwrite it.
-
-Use `docs/product/backlog-prioritized-status-2026-04-30.json` as a safe update layer until the full file can be edited safely.
+The old `docs/product/backlog.json` is too large for reliable connector reads and may be truncated. Do not use it for new chat-to-chat work unless it is explicitly replaced safely.
 
 ## Forbidden
 
@@ -33,7 +35,6 @@ Use `docs/product/backlog-prioritized-status-2026-04-30.json` as a safe update l
 - Do not create a competing backlog.
 - Do not delete backlog tasks.
 - Do not silently change acceptance criteria.
-- Do not add bundled pirated sources.
 - Do not silently install APK updates.
 
 ## Required handoff
