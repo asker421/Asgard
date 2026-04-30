@@ -3,6 +3,16 @@ window.AsInput={
   index:0,
   mode:'remote',
   handledKeys:['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Enter','NumpadEnter','Backspace','Escape'],
+  isTextEditable(el){
+    if(!el)return false;
+    const tag=(el.tagName||'').toUpperCase();
+    if(tag==='TEXTAREA')return true;
+    if(tag==='INPUT'){
+      const type=(el.getAttribute('type')||'text').toLowerCase();
+      return !['button','checkbox','color','file','hidden','image','radio','range','reset','submit'].includes(type);
+    }
+    return el.isContentEditable===true;
+  },
   isVisible(el){
     if(!el)return false;
     const r=el.getBoundingClientRect();
@@ -60,6 +70,16 @@ window.AsInput={
     return false;
   },
   onKey(e){
+    const active=document.activeElement;
+    const editing=this.isTextEditable(active);
+    if(editing){
+      if(e.key==='Backspace'||e.key==='Delete'||e.key.length===1||e.key==='Space'||e.key==='Home'||e.key==='End')return;
+      if(e.key==='Enter'&&((active.tagName||'').toUpperCase()==='TEXTAREA'))return;
+      if(e.key==='Escape'){
+        active.blur();
+        return;
+      }
+    }
     let handled=false;
     if(e.key==='ArrowRight')handled=this.move('right');
     else if(e.key==='ArrowLeft')handled=this.move('left');
