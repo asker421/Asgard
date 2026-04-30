@@ -18,5 +18,26 @@ data class MediaItem(
     val posterUrl: String? = null,
     val sourceName: String,
     val sourceType: String,
-    val priority: Int
+    val priority: Int,
+    val year: String? = null,
+    val quality: String? = null,
+    val size: String? = null
 )
+
+enum class ProviderStatus {
+    OK,
+    EMPTY,
+    DISABLED,
+    INVALID_CONFIG,
+    AUTH_REQUIRED,
+    UNSUPPORTED,
+    NETWORK_ERROR,
+    TIMEOUT,
+    PROVIDER_PROTECTED,
+    HUMAN_VERIFICATION_REQUIRED,
+    PARSE_ERROR
+}
+
+class ProviderProtectedException(message: String) : Exception(message)
+class HumanVerificationRequiredException(message: String) : Exception(message)
+class ProviderTimeoutException(message: String) : Exception(message)
