@@ -26,7 +26,10 @@ class JsonParser : BaseParser {
                     posterUrl = config.posterPath?.let { item.resolveString(it) },
                     sourceName = source.name,
                     sourceType = source.type,
-                    priority = source.priority
+                    priority = source.priority,
+                    year = config.yearPath?.let { item.resolveString(it) },
+                    quality = config.qualityPath?.let { item.resolveString(it) } ?: inferQuality(title + " " + link),
+                    size = config.sizePath?.let { item.resolveString(it) }
                 )
             }
         }
@@ -38,7 +41,10 @@ data class JsonMappingConfig(
     val titlePath: String,
     val linkPath: String,
     val descriptionPath: String?,
-    val posterPath: String?
+    val posterPath: String?,
+    val yearPath: String?,
+    val qualityPath: String?,
+    val sizePath: String?
 ) {
     companion object {
         fun fromNotes(notes: String): JsonMappingConfig {
@@ -48,7 +54,10 @@ data class JsonMappingConfig(
                 titlePath = map["title"] ?: "title",
                 linkPath = map["link"] ?: "url",
                 descriptionPath = map["description"] ?: map["desc"] ?: "description",
-                posterPath = map["poster"] ?: map["poster_url"]
+                posterPath = map["poster"] ?: map["poster_url"],
+                yearPath = map["year"],
+                qualityPath = map["quality"],
+                sizePath = map["size"]
             )
         }
     }
