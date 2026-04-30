@@ -1,4 +1,4 @@
-# Trigger note: 2026-04-30 ensure smoke artifacts are always created for ASG-QA-001 / v2.10.9.
+# Trigger note: 2026-04-30 fix sh-compatible emulator smoke script for ASG-QA-001 / v2.10.13.
 name: Android Emulator Smoke Test
 
 on:
@@ -67,7 +67,7 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: |
-            set -euo pipefail
+            set -eu
             mkdir -p "$GITHUB_WORKSPACE/smoke-artifacts"
             echo "Emulator smoke script started at $(date -u +'%Y-%m-%dT%H:%M:%SZ')" > "$GITHUB_WORKSPACE/smoke-artifacts/emulator-step.txt"
             adb devices | tee "$GITHUB_WORKSPACE/smoke-artifacts/adb-devices.txt"
