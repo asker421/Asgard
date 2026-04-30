@@ -10,6 +10,40 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.2 — First Launch Onboarding
+
+Expected release:
+
+```text
+Tag: v2.10.2
+Release: Asgard TV v2.10.2
+Asset: asgard-tv-release.apk
+versionCode: 42
+```
+
+### Added
+
+- TV-first first launch onboarding flow.
+- Six onboarding steps explaining Asgard TV, Sources, native ExoPlayer, QR import, Experimental screens and starting points.
+- Skip action.
+- Back/Next step navigation.
+- Completion flag in localStorage.
+- Reopen onboarding card in Settings.
+- Onboarding is loaded as the final runtime layer so it can intercept first Home render after all overlays.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Fresh install / clear data.
+- Confirm onboarding appears before Home.
+- Navigate all steps with D-pad.
+- Confirm Skip goes to Home.
+- Confirm completion persists across restart.
+- Confirm Settings → Reopen onboarding works.
+
 ## 2.10.1 — Unified Diagnostics Health Dashboard
 
 Expected release:
@@ -39,14 +73,6 @@ versionCode: 41
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Open Diagnostics screen.
-- Confirm dashboard replaces old source-only diagnostics screen.
-- Confirm bridge/version/storage/source warnings are readable.
-- Confirm Copy JSON works or falls back safely.
-- Confirm D-pad focus works across panels and buttons.
 
 ## 2.10.0 — Secure QR import prototype
 
@@ -259,7 +285,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.1`.
+3. GitHub Releases contains matching tag, for example `v2.10.2`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
