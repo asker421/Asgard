@@ -3,9 +3,6 @@ name: Web Preview
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'android/app/src/main/assets/web/**'
-      - '.github/workflows/web-preview.yml'
   workflow_dispatch:
 
 permissions:
@@ -30,8 +27,7 @@ jobs:
         run: |
           mkdir -p preview
           cp -R android/app/src/main/assets/web/. preview/
-          cat > preview/.nojekyll <<'EOF'
-          EOF
+          touch preview/.nojekyll
 
       - uses: actions/configure-pages@v5
 
