@@ -10,6 +10,44 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.3 — Global loading / empty / error / retry states
+
+Expected release:
+
+```text
+Tag: v2.10.3
+Release: Asgard TV v2.10.3
+Asset: asgard-tv-release.apk
+versionCode: 43
+```
+
+### Added
+
+- Global TV-friendly state component runtime.
+- Shared loading state.
+- Shared empty state.
+- Shared error state.
+- Shared success state.
+- Retry/action button support.
+- Search loading, empty and error patch.
+- Update check loading and error patch.
+- Source diagnostics empty placeholder patch.
+- State-card focus styling.
+- Premium TV CSS for state cards.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Search while sources are empty.
+- Search with broken source.
+- Check updates with network unavailable.
+- Open Sources with no diagnostics output.
+- Confirm state cards are readable from TV distance.
+- Confirm D-pad focus works on retry/action buttons.
+
 ## 2.10.2 — First Launch Onboarding
 
 Expected release:
@@ -34,15 +72,6 @@ versionCode: 42
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Fresh install / clear data.
-- Confirm onboarding appears before Home.
-- Navigate all steps with D-pad.
-- Confirm Skip goes to Home.
-- Confirm completion persists across restart.
-- Confirm Settings → Reopen onboarding works.
 
 ## 2.10.1 — Unified Diagnostics Health Dashboard
 
@@ -285,7 +314,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.2`.
+3. GitHub Releases contains matching tag, for example `v2.10.3`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
