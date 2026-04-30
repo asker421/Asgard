@@ -10,6 +10,46 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.5 — Search result to playable media task
+
+Expected release:
+
+```text
+Tag: v2.10.5
+Release: Asgard TV v2.10.5
+Asset: asgard-tv-release.apk
+versionCode: 45
+```
+
+### Added
+
+- Persistent media task runtime layer for `ASG-TOR-SEARCH-002`.
+- Selected media search result can now become a persistent media task.
+- Media task screen with status, source, target URL, selected file and diagnostics.
+- Metadata loading action.
+- Direct playable URL tasks are immediately stream-ready.
+- Magnet/torrent URL tasks route metadata loading through the configured service adapter where available.
+- File list rendering when metadata/files are available.
+- Select file action.
+- Open stream action.
+- Per-task diagnostics.
+- Media Search `Create media task` action now opens the media task screen instead of only showing an alert.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Search with a user-configured source.
+- Select a direct playable result and create task.
+- Confirm task is persistent and stream-ready.
+- Select a torrent/magnet result and confirm rights prompt.
+- Confirm metadata loading shows success or understandable error.
+- Confirm file list appears when service returns files.
+- Confirm selected file persists.
+- Confirm Open stream opens ExoPlayer or reports a clear missing stream URL error.
+
 ## 2.10.4 — Media search from movie title
 
 Expected release:
@@ -37,17 +77,6 @@ versionCode: 44
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Configure at least one user source/parser.
-- Search a movie title.
-- Confirm grouped results appear.
-- Confirm direct playable result opens ExoPlayer.
-- Confirm torrent/magnet result requires rights confirmation.
-- Confirm media task creation works.
-- Confirm configured service handoff works or fails with understandable error.
-- Confirm D-pad focus works on result cards and action buttons.
 
 ## 2.10.3 — Global loading / empty / error / retry states
 
@@ -353,7 +382,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.4`.
+3. GitHub Releases contains matching tag, for example `v2.10.5`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
