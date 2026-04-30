@@ -10,6 +10,43 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector.
 
+## 2.10.22 — Native source search hardening
+
+Expected release:
+
+```text
+Tag: v2.10.22
+Release: Asgard TV v2.10.22
+Asset: asgard-tv-release.apk
+versionCode: 62
+```
+
+### Added / Changed
+
+- Hardened native source search with safe provider guard detection.
+- Provider protection and human-verification pages are now returned as source diagnostics instead of being parsed as normal media pages.
+- Added per-source timeout handling in `SearchManager` so one stuck provider does not block other enabled sources.
+- Added provider statuses in native reports:
+  - `ok`
+  - `empty`
+  - `auth_required`
+  - `provider_protected`
+  - `human_verification_required`
+  - `timeout`
+  - `parse_error`
+  - `network_error`
+- Enriched native `MediaItem` with optional `year`, `quality`, and `size` fields.
+- Added safe explicit URL extraction from HTML/script text for direct media links and user-configured P2P references that are already present in source HTML.
+- Enriched JSON/API parser metadata mapping for `year`, `quality`, and `size` through `notes`.
+- Enriched Torznab/JacRed parser metadata extraction for year, quality and size/enclosure length.
+- Exposed provider status and enriched metadata through `NativeSearchJson` for WebView diagnostics/UI.
+- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
+- No protected-provider circumvention, no automated human-verification solving, no unauthorized catalogs, no paid-access circumvention, and no embedded P2P engine were added.
+
+### QA status
+
+Code-wired only. Build and Android TV runtime QA are still pending.
+
 ## 2.10.21 — Native sources.txt search engine integration
 
 Expected release:
@@ -36,7 +73,7 @@ versionCode: 61
 - Added `NativeSourceBridge` exposed to WebView as `AsgardNativeSearch`.
 - Added `native-search-runtime.js` to try native search first and fall back to existing JS search if native search fails.
 - Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
-- No pirated catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, paid auth bypass, or embedded P2P engine were added.
+- No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
 
 ### QA status
 
@@ -69,7 +106,7 @@ versionCode: 60
   - For Bigger Escapes.
 - Added `streaming-first-v2.js` runtime layer while working on `ASG-TOR-004`; it improves selected stream readiness lifecycle, but runtime QA is still pending.
 - Fixed accidental Gradle syntax typo from the version bump before release verification.
-- No pirated catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or embedded P2P engine were added.
+- No unauthorized catalogs, protected-provider circumvention, paid-access circumvention, or embedded P2P engine were added.
 
 ### QA status
 
@@ -90,7 +127,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.21`.
+3. GitHub Releases contains matching tag, for example `v2.10.22`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
