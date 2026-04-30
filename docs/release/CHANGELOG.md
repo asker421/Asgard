@@ -10,6 +10,45 @@ docs/product/backlog-v2.json
 
 The old `docs/product/backlog.json` is historical and may be truncated by the connector. Do not use it as active backlog.
 
+## 2.10.8 — Streaming-first playback readiness
+
+Expected release:
+
+```text
+Tag: v2.10.8
+Release: Asgard TV v2.10.8
+Asset: asgard-tv-release.apk
+versionCode: 48
+```
+
+### Added / Changed
+
+- Added separate streaming readiness runtime layer for `ASG-TOR-004`.
+- Media Task screen now gets a Streaming readiness panel.
+- Added Prepare stream action.
+- Added Open stream action through readiness preflight.
+- Added Cancel preparation action.
+- Added clear states for ready / not ready / service missing / preparing / cancelled / failed.
+- Added native bridge vs browser fallback indicator.
+- Added configured service readiness indicator for tasks that need external preparation.
+- Existing `AsMediaTask.openStream()` remains intact; readiness layer wraps around it without replacing source architecture.
+- No bundled catalogs, embedded source lists, or bypass features added.
+
+### QA status
+
+Not verified on Android TV / Mi Box S in this chat environment.
+
+Required before marking done:
+
+- Create direct playable media task.
+- Confirm Streaming readiness shows ready.
+- Create configured-service media task without service URL.
+- Confirm service missing state is readable.
+- Configure service and prepare stream.
+- Confirm preparing/ready/failed states are readable.
+- Confirm Cancel changes state to cancelled.
+- Confirm Open stream still opens native PlayerActivity when stream URL exists.
+
 ## 2.10.7 — Metadata and file selection hardening
 
 Expected release:
@@ -37,17 +76,6 @@ versionCode: 47
 ### QA status
 
 Not verified on Android TV / Mi Box S in this chat environment.
-
-Required before marking done:
-
-- Configure a compatible user service.
-- Search and create media task.
-- Load metadata where service returns files.
-- Confirm total/playable/other summary is accurate.
-- Select playable file and confirm selected file persists.
-- Try selecting non-playable file and confirm readable error state.
-- Confirm no-files and no-playable states are readable.
-- Confirm Open stream still uses selected playable stream path.
 
 ## 2.10.6 — Player handoff hardening
 
@@ -429,7 +457,7 @@ A release is successful only when all of these are true:
 
 1. `android/app/build.gradle.kts` version matches intended release.
 2. GitHub Actions → `Release APK` latest run is green.
-3. GitHub Releases contains matching tag, for example `v2.10.7`.
+3. GitHub Releases contains matching tag, for example `v2.10.8`.
 4. Release notes contain matching JSON metadata.
 5. Release contains asset:
 
