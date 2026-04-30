@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.3 according to Android build configuration.
+2.10.4 according to Android build configuration.
 
 ## Release Readiness
 
@@ -22,38 +22,38 @@ Not ready for stable release.
 
 ## Release Trigger
 
-2026-04-30: Release trigger requested for `2.10.3 (43)` after global loading/empty/error/retry state implementation.
+2026-04-30: Release trigger requested for `2.10.4 (44)` after media search from movie title implementation.
 
 This repository connector does not expose a direct `workflow_dispatch` action. The release is triggered by a push to `main`, because `.github/workflows/release-apk.yml` is configured to run on `push` to `main`.
 
 Expected result if GitHub Actions succeeds:
 
-- tag: `v2.10.3`
-- release title: `Asgard TV v2.10.3`
+- tag: `v2.10.4`
+- release title: `Asgard TV v2.10.4`
 - APK asset: `asgard-tv-release.apk`
 
 ## Current Verification Status
 
 Release verification is PENDING after release-trigger commits.
 
-Do not claim that `2.10.3` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.4` release APK is available until GitHub Actions / Releases confirm it.
 
-## New in 2.10.3 Scope
+## New in 2.10.4 Scope
 
-- Global TV-friendly state component runtime.
-- Shared loading state.
-- Shared empty state.
-- Shared error state.
-- Shared success state.
-- Retry/action button support.
-- Search loading, empty and error patch.
-- Update check loading and error patch.
-- Source diagnostics empty placeholder patch.
-- State-card focus styling.
-- Premium TV CSS for state cards.
+- Main media search runtime layer for `ASG-TOR-SEARCH-001`.
+- Search screen now focuses on movie title/query → user-configured sources/parsers → normalized media/torrent results.
+- Result normalization into playable, torrent, magnet and link groups.
+- Result ranking by playable type, quality, seeders and source ranking.
+- Source summary with total, playable, torrent, magnet, links, errors and source count.
+- Direct playable result action: open native ExoPlayer.
+- Torrent/magnet result actions: create media task and configured service → ExoPlayer.
+- Detail page action: Find media sources.
+- Diagnostics per result.
+- Legal-safe notice: user-configured sources only, no bundled prohibited catalogs.
 
 ## Included Scope Since 2.9.5
 
+- Global TV-friendly state component runtime.
 - TV-first first launch onboarding flow.
 - Unified Diagnostics Health Dashboard.
 - Secure QR import runtime layer.
@@ -61,8 +61,6 @@ Do not claim that `2.10.3` release APK is available until GitHub Actions / Relea
 - Hardened source-backed search runtime layer.
 - Real Continue Watching shelf from storage.
 - TorrServer playable stream preparation helper.
-- Search-result action: `TorrServer → ExoPlayer` for torrent/magnet results.
-- Torrent screen action: `TorrServer → ExoPlayer` for user media tasks.
 - Preserved legal-safe architecture: no bundled catalogs, no P2P engine inside APK, no DRM/Cloudflare/captcha bypass.
 - Playback requires user-configured service and explicit rights confirmation.
 
@@ -82,29 +80,28 @@ docs/release/CHANGELOG.md
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.3.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.3.
+- Confirm APK build for 2.10.4.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.4.
 - Confirm install on Android TV / Mi Box S.
-- Confirm loading/empty/error/retry states render correctly.
-- Confirm state-card D-pad focus and action buttons.
-- Confirm search empty and broken-source states.
-- Confirm update-check error state.
-- Confirm first launch onboarding appears after fresh install / clear data.
+- Configure at least one user source/parser.
+- Search a movie title and confirm grouped media results.
+- Confirm direct playable result opens ExoPlayer.
+- Confirm torrent/magnet result requires rights confirmation.
+- Confirm media task creation works.
+- Confirm configured service handoff works or fails with understandable error.
 - Confirm remote navigation.
-- Confirm ExoPlayer playback.
 - Confirm no first-launch crash.
 
 ## Missing Before Stable 1.0
 
 - Full smoke test passed.
 - Mi Box S validation passed.
+- Media search-to-player runtime-verified.
 - Global state components runtime-verified.
 - First launch onboarding runtime-verified.
 - Diagnostics dashboard runtime-verified.
 - QR import runtime-verified.
 - Full source manager runtime-verified.
-- Source-backed search runtime-verified.
-- User-provided media handoff flow verified with real configured service.
 - Continue Watching UX runtime-verified.
 
 ## Release Gates
@@ -114,16 +111,13 @@ Stable release is blocked unless:
 - APK builds.
 - APK installs on Android TV / Mi Box S.
 - App opens without internet.
-- Global loading/empty/error/retry states work.
-- First launch onboarding works.
+- Media search from title works with user-configured sources.
+- Selected playable result opens native player.
+- Torrent/magnet result routes to safe configured service flow with confirmation.
 - Remote navigation works.
 - Player works.
-- Diagnostics health dashboard works.
-- QR import works with TV confirmation.
-- Continue Watching works after real playback.
 - Source manager works on TV remote.
 - Source-backed search handles valid, empty and broken sources.
 - No critical crash.
-- Basic source/parser screens work.
 - QA smoke test passed.
 - Changelog exists.
