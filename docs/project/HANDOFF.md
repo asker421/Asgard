@@ -27,29 +27,23 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
-### ASG-012 — Unified search results and normalization hardening
+### ASG-080 — Settings / source-service setup UX
 
-- Selected task: `ASG-012 — Unified search results and normalization`.
-- Reason: `ASG-QA-001` was triggered/patched but live workflow status was not available through connector, and previous handoff allowed continuing engineering work while QA gate remains pending.
-- Inspected:
-  - `source-search-hardening.js`
-  - `media-search.js`
-- Found search normalization duplicated across layers:
-  - `source-search-hardening.js` ranked/classified source results;
-  - `media-search.js` normalized again and could lose fields.
-- Added `search-normalization-v2.js` as a late runtime layer:
-  - unified result schema: title, description, sourceName, sourceType, sourcePriority, kind, classification, url, magnetUrl, torrentUrl, quality, sizeBytes, sizeLabel, seeders, peers, rightsStatus, requiresUserConfirmation, raw snapshot, score;
-  - kind detection for direct playable, torrent file, magnet and link results;
-  - quality detection from title/description/metadata;
-  - size normalization and TV-readable size labels;
-  - scoring by result type, title match, quality, size, seeders, peers and source priority;
-  - dedupe by URL / magnet / torrent / title key;
-  - grouped result sections for Search screen;
-  - unified search summary counters;
-  - diagnostics now include normalized fields plus raw result snapshot.
-- Loaded `search-normalization-v2.js` after `media-search.js` and before media task/readiness/diagnostics layers.
-- Bumped Android version to `2.10.10 (50)` for release trigger.
-- Updated changelog and release status for `2.10.10`.
+- Selected task: `ASG-080 — Settings sections / source-service setup UX`.
+- Reason: Search → Media Task flow is code-wired, but non-programmer setup of user-configured sources/services was still too technical.
+- Inspected `parser-settings.js`.
+- Added `setup-wizard.js` as a TV-friendly setup layer:
+  - adds `Search setup wizard` card to Settings;
+  - Step 1: overview of what Asgard needs;
+  - Step 2: enabled sources overview and link to Source Manager;
+  - Step 3: parser/service status and link to Parser & service settings;
+  - Step 4: test setup summary;
+  - direct actions to Source Manager, Parser & service and Search;
+  - shows enabled sources count, parser URL status, service URL status and legal-safe notice;
+  - no bundled catalogs, embedded source lists, engines, or bypass features added.
+- Loaded `setup-wizard.js` after stream diagnostics runtime in `index.html`.
+- Bumped Android version to `2.10.11 (51)` for release trigger.
+- Updated changelog and release status for `2.10.11`.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
@@ -61,7 +55,7 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Files Changed
 
-- `android/app/src/main/assets/web/search-normalization-v2.js`
+- `android/app/src/main/assets/web/setup-wizard.js`
 - `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
@@ -70,11 +64,11 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Recent Commits
 
-- search normalization runtime commit was created after `search-normalization-v2.js` creation; verify exact SHA through commit history if needed.
-- `b1189e1dd95b5aaa8f17a11f621af1df3801bd77` — `Load search normalization v2`
-- `6e9addfdf17a988d09370d8148f9b44f8c6c9068` — `Bump version for search normalization release`
-- `8d88db76db15a5ff1690442c9b486e20b72b7244` — `Update changelog for 2.10.10 search normalization`
-- `82e69c0387ce9d81da3ee918bcf7b5a454f24562` — `Update release status for 2.10.10 search normalization`
+- setup wizard runtime commit was created after `setup-wizard.js` creation; verify exact SHA through commit history if needed.
+- `722e2864843424ca4d6e3e2006438588cd9570ca` — `Load setup wizard runtime`
+- `e9e592d0550cc31d514e86ee8e7bf26d6b1d3104` — `Bump version for setup wizard release`
+- changelog update commit for `2.10.11` was created after `CHANGELOG.md` update; verify exact SHA through commit history if needed.
+- `acfb85660ee02413d308be16f131d6a72eafb394` — `Update release status for 2.10.11 setup wizard`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -83,10 +77,10 @@ Early alpha / working prototype.
 
 Current release expectation:
 
-- versionName: `2.10.10`
-- versionCode: `50`
-- expected tag: `v2.10.10`
-- expected release: `Asgard TV v2.10.10`
+- versionName: `2.10.11`
+- versionCode: `51`
+- expected tag: `v2.10.11`
+- expected release: `Asgard TV v2.10.11`
 - expected APK asset: `asgard-tv-release.apk`
 
 Current QA status:
@@ -97,40 +91,40 @@ ASG-QA-001: QA_IN_PROGRESS / WORKFLOW_PATCHED / RUN_REQUIRED_OR_VERIFY_MANUALLY
 
 Current verification status:
 
-- Search normalization v2 is code-wired.
+- Setup wizard is code-wired.
 - Runtime QA is not verified.
 - Android emulator smoke workflow should still be verified in GitHub Actions.
 - Physical Android TV / Mi Box S QA still not completed.
 
 ## Current Highest Priority
 
-1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after the latest workflow patches.
-2. Verify release `v2.10.10` and asset `asgard-tv-release.apk` after Actions completes.
-3. Runtime QA Search screen with user-configured sources:
-   - unified summary counters;
-   - grouping;
-   - diagnostics;
-   - Create media task still works;
-   - direct playable still opens player;
-   - no-result and error states remain readable.
+1. Manually verify GitHub Actions → `Android Emulator Smoke Test` after latest workflow patches.
+2. Verify release `v2.10.11` and asset `asgard-tv-release.apk` after Actions completes.
+3. Runtime QA Settings → Search setup wizard:
+   - card appears;
+   - D-pad focus works;
+   - Source Manager link works;
+   - Parser/service link works;
+   - Test setup renders status;
+   - Open Search works.
 4. Continue physical Android TV / Mi Box S QA.
 
 ## Next Recommended Task
 
 QA:
 
-Verify Android Emulator Smoke Test and then test `2.10.10` Search normalization flow.
+Verify Android Emulator Smoke Test and then test `2.10.11` setup wizard flow.
 
 Engineer if device QA remains unavailable:
 
-Improve source setup UX under `ASG-080`, because main flow still depends on user-configured sources/services and may be too technical for non-programmer use.
+Implement `ASG-042 — Continue Watching runtime UX hardening`, because playback/progress exists but resume/start-over UX still needs stable TV-first validation and polish.
 
 ## Blockers / Risks
 
 - GitHub connector did not expose latest workflow run.
 - Physical Android TV / Mi Box S QA still not completed.
-- Search normalization v2 depends on runtime load order.
-- Need runtime QA before marking `ASG-012` DONE.
+- Setup wizard depends on runtime load order and existing Settings overrides.
+- Need runtime QA before marking `ASG-080` DONE.
 - Do not mark `ASG-QA-001`, `ASG-001`, `ASG-002`, `ASG-040`, or media playback tasks DONE until CI/manual QA evidence exists.
 - Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
