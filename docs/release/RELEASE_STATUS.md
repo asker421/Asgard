@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.24 according to Android build configuration.
+2.10.25 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,59 +16,64 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.24`
-- versionCode: `64`
-- tag: `v2.10.24`
-- release title: `Asgard TV v2.10.24`
+- versionName: `2.10.25`
+- versionCode: `65`
+- tag: `v2.10.25`
+- release title: `Asgard TV v2.10.25`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.24 Scope
+## New in 2.10.25 Scope
 
-- Fixed media task flow so magnet/torrent metadata loading starts automatically after media task creation.
-- Added `autoMetadata=true` task flag and immediate metadata loading trigger after search result conversion.
-- Added default parser candidate to `parsers.json`:
+- Search results are now grouped into film/series cards instead of being shown as raw links/text rows.
+- Added `search-card-groups-v6.js`:
+  - groups multiple source results by cleaned title;
+  - each card shows poster placeholder, title, source count, best source type, quality and seed/peer chips when available;
+  - each card has primary action `▶ Включить лучший`;
+  - each card has `Выбрать источник` to open a detailed list of available variants;
+  - source selection screen lists each variant with quality/source/size/seed/peer metadata;
+  - variant action is `▶ Включить этот вариант`.
+- Search flow now matches target UX:
+  - first choose movie/series card;
+  - then choose source/variant;
+  - then one-click playback flow prepares direct stream or service-based metadata/files.
+- Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
+- No unauthorized catalogs, no protected-provider circumvention, no paid-access circumvention, and no embedded P2P engine were added.
+
+## Carried from 2.10.24
+
+- Magnet/torrent metadata loading starts automatically after media task creation.
+- Default parser candidate exists in `parsers.json`:
 
 ```text
 Default JacRed/Torznab Parser → http://pape85e.tsarea.tv:8880
 ```
 
-- Improved parser discovery:
-  - ignores placeholder parser URLs like `USER_CONFIGURED_*`;
-  - includes bundled enabled default parser candidates;
-  - saves active parser automatically when detected;
-  - fills default TorrServer URL from bundled parser config if missing.
-- Added `search-parser-runtime-v4.js`:
-  - default/active parser is tested automatically during search;
-  - search no longer depends only on manually entered parser URL;
-  - parser results and source results are merged and deduplicated;
-  - search UI is patched to use parser results even if manual source/parser setup is incomplete.
-- Updated TorrServer adapter to prefer native POST bridge if available; Android Kotlin native POST bridge was attempted but not committed because the tool blocked the full `MainActivity.kt` update. The adapter still falls back to browser fetch for POST when native POST is unavailable.
-- No package/applicationId or branding changes.
-- No unauthorized catalogs, no protected-provider circumvention, no paid-access circumvention, and no embedded P2P engine were added.
+- Parser discovery ignores placeholder URLs like `USER_CONFIGURED_*`.
+- Default/active parser is tested automatically during search.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.24` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.25` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.24.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.24.
+- Confirm APK build for 2.10.25.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.25.
 - Confirm install on Android TV / Mi Box S.
 - Open Search.
-- Confirm default parser appears or is used automatically.
-- Search a title and confirm parser/source results appear.
-- Select a magnet/torrent result.
-- Confirm media task is created.
-- Confirm metadata loading starts automatically without pressing a separate button.
-- Confirm task eventually shows files or a clear service error.
-- Confirm direct playable still opens PlayerActivity.
+- Search a title.
+- Confirm results appear as film/series cards, not raw links.
+- Open a card with `Выбрать источник`.
+- Confirm source variants are listed with quality/source/size/seed metadata where available.
+- Press `▶ Включить этот вариант`.
+- Confirm direct playable opens PlayerActivity or service metadata/files starts automatically.
+- Confirm HTML/web pages are not opened directly in PlayerActivity as video.
 
 ## Known Risk
 
-Native POST bridge for service API could not be committed in this pass because the full Android file update was blocked by the tool. If TorrServer metadata still fails, the next fix should add a small safe native POST bridge in `MainActivity.kt` or a separate bridge class, then route TorrServer `POST /torrents` through it.
+Native POST bridge for service API is still not confirmed. If service metadata still fails, the next fix should add a small safe native POST bridge in `MainActivity.kt` or a separate bridge class, then route service POST calls through it.
 
 ## Stable Release Gates
 
@@ -77,11 +82,11 @@ Stable release is blocked unless:
 - APK builds.
 - APK installs on Android TV / Mi Box S.
 - App opens without internet.
-- Home/Catalog show testable demo content.
+- Home/Catalog show testable demo content or metadata fallback.
 - Remote navigation works.
 - Player works.
 - Movie title search works with user-configured or bundled legal demo sources.
-- Search result can become media task.
+- Search result can become a playable media task.
 - Metadata/files load from configured service where applicable.
 - Playable video file can be selected.
 - Stream-ready media task opens native player.
