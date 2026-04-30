@@ -29,42 +29,51 @@ Refreshed for latest task:
 
 ## Work Completed In Latest Task
 
-### Metadata API compatibility and search timeout — 2.10.27
+### TMDB metadata and resilient stream loader — 2.10.28
 
 User reported:
 
 ```text
-метадата апи из миссинг
-начало зависать на поиске
+мок дата осталась
+метаданные не подтянулись
+фильмы и сериалы все еще на английском и не актуальные
+поиск дает результаты только с rutor.org
+запуск видео не идет пишет stream еще не готов
 ```
-
-Root cause found:
-
-- `one-click-playback-v5.js` fails with `Metadata API missing` if `AsMediaTask.loadMetadata` is not available at click time.
-- `torrserver-adapter.js` already prefers `AsgardBridge.nativePostJson`, but `MainActivity.kt` still exposes only `nativeFetch(GET)` and not native JSON POST.
-- Full `MainActivity.kt` update to add native POST was blocked by tool safety checks again.
 
 Implemented:
 
-- Added `metadata-api-compat-v10.js`:
-  - ensures `window.AsMediaTask` exists;
-  - ensures `AsMediaTask.loadMetadata()` exists;
-  - delegates to `AsMetadataFilesV2.load(taskId)` when available;
-  - returns a readable `metadata_loader_missing` diagnostic instead of letting one-click playback crash with `Metadata API missing`.
+- Added `metadata-loader-v12.js`:
+  - retries service metadata/files several times instead of failing after one attempt;
+  - extracts torrent hash from magnet btih where possible;
+  - uses service list/get fallback when add response does not immediately return hash;
+  - selects the largest supported video file;
+  - builds stream URL only after file selection is available;
+  - gives clearer states: `metadata_pending`, `hash_pending`, `no_playable_video_file`, `stream_ready`.
 
-- Added `search-timeout-v11.js`:
-  - wraps `AsSources.searchContent(query)` with a 14-second timeout guard;
-  - if a parser/source hangs, Search gets a timeout diagnostic instead of infinite loading.
+- Added `metadata-provider-v13.js`:
+  - TMDB metadata provider foundation;
+  - language defaults to `ru-RU` and region defaults to `RU`;
+  - supports trending movies, now playing movies, trending series;
+  - supports details, cast and seasons;
+  - requires user-configured TMDB API key.
+
+- Added `home-tmdb-v14.js`:
+  - Home no longer pretends random English TVMaze data is real movie/top-chart data;
+  - if TMDB API key is missing, Home shows a clear setup state instead of fake charts;
+  - if TMDB API key exists, Home shows real TMDB `ru-RU` metadata cards;
+  - Details can show cast and season grouping for series;
+  - `▶ Включить фильм` routes title into Search/source selection flow.
 
 - Updated `index.html`:
-  - loads `search-timeout-v11.js` after `search-parser-runtime-v4.js`;
-  - loads `metadata-api-compat-v10.js` after `metadata-files-v2.js` and before one-click playback.
+  - loads `metadata-loader-v12.js` after metadata compatibility layers;
+  - loads `metadata-provider-v13.js` and `home-tmdb-v14.js` after older Home metadata fallbacks, so TMDB Home is the final Home override.
 
 - Updated version:
 
 ```text
-versionName = "2.10.27"
-versionCode = 67
+versionName = "2.10.28"
+versionCode = 68
 ```
 
 - Updated release docs:
@@ -77,16 +86,17 @@ docs/release/RELEASE_STATUS.md
 Expected release:
 
 ```text
-Tag: v2.10.27
-Release: Asgard TV v2.10.27
+Tag: v2.10.28
+Release: Asgard TV v2.10.28
 Asset: asgard-tv-release.apk
-versionCode: 67
+versionCode: 68
 ```
 
 ## Files Changed In Latest Task
 
-- `android/app/src/main/assets/web/metadata-api-compat-v10.js`
-- `android/app/src/main/assets/web/search-timeout-v11.js`
+- `android/app/src/main/assets/web/metadata-loader-v12.js`
+- `android/app/src/main/assets/web/metadata-provider-v13.js`
+- `android/app/src/main/assets/web/home-tmdb-v14.js`
 - `android/app/src/main/assets/web/index.html`
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
@@ -95,13 +105,14 @@ versionCode: 67
 
 ## Recent Commits From Latest Task
 
-- `564e93a65929afb0e0e1a40b18a34e3577ec8db8` — `Add metadata loader compatibility shim`
-- `4c372e054cbd449448f5ff4d6dc98f8996f15daa` — `Load metadata API compatibility shim`
-- `de0b8b308631418761046b379821490152388ab8` — `Add search timeout guard`
-- `dde5bbae3f73387343945b7dd098d9d636f14ba0` — `Load search timeout guard`
-- `198a1ce129519b99fa0e0402d8590c98d5910eda` — `Bump version for metadata API and search timeout fix`
-- `ffc70f14172a0c31ce1c2a264d03a7de1732b6dc` — `Update release status for metadata API fix`
-- `f96884f6d05b684bb086cef6e1c6ba8f5eccd356` — `Update changelog for metadata API fix`
+- `7a8bff8b8028d32fcbeb73c20203782fdd6fae20` — `Add resilient metadata loader`
+- `907eef6dd52d4b43b13f131ee6fa505600989cb8` — `Load resilient metadata loader`
+- `416e5a66bf83177adafe072cc285958db43f7e0d` — `Add TMDB metadata provider`
+- `6052e90a5d9e4349d48328a408993016bfb865c6` — `Add TMDB driven home runtime`
+- `12b763c379843a3a43b7c235aef80be88e6e0bcc` — `Load TMDB metadata home runtime`
+- `6d28094c2ab1e2481f952ad2b7c06516b14aceb3` — `Bump version for TMDB metadata and resilient stream loader`
+- `91406453d4dcbef4fd2d17e1b7d65986ab2df59c` — `Update release status for TMDB metadata and loader`
+- `53f7344934891d2182a0817f4b4f95b04cc4eb54` — `Update changelog for TMDB metadata and loader`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Verified
@@ -112,35 +123,31 @@ versionCode: 67
 - Android build config was bumped to:
 
 ```text
-versionName = "2.10.27"
-versionCode = 67
+versionName = "2.10.28"
+versionCode = 68
 ```
 
 - `index.html` now loads:
 
 ```text
-search-timeout-v11.js
-metadata-api-compat-v10.js
+metadata-loader-v12.js
+metadata-provider-v13.js
+home-tmdb-v14.js
 ```
 
 ## Not Verified
 
 - Local Gradle build was not run in this chat environment.
-- GitHub Actions result for `2.10.27` is not yet confirmed.
+- GitHub Actions result for `2.10.28` is not yet confirmed.
 - Android TV / Mi Box S runtime QA not completed.
-- Runtime metadata/files flow is not confirmed on device.
+- Runtime TMDB API key entry and TMDB data loading are not manually verified.
+- Runtime TorrServer metadata/files flow is not confirmed on device.
 
-## Known Limitation / Next Blocker
+## Known Limitations / Risks
 
-This patch should remove the visible `Metadata API missing` blocker.
-
-However, native POST bridge for service API is still not committed. If the next device test fails with a service/network/POST/CORS style error, the next fix must add a small safe native POST bridge to Android and expose:
-
-```text
-AsgardBridge.nativePostJson(url, jsonBody)
-```
-
-`torrserver-adapter.js` is already prepared to use that method when present.
+- TMDB metadata requires user-provided TMDB API key. Without it, Home intentionally shows setup state instead of fake top charts.
+- Search still depends on currently configured sources/parsers; if only Rutor works, diagnostics/source setup must be improved next.
+- Native POST bridge for service API is still not committed. `metadata-loader-v12.js` improves retries/fallbacks, but if WebView POST is blocked, the next fix must add Android native POST bridge.
 
 ## Current Product Status
 
@@ -162,15 +169,16 @@ Do not mark tasks DONE without QA evidence.
 
 ## Current Highest Priority
 
-1. Check GitHub Actions for the `2.10.27` build/release run.
+1. Check GitHub Actions for the `2.10.28` build/release run.
 2. If build fails, fix the first compile/build error only.
-3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.27`.
+3. If build passes, download/install `asgard-tv-release.apk` from `v2.10.28`.
 4. Test:
-   - Search no longer hangs indefinitely;
-   - timeout diagnostic appears around 14 seconds if parser/source hangs;
-   - `▶ Включить этот вариант` no longer shows `Metadata API missing`;
-   - capture the new exact error if metadata still fails.
-5. Next work if metadata still fails: native POST bridge for service API.
+   - Home without TMDB key shows setup state, not fake charts;
+   - after entering TMDB key, Home shows `ru-RU` metadata cards;
+   - Details shows cast and seasons where available;
+   - selecting a torrent/magnet tries metadata/files several times before failing;
+   - capture exact service error if stream still not ready.
+5. Next likely fix: native POST bridge for service API and better source diagnostics beyond Rutor.
 
 ## Notes for Next Chat
 
