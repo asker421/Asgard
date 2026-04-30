@@ -21,7 +21,7 @@ class TorznabParser : BaseParser {
             val items = document.getElementsByTagName("item")
 
             buildList {
-                for (i in 0 until items.length.coerceAtMost(80)) {
+                for (i in 0 until items.length.coerceAtMost(100)) {
                     val item = items.item(i) as? Element ?: continue
                     val title = item.childText("title")?.takeIf { it.isNotBlank() }
                     val link = item.extractTorrentOrMagnetLink()
@@ -34,7 +34,10 @@ class TorznabParser : BaseParser {
                             posterUrl = item.extractPosterUrl(),
                             sourceName = source.name,
                             sourceType = source.type,
-                            priority = source.priority
+                            priority = source.priority,
+                            year = item.extractTorznabAttr("year"),
+                            quality = item.extractTorznabAttr("quality") ?: inferQuality(title),
+                            size = item.extractTorznabAttr("size") ?: item.extractEnclosureLength()
                         )
                     )
                 }
@@ -86,6 +89,16 @@ private fun Element.extractPosterUrl(): String? {
         ?: extractTorznabAttr("poster")
         ?: extractTorznabAttr("posterurl")
         ?: extractTorznabAttr("banner")
+}
+
+private fun Element.extractEnclosureLength(): String? {
+    val enclosures = getElementsByTagName("enclosure")
+    for (i in 0 until enclosures.length) {
+        val element = enclosures.item(i) as? Element ?: continue
+        val length = element.getAttribute("length")?.trim()
+        if (!length.isNullOrBlank()) return length
+    }
+    return null
 }
 
 private fun Element.extractTorznabAttr(name: String): String? {
