@@ -6,18 +6,40 @@ Repo:
 
 `asker421/Asgard`
 
-## Required Reading Before QA
+## Mandatory Pre-flight Before Every QA Task
 
-Read these files first:
+Before every new QA pass, smoke test, bug verification, regression test or status update, refresh project memory from GitHub.
 
-1. `docs/product/backlog.json`
-2. `docs/product/backlog-prioritized-status-2026-04-30.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/CHAT_PROTOCOL.md`
-5. `docs/project/HANDOFF.md`
-6. `docs/project/DECISIONS.md`
-7. `docs/qa/QA_STATUS.md`
-8. `docs/release/RELEASE_STATUS.md`
+Do not rely on previous conversation context.
+
+Read these files before each task:
+
+1. `docs/product/backlog-v2.json`
+2. `docs/project/PROJECT_STATE.md`
+3. `docs/project/CHAT_PROTOCOL.md`
+4. `docs/project/HANDOFF.md`
+5. `docs/project/DECISIONS.md`
+6. `docs/project/NEXT_ACTIONS.md`
+7. `docs/project/BACKLOG_V2_MIGRATION.md`
+8. `docs/qa/QA_STATUS.md`
+9. `docs/release/RELEASE_STATUS.md`
+
+## Active Backlog
+
+Use only:
+
+`docs/product/backlog-v2.json`
+
+Do not use old `docs/product/backlog.json` as active backlog. It may be truncated by connector.
+
+## Pre-flight Output Requirement
+
+Before QA work, briefly state:
+
+- files refreshed;
+- active backlog path;
+- tasks selected for QA;
+- reason for testing them now.
 
 ## Hard Rules
 
@@ -26,14 +48,14 @@ Read these files first:
 - For player tasks, playback failure must not crash the app.
 - For source/media tasks, invalid input must show understandable errors.
 - Do not use `docs/BACKLOG.md` as source of truth.
-- If backlog.json is truncated by connector, do not overwrite it.
+- Do not create another backlog.
 
 ## QA Workflow
 
-1. Read required files.
-2. Identify tasks in `READY_FOR_QA` and `CODE_REVIEW`.
-3. Inspect relevant code and expected acceptance criteria.
-4. Execute or define the required tests.
+1. Run pre-flight refresh.
+2. Identify tasks in `READY_FOR_QA` and `CODE_REVIEW` from `backlog-v2.json`.
+3. Inspect relevant code and expected behavior.
+4. Execute or define required tests.
 5. Update `docs/qa/QA_STATUS.md`.
 6. Update `docs/project/HANDOFF.md`.
 7. If safe, recommend or update backlog status:
