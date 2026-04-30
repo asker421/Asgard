@@ -4,11 +4,11 @@ Last updated: 2026-04-30
 
 ## Chat Role
 
-Product Owner / Engineering coordination
+Engineer / Release / QA coordination
 
 ## Mandatory Pre-flight Refreshed
 
-Refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest engineering task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
 1. `docs/project/CHAT_PROTOCOL.md`
 2. `docs/product/backlog-v2.json`
@@ -17,7 +17,7 @@ Refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 5. `docs/project/DECISIONS.md`
 6. `docs/project/NEXT_ACTIONS.md`
 7. `docs/project/BACKLOG_V2_MIGRATION.md`
-8. `docs/prompts/PO_CHAT_PROMPT.md`
+8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
 
 Active backlog:
 
@@ -25,111 +25,119 @@ Active backlog:
 
 Do not use old `docs/product/backlog.json` as active backlog.
 
-## Product Decision
-
-User changed the main product priority.
-
-The fastest path to a working version is now:
-
-**Search movie → find user-configured torrent/media result → select playable video file → launch in ExoPlayer.**
-
-QA/build smoke test remains critical, but it should run in parallel or immediately after the MVP flow. It should not block engineering from completing the search-to-player path.
-
 ## Work Completed
 
-- Updated `docs/product/backlog-v2.json` with new product focus.
-- Added new high-priority tasks:
-  - `ASG-TOR-SEARCH-001` — Torrent/media search from movie title.
-  - `ASG-TOR-SEARCH-002` — Search result to playable media task.
-- Reordered `current_next_tasks` so the first items are:
-  1. `ASG-TOR-SEARCH-001`
-  2. `ASG-TOR-SEARCH-002`
-  3. `ASG-TOR-005`
-  4. `ASG-TOR-003`
-  5. `ASG-QA-001`
-- Updated task priorities so AI, onboarding, watchlist, profiles and polish are deferred until after the working search-to-player MVP.
-- Updated `docs/project/NEXT_ACTIONS.md` with the same MVP definition and engineering flow.
-- Did not modify code.
-- Did not use old `docs/product/backlog.json`.
+- Continued engineering work after user asked to check the next priority task and implement it.
+- Completed mandatory pre-flight before starting the task.
+- Fresh `backlog-v2.json` showed changed product focus:
+  - `Search movie -> find user-configured torrent/media result -> select playable video -> launch in ExoPlayer`.
+- Selected task: `ASG-TOR-SEARCH-001 — Torrent/media search from movie title`.
+- Reason: it is the first item in `current_next_tasks` and is marked Critical.
+- Inspected existing `source-search.js` and `qa-stabilization-fix.js`.
+- Added `media-search.js` as the final runtime layer for the Search screen.
+- Implemented media search path:
+  - Search screen focused on movie title/query;
+  - uses enabled user-configured sources/parsers through `AsSources.searchContent(query)`;
+  - normalizes results into playable, torrent, magnet and link groups;
+  - ranks results by playable type, quality, seeders and source rank;
+  - shows summary counters: total, playable, torrent, magnet, links, errors, source count;
+  - shows legal-safe notice: user-configured sources only, no bundled prohibited catalogs;
+  - direct playable result action opens native ExoPlayer;
+  - torrent/magnet result actions create media task or route to configured service -> ExoPlayer;
+  - detail page gets `Find media sources` action;
+  - per-result diagnostics added.
+- Loaded `media-search.js` last in `index.html`, after all runtime overlays, so it becomes active Search screen.
+- Bumped Android version to `2.10.4 (44)` for the release trigger.
+- Updated changelog and release status for 2.10.4.
+- Did not mark any backlog item DONE.
+- Did not overwrite old `docs/product/backlog.json`.
 
 ## Files Changed
 
-- `docs/product/backlog-v2.json`
-- `docs/project/NEXT_ACTIONS.md`
+- `android/app/src/main/assets/web/media-search.js`
+- `android/app/src/main/assets/web/index.html`
+- `android/app/build.gradle.kts`
+- `docs/release/CHANGELOG.md`
+- `docs/release/RELEASE_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
 
-- `65e32089b801f7bc32b89e2dca46d51ecbae28e6` — `Prioritize torrent search to player workflow`
-- `900bbc330b7bad23f3c68339a5b40af4b3c4d92d` — `Prioritize torrent search to player path`
+- `34d637b524173047835ead78aed31d4bc7c61de8` — `Implement media search from movie title`
+- `6d566dadca39e2d428dcdb1170202211563c5ace` — `Load media search runtime last`
+- `10467f9150aeec59f2a0807293a1e025a7054436` — `Bump version for media search release`
+- `c7886d755e65846c16f28160c573fbc1618c11c7` — `Update changelog for 2.10.4 media search`
+- `8a7b517f6899495d3ae9f37db71aed819967247d` — `Update release status for 2.10.4 media search`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
 
 Early alpha / working prototype.
 
-The main MVP is not general polish anymore. The main MVP is a single working end-to-end user flow:
+Current release expectation:
 
-1. User searches a movie title.
-2. App queries configured user source/parser.
-3. App shows torrent/media results.
-4. User selects a result.
-5. App loads metadata/files or obtains stream URL.
-6. User selects playable video file if needed.
-7. App opens selected video in ExoPlayer.
-8. Player starts playback or shows a clear failure reason.
-9. App does not crash on no source, no result, metadata failure or player failure.
+- versionName: `2.10.4`
+- versionCode: `44`
+- expected tag: `v2.10.4`
+- expected release: `Asgard TV v2.10.4`
+- expected APK asset: `asgard-tv-release.apk`
+
+Current verification status:
+
+- Release should be triggered by push to `main`.
+- GitHub connector does not expose direct `workflow_dispatch` and did not confirm live workflow completion.
+- Release APK availability must still be verified in GitHub Actions / Releases before claiming success.
+- No Android TV / Mi Box S runtime QA has been completed in this session.
+- Media search is code-wired but not runtime-verified with real user-configured source/parser/service.
 
 ## Current Highest Priority
 
-1. `ASG-TOR-SEARCH-001` — Torrent/media search from movie title.
-2. `ASG-TOR-SEARCH-002` — Search result to playable media task.
-3. `ASG-TOR-005` — Player integration and seeking.
-4. `ASG-TOR-003` — Metadata and file selection.
-5. `ASG-QA-001` — Android TV build/install smoke test.
-6. `ASG-012` — Unified search results and normalization.
+1. `ASG-TOR-SEARCH-002` — Search result to playable media task.
+2. `ASG-TOR-005` — Player integration and seeking.
+3. `ASG-TOR-003` — Metadata and file selection.
+4. `ASG-QA-001` — Android TV build/install smoke test.
+5. Runtime QA for `ASG-TOR-SEARCH-001`.
 
 ## Next Recommended Task
 
 Engineer:
 
-Implement `ASG-TOR-SEARCH-001` first.
+Implement `ASG-TOR-SEARCH-002` next.
 
-Expected engineering direction:
+Expected direction:
 
-- Use existing Search screen/source-search foundation.
-- Use user-configured source/parser only.
-- Return normalized result objects containing as much as available: title, source, type, quality, size, seeds/peers, magnet/link/file URL.
-- Add result actions that can hand off to `ASG-TOR-SEARCH-002`.
-- If no source/parser is configured, show a clear setup error.
-- If no results, show a clear empty state.
-
-Then implement `ASG-TOR-SEARCH-002`:
-
-- Convert selected result into a media task.
+- Convert selected media search result into a persistent media task.
 - Route magnet/link/file result to configured service/adapter where applicable.
 - Show metadata loading/error state.
-- Continue to `ASG-TOR-005` for ExoPlayer launch.
+- Persist task state and selected result diagnostics.
+- Continue to `ASG-TOR-005` for ExoPlayer launch and seeking behavior.
 
-## QA Focus After Implementation
+QA:
 
-- Search with no configured source.
-- Search with broken configured source.
-- Search with configured source returning no results.
-- Search with valid result.
-- Select result.
-- Metadata/file selection appears or stream URL is created.
-- Launch player.
-- Back behavior works.
-- D-pad focus works across all result/action/error states.
+Run Android TV smoke test for `2.10.4`.
+
+Minimum media search QA scope:
+
+- Open Search.
+- Confirm new Media Search screen is visible.
+- Search with no configured source and confirm understandable empty/setup state.
+- Add valid user source/parser.
+- Search a movie title.
+- Confirm grouped results appear.
+- Confirm direct playable result opens native ExoPlayer.
+- Confirm torrent/magnet result requires rights confirmation.
+- Confirm Create media task works.
+- Confirm configured service -> ExoPlayer works or fails with understandable error.
+- Confirm D-pad focus works on result cards/actions.
 
 ## Blockers / Risks
 
-- No physical Android TV / Mi Box S QA confirmed yet.
-- Search-to-player flow depends on user-configured source/parser/service.
-- Product must not depend on bundled catalogs.
-- Error states are critical because many user sources/services may fail.
-- Do not mark tasks DONE without QA.
+- GitHub connector did not confirm latest workflow result.
+- No evidence yet of completed Android TV / Mi Box S physical QA.
+- Media search depends on user-configured source/parser/service.
+- `ASG-TOR-SEARCH-002` still needs stronger task creation/metadata state wiring.
+- Do not mark any backlog item DONE until acceptance criteria and Definition of Done are verified.
+- Do not add bundled prohibited catalogs, unauthorized sources, DRM bypass, Cloudflare bypass, captcha bypass, or silent APK installation.
 
 ## Notes for Next Chat
 
