@@ -1,3 +1,4 @@
+# Trigger note: update this file to run Android Emulator Smoke Test on push.
 name: Android Emulator Smoke Test
 
 on:
