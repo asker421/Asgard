@@ -8,16 +8,16 @@ Engineer / Release / QA coordination
 
 ## Mandatory Pre-flight Refreshed
 
-For the latest engineering task, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
+For the latest app test request, refreshed according to `docs/project/CHAT_PROTOCOL.md`:
 
-1. `docs/project/CHAT_PROTOCOL.md`
-2. `docs/product/backlog-v2.json`
-3. `docs/project/PROJECT_STATE.md`
-4. `docs/project/HANDOFF.md`
-5. `docs/project/DECISIONS.md`
-6. `docs/project/NEXT_ACTIONS.md`
-7. `docs/project/BACKLOG_V2_MIGRATION.md`
-8. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+1. `docs/product/backlog-v2.json`
+2. `docs/project/PROJECT_STATE.md`
+3. `docs/project/HANDOFF.md`
+4. `docs/project/DECISIONS.md`
+5. `docs/project/NEXT_ACTIONS.md`
+6. `docs/project/BACKLOG_V2_MIGRATION.md`
+7. `docs/prompts/ENGINEER_CHAT_PROMPT.md`
+8. `docs/qa/QA_STATUS.md`
 
 Active backlog:
 
@@ -27,8 +27,9 @@ Do not use old `docs/product/backlog.json` as active backlog.
 
 ## Work Completed
 
+### Prior engineering work
+
 - Continued engineering work after user asked to take the next task.
-- Completed mandatory pre-flight before starting the task.
 - Selected task: `ASG-TOR-005 — Player integration and seeking`.
 - Reason: `ASG-TOR-SEARCH-002` was code-wired in `2.10.5`, and `NEXT_ACTIONS.md` lists stream URL -> `PlayerActivity` as the next main flow step.
 - Inspected `media-task.js` and `PlayerActivity.kt`.
@@ -45,6 +46,20 @@ Do not use old `docs/product/backlog.json` as active backlog.
   - diagnostics now include bridge availability, stream URL presence and saved progress.
 - Bumped Android version to `2.10.6 (46)` for the release trigger.
 - Updated changelog and release status for 2.10.6.
+
+### Static app test completed
+
+- Ran static repository app smoke test for `2.10.6 (46)` after user requested testing.
+- Verified `android/app/build.gradle.kts` currently reports `versionName = "2.10.6"`, `versionCode = 46`.
+- Verified `Build APK` workflow configuration is present and uses Java 17, Android SDK 35, Gradle 8.10.2 and `./gradlew :app:assembleDebug`.
+- Verified `index.html` loads the current runtime layers including `source-manager.js`, `qr-import.js`, `diagnostics-health.js`, `onboarding.js`, `states.js`, `media-search.js`, and `media-task.js`.
+- Verified `input.js` has explicit D-pad key handling for ArrowUp/Down/Left/Right, Enter/NumpadEnter, Backspace/Escape, spatial movement and visible focus filtering.
+- Verified `ui.js` has `history`, `nav()`, `back()`, and `window.asgardBack`.
+- Verified `MainActivity` exposes `exitApp()`, `openPlayer()`, `nativeFetch()`, persistence APIs and Back bridge.
+- Verified `PlayerActivity` has URL validation, Media3 ExoPlayer, D-pad play/pause/seek, error Toast and progress save.
+- Verified `media-task.js` has persistent media task creation, direct playable stream-ready path, service metadata path, file selection state, stream URL handoff and diagnostics.
+- Updated `docs/qa/QA_STATUS.md` with static app test results for `2.10.6 (46)`.
+- No physical Android TV / Mi Box S runtime QA was completed in this chat environment.
 - Did not mark any backlog item DONE.
 - Did not overwrite old `docs/product/backlog.json`.
 
@@ -54,6 +69,7 @@ Do not use old `docs/product/backlog.json` as active backlog.
 - `android/app/build.gradle.kts`
 - `docs/release/CHANGELOG.md`
 - `docs/release/RELEASE_STATUS.md`
+- `docs/qa/QA_STATUS.md`
 - `docs/project/HANDOFF.md`
 
 ## Recent Commits
@@ -62,6 +78,7 @@ Do not use old `docs/product/backlog.json` as active backlog.
 - `4468ad537439b5dba4dc5d1b3c2913c212c19d59` — `Bump version for player handoff release`
 - `5b80d6b6bdfcbb28245fd030608895a1853a296a` — `Update changelog for 2.10.6 player handoff`
 - `5876d4060e599456d5f899317106be8bbd5448b6` — `Update release status for 2.10.6 player handoff`
+- `87354ca8e5425444421ec7fd4efbe8ef1cb9d7a8` — `Update QA status for 2.10.6 static app test`
 - Current handoff update commit is the latest commit after this file is saved.
 
 ## Current Product Status
@@ -78,22 +95,48 @@ Current release expectation:
 
 Current verification status:
 
+- Static repository app test is recorded in `docs/qa/QA_STATUS.md`.
+- Full physical Android TV QA is still BLOCKED / not completed.
 - Release should be triggered by push to `main`.
-- GitHub connector does not expose direct `workflow_dispatch` and did not confirm live workflow completion.
+- GitHub connector did not confirm live workflow completion.
 - Release APK availability must still be verified in GitHub Actions / Releases before claiming success.
 - No Android TV / Mi Box S runtime QA has been completed in this session.
-- Player handoff is code-wired but not runtime-verified in Android APK.
+- Media task/player handoff is code-wired but not runtime-verified in Android APK.
 
 ## Current Highest Priority
 
-1. `ASG-TOR-003` — Metadata and file selection.
-2. `ASG-QA-001` — Android TV build/install smoke test.
-3. Runtime QA for `ASG-TOR-SEARCH-001`, `ASG-TOR-SEARCH-002`, and `ASG-TOR-005`.
+1. `ASG-QA-001` — Android TV build/install smoke test.
+2. Runtime QA for `ASG-TOR-SEARCH-001`, `ASG-TOR-SEARCH-002`, and `ASG-TOR-005`.
+3. `ASG-TOR-003` — Metadata and file selection.
 4. `ASG-TOR-004` — Streaming-first playback.
 
 ## Next Recommended Task
 
-Engineer:
+QA:
+
+Run Android TV smoke test for `2.10.6`.
+
+Minimum app QA scope:
+
+- APK builds in GitHub Actions.
+- APK installs on Android TV emulator / Mi Box S.
+- App launches offline.
+- D-pad focus works.
+- Enter activates focused items.
+- Back works from Home/Search/Details/Sources/Settings/Player.
+- Home opens.
+- Search opens.
+- Media search returns configured source result.
+- Selected result creates media task.
+- Direct playable task opens native ExoPlayer.
+- Configured service task loads metadata/files or shows understandable error.
+- Selected file persists.
+- Stream URL opens ExoPlayer.
+- Player play/pause/seek work.
+- Progress saves and Continue Watching appears.
+- App survives 15 minutes.
+
+Engineer if no device QA is available:
 
 Implement `ASG-TOR-003` next.
 
@@ -104,24 +147,6 @@ Expected direction:
 - Persist selected file details.
 - Improve no-files / no-playable-video states.
 - Keep player handoff stable and reuse `AsMediaTask.openStream()`.
-
-QA:
-
-Run Android TV smoke test for `2.10.6`.
-
-Minimum player handoff QA scope:
-
-- Search with a user-configured source.
-- Select direct playable result.
-- Create media task.
-- Open stream and confirm native PlayerActivity starts.
-- Exit player and confirm progress is saved against task ID.
-- Reopen task and confirm Resume appears.
-- Confirm Resume starts from saved position.
-- Confirm Start over starts from 0.
-- Confirm missing stream URL shows readable error state.
-- Confirm bridge/player failure is shown clearly.
-- Confirm D-pad focus works on task screen.
 
 ## Blockers / Risks
 
