@@ -1,3 +1,4 @@
+window.ASGARD_DEFAULT_TORR_SERVER='http://pape85e.tsarea.tv:8880';
 window.AsStore={
   b(){return window.AsgardBridge||null},
   json(v,f){try{return JSON.parse(v)}catch(e){return f}},
@@ -6,8 +7,9 @@ window.AsStore={
   resetSources(){const b=this.b();if(b&&b.resetSourcesTxt)return b.resetSourcesTxt();localStorage.removeItem('sources_txt');return true},
   settings(){return this.json(localStorage.getItem('asgard_settings')||'{}',{})},
   saveSettings(s){localStorage.setItem('asgard_settings',JSON.stringify(s||{}));return true},
-  parserSettings(){const s=this.settings();return s.parser||{type:'jacred',jacredBaseUrl:'',jacredApiKey:'',torrServerUrl:''}},
-  saveParserSettings(p){const s=this.settings();s.parser=Object.assign({type:'jacred',jacredBaseUrl:'',jacredApiKey:'',torrServerUrl:''},p||{});return this.saveSettings(s)},
+  defaultParserSettings(){return {type:'jacred',jacredBaseUrl:'',jacredApiKey:'',torrServerUrl:window.ASGARD_DEFAULT_TORR_SERVER}},
+  parserSettings(){const s=this.settings();return Object.assign(this.defaultParserSettings(),s.parser||{})},
+  saveParserSettings(p){const s=this.settings();s.parser=Object.assign(this.defaultParserSettings(),p||{});return this.saveSettings(s)},
   clearParserSettings(){const s=this.settings();delete s.parser;return this.saveSettings(s)},
   maskedKey(k){k=String(k||'');if(!k)return '';if(k.length<=6)return '******';return k.slice(0,3)+'***'+k.slice(-3)},
   progress(){const b=this.b();return b?this.json(b.getAllWatchProgress(),[]):this.json(localStorage.getItem('watch_progress')||'[]',[])},
