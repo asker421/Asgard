@@ -8,7 +8,7 @@ Pre-release / early alpha.
 
 ## Current Version
 
-2.10.28 according to Android build configuration.
+2.10.29 according to Android build configuration.
 
 ## Release Readiness
 
@@ -16,64 +16,60 @@ Not ready for stable release.
 
 ## Expected Release
 
-- versionName: `2.10.28`
-- versionCode: `68`
-- tag: `v2.10.28`
-- release title: `Asgard TV v2.10.28`
+- versionName: `2.10.29`
+- versionCode: `69`
+- tag: `v2.10.29`
+- release title: `Asgard TV v2.10.29`
 - APK asset: `asgard-tv-release.apk`
 
-## New in 2.10.28 Scope
+## New in 2.10.29 Scope
 
-- Added `metadata-loader-v12.js` for more resilient service metadata/files loading:
-  - retries metadata/files several times instead of failing after one attempt;
-  - extracts torrent hash from magnet btih where possible;
-  - uses service list/get fallback when add response does not immediately return hash;
-  - selects the largest supported video file;
-  - builds stream URL only after file selection is available;
-  - returns clearer states such as `metadata_pending`, `hash_pending`, `no_playable_video_file`, and `stream_ready`.
-- Added `metadata-provider-v13.js`:
-  - TMDB metadata provider foundation;
-  - supports `ru-RU` language and region settings;
-  - supports trending movies, now playing movies, trending series, details, cast and seasons;
-  - requires user-configured TMDB API key.
-- Added `home-tmdb-v14.js`:
-  - Home no longer pretends that random English TVMaze data is a real movie/top chart;
-  - if TMDB key is missing, Home shows a clear metadata setup state instead of fake top charts;
-  - if TMDB key is configured, Home shows real TMDB `ru-RU` metadata cards;
-  - Details can show cast and season grouping for series;
-  - `▶ Включить фильм` routes title into Search/source selection flow.
+- Added a new Android TV UX layer for a more familiar media-center experience while preserving Asgard branding/colors.
+- Added `lampa-style-v15.css`:
+  - compact left icon rail;
+  - larger TV-safe cards;
+  - sticky topbar/search layout;
+  - grid search results;
+  - detail layout with poster, metadata and source side-panel;
+  - season/source blocks optimized for D-pad focus.
+- Added `lampa-ux-v15.js`:
+  - Search results render as movie/series cards;
+  - each card opens a source-selection detail screen;
+  - source choices appear in a side panel with source, quality, size, seeds/peers and direct play action;
+  - details/seasons are visually grouped into TV-friendly blocks;
+  - flow is now: catalog/search card → detail/source selection → play selected source.
 - Updated `index.html` to load:
 
 ```text
-metadata-loader-v12.js
-metadata-provider-v13.js
-home-tmdb-v14.js
+lampa-style-v15.css
+lampa-ux-v15.js
 ```
 
 - Preserved package/applicationId `com.asgard.tv` and branding `Asgard TV`.
 - No unauthorized catalogs, no protected-provider circumvention, no paid-access circumvention, and no embedded P2P engine were added.
 
-## Carried from 2.10.27
+## Carried from 2.10.28
 
-- `Metadata API missing` compatibility shim.
-- Search timeout guard around long source/parser calls.
+- TMDB metadata provider foundation.
+- TMDB-driven Home setup/metadata runtime.
+- Resilient metadata/files loader.
 
 ## Verification Status
 
 Release verification is PENDING.
 
-Do not claim that `2.10.28` release APK is available until GitHub Actions / Releases confirm it.
+Do not claim that `2.10.29` release APK is available until GitHub Actions / Releases confirm it.
 
 ## Missing Before Demo APK
 
-- Confirm APK build for 2.10.28.
-- Confirm release asset `asgard-tv-release.apk` exists for v2.10.28.
+- Confirm APK build for 2.10.29.
+- Confirm release asset `asgard-tv-release.apk` exists for v2.10.29.
 - Confirm install on Android TV / Mi Box S.
-- Open Home without TMDB key and confirm it shows metadata setup state, not fake charts.
-- Enter TMDB API key and confirm Home shows Russian metadata cards where available.
-- Open a series details page and confirm seasons/cast appear where available.
-- Select a magnet/torrent source variant and confirm metadata loader retries before showing failure.
-- Confirm stream opens only when stream URL is ready.
+- Confirm compact left rail renders correctly.
+- Confirm Search shows grid cards.
+- Confirm selecting a card opens detail/source-selection panel.
+- Confirm source list is readable and D-pad focusable.
+- Confirm play selected source still routes through metadata/files/stream flow.
 
 ## Known Risk
 
