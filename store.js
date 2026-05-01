@@ -1,0 +1,27 @@
+window.ASGARD_DEFAULT_TORR_SERVER='http://pape85e.tsarea.tv:8880';
+window.AsStore={
+  b(){return window.AsgardBridge||null},
+  json(v,f){try{return JSON.parse(v)}catch(e){return f}},
+  readSources(){const b=this.b();return b?b.readSourcesTxt():localStorage.getItem('sources_txt')||''},
+  saveSources(t){const b=this.b();if(b)return b.saveSourcesTxt(t);localStorage.setItem('sources_txt',t);return true},
+  resetSources(){const b=this.b();if(b&&b.resetSourcesTxt)return b.resetSourcesTxt();localStorage.removeItem('sources_txt');return true},
+  settings(){return this.json(localStorage.getItem('asgard_settings')||'{}',{})},
+  saveSettings(s){localStorage.setItem('asgard_settings',JSON.stringify(s||{}));return true},
+  defaultParserSettings(){return {type:'jacred',jacredBaseUrl:'',jacredApiKey:'',torrServerUrl:window.ASGARD_DEFAULT_TORR_SERVER}},
+  parserSettings(){const s=this.settings();return Object.assign(this.defaultParserSettings(),s.parser||{})},
+  saveParserSettings(p){const s=this.settings();s.parser=Object.assign(this.defaultParserSettings(),p||{});return this.saveSettings(s)},
+  clearParserSettings(){const s=this.settings();delete s.parser;return this.saveSettings(s)},
+  maskedKey(k){k=String(k||'');if(!k)return '';if(k.length<=6)return '******';return k.slice(0,3)+'***'+k.slice(-3)},
+  progress(){const b=this.b();return b?this.json(b.getAllWatchProgress(),[]):this.json(localStorage.getItem('watch_progress')||'[]',[])},
+  favorites(){const b=this.b();return b?this.json(b.getFavorites(),[]):this.json(localStorage.getItem('favorites')||'[]',[])},
+  history(){const b=this.b();return b?this.json(b.getHistory(),[]):this.json(localStorage.getItem('history')||'[]',[])},
+  fav(item){const b=this.b();if(b)return b.addToFavorites(JSON.stringify(item));const a=this.favorites().filter(x=>x.id!==item.id);a.push(item);localStorage.setItem('favorites',JSON.stringify(a));return true},
+  unfav(id){const b=this.b();if(b)return b.removeFromFavorites(id);localStorage.setItem('favorites',JSON.stringify(this.favorites().filter(x=>x.id!==id)));return true},
+  hist(item){const b=this.b();if(b)return b.addHistory(JSON.stringify(item));const a=this.history().filter(x=>x.id!==item.id);a.push(item);localStorage.setItem('history',JSON.stringify(a));return true},
+  clearHistory(){const b=this.b();if(b)return b.clearHistory();localStorage.setItem('history','[]');return true},
+  torrentTasks(){const b=this.b();return b&&b.getTorrentTasks?this.json(b.getTorrentTasks(),[]):this.json(localStorage.getItem('torrent_tasks')||'[]',[])},
+  addTorrentTask(task){const b=this.b();if(b&&b.addTorrentTask)return b.addTorrentTask(JSON.stringify(task));const a=this.torrentTasks().filter(x=>x.id!==task.id);a.push(task);localStorage.setItem('torrent_tasks',JSON.stringify(a));return true},
+  updateTorrentTask(task){const b=this.b();if(b&&b.updateTorrentTask)return b.updateTorrentTask(JSON.stringify(task));return this.addTorrentTask(task)},
+  removeTorrentTask(id){const b=this.b();if(b&&b.removeTorrentTask)return b.removeTorrentTask(id);localStorage.setItem('torrent_tasks',JSON.stringify(this.torrentTasks().filter(x=>x.id!==id)));return true},
+  clearTorrentTasks(){const b=this.b();if(b&&b.clearTorrentTasks)return b.clearTorrentTasks();localStorage.setItem('torrent_tasks','[]');return true}
+};
