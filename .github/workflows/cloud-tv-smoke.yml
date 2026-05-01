@@ -11,10 +11,12 @@ permissions:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     env:
       AVD_NAME: asgard_tv_smoke
       APK_PATH: android/app/build/outputs/apk/debug/app-debug.apk
+      TV_API_LEVEL: 34
+      TV_SYSTEM_IMAGE: system-images;android-34;android-tv;x86
     steps:
       - uses: actions/checkout@v4
 
@@ -25,6 +27,9 @@ jobs:
 
       - uses: android-actions/setup-android@v3
 
+      - name: Accept Android SDK licenses
+        run: yes | sdkmanager --licenses >/dev/null || true
+
       - name: Install Android SDK packages
         run: |
           sdkmanager --install \
@@ -32,7 +37,7 @@ jobs:
             "emulator" \
             "platforms;android-35" \
             "build-tools;35.0.0" \
-            "system-images;android-35;android-tv;x86_64"
+            "$TV_SYSTEM_IMAGE"
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -43,14 +48,20 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleDebug
+          ls -lah app/build/outputs/apk/debug/
 
       - name: Create Android TV AVD
         run: |
+          avdmanager list device | sed -n '1,140p'
           echo "no" | avdmanager create avd \
             --force \
             --name "$AVD_NAME" \
-            --package "system-images;android-35;android-tv;x86_64" \
-            --device "tv_1080p"
+            --package "$TV_SYSTEM_IMAGE" \
+            --device "tv_1080p" || \
+          echo "no" | avdmanager create avd \
+            --force \
+            --name "$AVD_NAME" \
+            --package "$TV_SYSTEM_IMAGE"
 
       - name: Start Android TV emulator
         run: |
@@ -65,7 +76,7 @@ jobs:
             > emulator.log 2>&1 &
           adb wait-for-device
           boot_completed=""
-          for i in {1..90}; do
+          for i in {1..120}; do
             boot_completed=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')
             if [ "$boot_completed" = "1" ]; then
               break
