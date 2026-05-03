@@ -46,6 +46,11 @@ APK output:
 android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
+## QA and release docs
+
+- [Android TV smoke test checklist](docs/qa/smoke-test-android-tv.md)
+- [Android TV installation guide](docs/release/install-android-tv.md)
+
 ## Updates
 
 The app can check GitHub Releases and open the latest release page. Android requires user confirmation to install APK updates.
